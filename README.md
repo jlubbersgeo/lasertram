@@ -10,6 +10,7 @@ Welcome to the repository for `lasertram`, a package for the time resolved analy
 
 ```python
     output_report = True
+    despike = False
     spot = LaserTRAM(name = 'BCR-2G')
 
     # assign data to the spot
