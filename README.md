@@ -1,6 +1,6 @@
 # lasertram
 
-Welcome to the repository for `lasertram`, a package for the time resolved analysis for processing laser ablation inductively coupled plasma mass spectrometry (LA-ICP-MS) data.
+Welcome to the repository for `lasertram`, a package for the time resolved analysis for processing laser ablation inductively coupled plasma mass spectrometry (LA-ICP-MS) data. It is utilized heavily in the dashboard [LaserTRAM-DB](https://github.com/jlubbersgeo/laserTRAM-DB).
 
 ## Structure
 
