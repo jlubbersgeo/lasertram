@@ -69,6 +69,14 @@ Welcome to the repository for `lasertram`, a package for the time resolved analy
 
 ```
 
+Attributes follow naming conventions similar to the methods that create them. For example:
+
+```python
+spot.get_detection_limits()
+```
+
+creates the attribute `detection_limits` which is simply a 1D array of values corresponding to the detection limit of each analyte in counts per second.
+
 2. `LaserCalc`: taking the output from the `LaserTRAM` class and calculating concentrations according to [Longerich et al., (1996)](https://pubs.rsc.org/en/content/articlepdf/1996/ja/ja9961100899?casa_token=KagVZMK9AgAAAAAA:pPybAcUcksXzD8UYmpjc_MI4uWa2tLELI_jC9Gtc1ycNTyH_tPK2meMuJ1SXVZICLwky-NggmJQXRA).
 
 ## Installation
