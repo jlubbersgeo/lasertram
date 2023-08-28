@@ -100,9 +100,10 @@ class LaserTRAM:
             `all_data.loc[spot,:]` if `all_data` is the
             LT_ready file
         """
-        self.data = df.set_index("SampleLabel")
+        self.data = df.reset_index()
+        self.data = self.data.set_index("SampleLabel")
         self.data["Time"] = self.data["Time"] / 1000
-        self.data_matrix = self.data.to_numpy()
+        self.data_matrix = self.data.iloc[:, 1:].to_numpy()
         self.analytes = self.data.loc[:, "Time":].columns.tolist()[1:]
         self.timestamp = str(self.data.loc[:, "timestamp"].unique()[0])
 
@@ -156,11 +157,10 @@ class LaserTRAM:
         is defined as the value that is three standard deviations away from the
         background.
         """
-        self.detection_limits = (
-            np.std(
-                self.data_matrix[self.bkgd_start_idx : self.bkgd_stop_idx, 1:], axis=0
-            )
-            * 3
+        self.detection_limits = np.std(
+            self.data_matrix[self.bkgd_start_idx : self.bkgd_stop_idx, 1:], axis=0
+        ) * 3 + np.median(
+            self.data_matrix[self.bkgd_start_idx : self.bkgd_stop_idx, 1:], axis=0
         )
 
     def subtract_bkgd(self):
@@ -189,17 +189,19 @@ class LaserTRAM:
                 break
             self.int_std_loc = i
 
-        self.bkgd_subtract_normal_data(
-            self.bkgd_correct_data
-            / self.bkgd_correct_data[:, self.int_std_loc][:, None]
+        threshold = self.detection_limits - np.median(
+            self.data_matrix[self.bkgd_start_idx : self.bkgd_stop_idx, 1:], axis=0
         )
+
+        self.bkgd_subtract_normal_data = self.bkgd_correct_data / self.bkgd_correct_data[:, self.int_std_loc][:, None]
+        
         self.bkgd_correct_med = np.median(self.bkgd_subtract_normal_data, axis=0)
         self.bkgd_correct_med[
-            np.median(self.bkgd_correct_data, axis=0) <= self.detection_limits
+            np.median(self.bkgd_correct_data, axis=0) <= threshold
         ] = -9999
         self.bkgd_correct_med[np.median(self.bkgd_correct_data, axis=0) == 0] = -9999
 
-        self.bkgd_correct_std_err = self.bkgd_correct_normal_data.std(axis=0) / np.sqrt(
+        self.bkgd_correct_std_err = self.bkgd_subtract_normal_data.std(axis=0) / np.sqrt(
             abs(self.int_stop_idx - self.int_start_idx)
         )
         self.bkgd_correct_std_err_rel = 100 * (
@@ -346,7 +348,7 @@ def process_spot(
     # assign the internal standard analyte
     spot.assign_int_std(internal_std)
     # assign intervals for background and ablation signal
-    spot.assign_intervals(bkgd=bkgd, interval=keep)
+    spot.assign_intervals(bkgd=bkgd, keep=keep)
     # assign and save the median background values
     spot.get_bkgd_data()
     # remove the median background values from the ablation interval
@@ -852,17 +854,26 @@ class LaserCalc:
                 )
         if SRM is True:
             # creates a list of dataframes that hold the uncertainty information for each secondary standard.
-            for standard, concentration in zip(secondary_standards, concentrations_list):
-
+            for standard, concentration in zip(
+                secondary_standards, concentrations_list
+            ):
                 # concentration of internal standard in unknown uncertainties
                 t1 = (
                     self.standards_data.loc[
                         standard,
-                        "{}_std".format(re.split("(\d+)", self.calibration_std_data["norm"].unique()[0])[2]),
+                        "{}_std".format(
+                            re.split(
+                                "(\d+)", self.calibration_std_data["norm"].unique()[0]
+                            )[2]
+                        ),
                     ]
                     / self.standards_data.loc[
                         standard,
-                        "{}".format(re.split("(\d+)", self.calibration_std_data["norm"].unique()[0])[2]),
+                        "{}".format(
+                            re.split(
+                                "(\d+)", self.calibration_std_data["norm"].unique()[0]
+                            )[2]
+                        ),
                     ]
                 ) ** 2
 
@@ -870,11 +881,20 @@ class LaserCalc:
                 t2 = (
                     self.standards_data.loc[
                         self.calibration_standard,
-                        "{}_std".format(re.split("(\d+)", self.calibration_std_data["norm"].unique()[0])[2]),
+                        "{}_std".format(
+                            re.split(
+                                "(\d+)", self.calibration_std_data["norm"].unique()[0]
+                            )[2]
+                        ),
                     ]
                     / self.standards_data.loc[
                         self.calibration_standard,
-                        "{}".format(re.split("(\d+)", self.self.calibration_std_data["norm"].unique()[0])[2]),
+                        "{}".format(
+                            re.split(
+                                "(\d+)",
+                                self.self.calibration_std_data["norm"].unique()[0],
+                            )[2]
+                        ),
                     ]
                 ) ** 2
 
@@ -888,8 +908,12 @@ class LaserCalc:
                     if nomass in self.standard_elements:
                         std_conc_stds.append(
                             (
-                                self.standards_data.loc[self.calibration_standard, "{}_std".format(nomass)]
-                                / self.standards_data.loc[self.calibration_standard, nomass]
+                                self.standards_data.loc[
+                                    self.calibration_standard, "{}_std".format(nomass)
+                                ]
+                                / self.standards_data.loc[
+                                    self.calibration_standard, nomass
+                                ]
                             )
                             ** 2
                         )
@@ -899,14 +923,23 @@ class LaserCalc:
                 # Overall uncertainties
 
                 if calib_uncertainty == True:
-
                     stds_values = concentration * np.sqrt(
                         np.array(
                             t1
                             + t2
                             + std_conc_stds
-                            + (self.calibration_std_ses[self.analytes].to_numpy()[np.newaxis, :] / 100) ** 2
-                            + (self.data.loc[standard, myuncertainties].to_numpy() / 100) ** 2
+                            + (
+                                self.calibration_std_ses[self.analytes].to_numpy()[
+                                    np.newaxis, :
+                                ]
+                                / 100
+                            )
+                            ** 2
+                            + (
+                                self.data.loc[standard, myuncertainties].to_numpy()
+                                / 100
+                            )
+                            ** 2
                         ).astype(np.float64)
                     )
 
@@ -918,7 +951,13 @@ class LaserCalc:
                         t1
                         + t2
                         + std_conc_stds
-                        + (self.calibration_std_ses[self.analytes].to_numpy()[np.newaxis, :] / 100) ** 2
+                        + (
+                            self.calibration_std_ses[self.analytes].to_numpy()[
+                                np.newaxis, :
+                            ]
+                            / 100
+                        )
+                        ** 2
                         + (self.loc[standard, myuncertainties].to_numpy() / 100) ** 2
                     )
                     stds_values.columns = myuncertainties
@@ -928,24 +967,34 @@ class LaserCalc:
 
         else:
             # creates a list of dataframes that hold the uncertainty information for unknown spot.
-            for sample, concentration in zip(self.samples_nostandards, concentrations_list):
-
+            for sample, concentration in zip(
+                self.samples_nostandards, concentrations_list
+            ):
                 # concentration of internal standard in unknown uncertainties
                 t1 = (self.data["internal_std_rel_unc"] / 100) ** 2
-                t1 = t1[:,np.newaxis]
+                t1 = t1[:, np.newaxis]
 
                 # concentration of internal standard in calibration standard uncertainties
                 t2 = (
                     self.standards_data.loc[
                         self.calibration_standard,
-                        "{}_std".format(re.split("(\d+)", self.self.calibration_std_data["norm"].unique()[0])[2]),
+                        "{}_std".format(
+                            re.split(
+                                "(\d+)",
+                                self.self.calibration_std_data["norm"].unique()[0],
+                            )[2]
+                        ),
                     ]
                     / self.standards_data.loc[
                         self.calibration_standard,
-                        "{}".format(re.split("(\d+)", self.self.calibration_std_data["norm"].unique()[0])[2]),
+                        "{}".format(
+                            re.split(
+                                "(\d+)",
+                                self.self.calibration_std_data["norm"].unique()[0],
+                            )[2]
+                        ),
                     ]
                 ) ** 2
-
 
                 # concentration of each analyte in calibration standard uncertainties
                 std_conc_stds = []
@@ -957,8 +1006,12 @@ class LaserCalc:
                     if nomass in self.standard_elements:
                         std_conc_stds.append(
                             (
-                                self.standards_data.loc[self.calibration_standard, "{}_std".format(nomass)]
-                                / self.standards_data.loc[self.calibration_standard, nomass]
+                                self.standards_data.loc[
+                                    self.calibration_standard, "{}_std".format(nomass)
+                                ]
+                                / self.standards_data.loc[
+                                    self.calibration_standard, nomass
+                                ]
                             )
                             ** 2
                         )
@@ -970,7 +1023,13 @@ class LaserCalc:
                         t1
                         + t2
                         + std_conc_stds
-                        + (self.calibration_std_ses[self.analytes].to_numpy()[np.newaxis, :] / 100) ** 2
+                        + (
+                            self.calibration_std_ses[self.analytes].to_numpy()[
+                                np.newaxis, :
+                            ]
+                            / 100
+                        )
+                        ** 2
                         + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
                     )
                     unknown_stds_values.columns = myuncertainties
@@ -979,14 +1038,16 @@ class LaserCalc:
                     unknown_stds_values = concentration * np.sqrt(
                         t2
                         + std_conc_stds
-                        + (self.calibration_std_ses[self.analytes].to_numpy()[np.newaxis, :] / 100) ** 2
+                        + (
+                            self.calibration_std_ses[self.analytes].to_numpy()[
+                                np.newaxis, :
+                            ]
+                            / 100
+                        )
+                        ** 2
                         + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
                     )
                     unknown_stds_values.columns = myuncertainties
                     unknowns_list.append(unknown_stds_values)
 
             self.unknown_uncertainties = unknowns_list
-
-
-
-        
