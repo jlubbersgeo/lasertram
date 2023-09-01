@@ -1056,6 +1056,7 @@ class LaserCalc:
 
         secondary_standards = self.potential_calibration_standards.copy()
         secondary_standards.remove(self.calibration_standard)
+        self.secondary_standards = secondary_standards
         secondary_standards_concentrations_list = []
         unknown_concentrations_list = []
 
@@ -1210,4 +1211,18 @@ class LaserCalc:
             unknown_concentrations_list.append(concentrations)
 
         self.SRM_concentrations = pd.concat(secondary_standards_concentrations_list)
+        self.SRM_concentrations.insert(
+            0, "Spot", list(self.data.loc[self.secondary_standards, "Spot"])
+        )
         self.unknown_concentrations = pd.concat(unknown_concentrations_list)
+        self.unknown_concentrations.insert(
+            0, "Spot", list(self.data.loc[self.samples_nostandards, "Spot"])
+        )
+        self.unknown_concentrations.index = [
+            "unknown"
+        ] * self.unknown_concentrations.shape[0]
+        self.unknown_concentrations.index.name = "sample"
+
+
+## ADD FUNCTION FOR CALCULATING UNCERTAINTIES. THIS SHOULD BE SEPARATE
+## FROM THE CALCULATE CONCENTRATIONS FUNCTION SO ITS EASIER TO MAINTAIN
