@@ -1223,6 +1223,10 @@ class LaserCalc:
         ] * self.unknown_concentrations.shape[0]
         self.unknown_concentrations.index.name = "sample"
 
+    ## ADD FUNCTION FOR CALCULATING UNCERTAINTIES. THIS SHOULD BE SEPARATE
+    ## FROM THE CALCULATE CONCENTRATIONS FUNCTION SO ITS EASIER TO MAINTAIN
+    ## arguments for calib_uncertainty = True as default
 
-## ADD FUNCTION FOR CALCULATING UNCERTAINTIES. THIS SHOULD BE SEPARATE
-## FROM THE CALCULATE CONCENTRATIONS FUNCTION SO ITS EASIER TO MAINTAIN
+    def calculate_uncertainties(self, calib_uncertainty=True):
+        self.SRM_concentration_uncertainties = 1
+        self.unknown_concentration_uncertainties = 1
