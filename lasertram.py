@@ -1,15 +1,21 @@
 """
     The API for LaserTRAM-DB
     This will largely be comprised of two classes:
-    - LaserTRAM
-    - LaserCalc
+
+    - LaserTRAM: for taking raw counts per second data from a
+    Laser Ablation Inductively Coupled Plasma Mass Spectrometry (LA-ICP-MS)
+    experiment, choosing an interval to be turned into a concentration, normalizing
+    that interval to an internal standard and outputting that value + other metadata
+
+    - LaserCalc: for taking the output from `LaserTRAM` along with user input
+    to calculate concentrations for a series of `LaserTRAM` spot objects along
+    with statistics on calibration standards
 
     Created and maintained by:
     Jordan Lubbers
     jlubbers@usgs.gov
 
 """
-import os
 import re
 
 import mendeleev
@@ -22,60 +28,12 @@ from statsmodels.tools.eval_measures import rmse
 
 class LaserTRAM:
     """
+    # LaserTRAM
     The class `LaserTRAM` which is devoted to the "time resolved analysis"
-    operations during thelaser data reduction process. To be used in
+    operations during the laser data reduction process. To be used in
     conjunction with the `LaserCalc` class. The general idea is that
     this creates an object that contains all the information related
-    to one individual spot analysis. For relatability we can call this
-    object `spot`:
-
-    ```python
-    spot = LaserTRAM(name = 'BCR-2G')
-
-    # assign data to the spot
-    spot.get_data(raw_data)
-
-    # despike the data if desired
-    if despike is True:
-        spot.despike_data(analyte_list="all")
-
-    # assign the internal standard analyte
-    spot.assign_int_std(internal_std)
-
-    # assign intervals for background and ablation signal
-    spot.assign_intervals(bkgd=bkgd, interval=keep)
-
-    # assign and save the median background values
-    spot.get_bkgd_data()
-
-    # remove the median background values from the ablation interval
-    spot.subtract_bkgd()
-
-    # calculate detection limits based off background values
-    spot.get_detection_limits()
-
-    # normalize the ablation interval to the internal standard analyte,
-    # get the median values, and the standard error
-    spot.normalize_interval()
-
-    if output_report is True:
-        spot.make_output_report()
-
-    # or utilizing the process_data() function that calls on many of the
-    # methods within the LaserTRAM class. Ex:
-
-    #create the spot object
-    spot = LaserTRAM(name = 'BCR-2G')
-    process_data(
-        spot,
-        raw_data = df,
-        bkgd = (5,10),
-        keep = (20,50),
-        internal_std = "29Si",
-        despike = False,
-        output_report = True
-        )
-    ```
+    to one individual spot analysis.
 
     """
 
@@ -83,9 +41,7 @@ class LaserTRAM:
         """
 
         Args:
-            name (str): your sample name
-            i.e., the value in the "SampleLabel" column
-            of the LT_ready file
+            name (str): your sample name i.e. the value in the `SampleLabel` column of the LT_ready file
         """
         self.name = name
         self.despiked = False
@@ -95,10 +51,7 @@ class LaserTRAM:
         """assigns raw counts/sec data to the object
 
         Args:
-            df (pandas DataFrame): raw data corresponding
-            to the spot being processed i.e.,
-            `all_data.loc[spot,:]` if `all_data` is the
-            LT_ready file
+            df (pandas DataFrame): raw data corresponding to the spot being processed i.e., `all_data.loc[spot,:]` if `all_data` is the LT_ready file
         """
         self.data = df.reset_index()
         self.data = self.data.set_index("SampleLabel")
@@ -112,8 +65,7 @@ class LaserTRAM:
         analyte
 
         Args:
-            int_std (str): the name of the column for the
-            internal standard analyte e.g., "29Si"
+            int_std (str): the name of the column for the internal standard analyte e.g., "29Si"
         """
         self.int_std = int_std
 
@@ -123,12 +75,8 @@ class LaserTRAM:
         be used in calculating concentrations
 
         Args:
-            bkgd (tuple): (start, stop) pair of values corresponding
-            to the analysis time where the background signal starts
-            and stops
-            interval (tuple): (start, stop) pair of values correpsonding
-            to the analysis time where the interval signal for concentrations
-            starts and stops
+            bkgd (tuple): (start, stop) pair of values corresponding to the analysis time where the background signal starts and stops
+            keep (tuple): (start, stop) pair of values correpsonding to the analysis time where the interval signal for concentrations starts and stops
         """
         self.bkgd_start = bkgd[0]
         self.bkgd_stop = bkgd[1]
@@ -211,7 +159,7 @@ class LaserTRAM:
     def make_output_report(self):
         """
         create an output report for the spot processing. This is a
-        pandas dataframe that has the following format:
+        pandas DataFrame that has the following format:
 
         |timestamp|Spot|bkgd_start|bkgd_stop|int_start|int_stop|norm|norm_cps|analyte vals and uncertainties -->|
         |---------|----|----------|---------|---------|--------|----|--------|----------------------------------|
@@ -271,11 +219,9 @@ class LaserTRAM:
             apply a standard deviation filter to analyte signal
 
             Args:
-                data (pandas DataFrame): dataframe representing the
-                spot raw counts per second data.
+                data (pandas DataFrame): dataframe representing the spot raw counts per second data.
                 analyte (string): analyte to despike
-                passes (int, optional): the number of iterations
-                for the filter to complete. Defaults to 2.
+                passes (int, optional): the number of iterations for the filter to complete. Defaults to 2.
 
             Returns:
                 signal (ndarray): the filtered signal
@@ -332,12 +278,14 @@ def process_spot(
     so a spot can be processed in an efficient and compact way.
 
     Args:
-        spot (_type_): _description_
-        raw_data (_type_): _description_
-        bkgd (_type_): _description_
-        keep (_type_): _description_
-        internal_std (_type_): _description_
-        output_report (bool, optional): _description_. Defaults to True.
+        spot (LaserTRAM spot object): an empty `LaserTRAM` spot object to be processed
+        raw_data (pandas DataFrame): the raw counts per second dataframe to be assigned to the spot. Shape is (m x n) where m is the number of cycles through the mass range
+        bkgd (tuple): (start, stop) pair of values corresponding to the analysis time where the background signal starts and stops
+        keep (tuple): (start, stop) pair of values correpsonding to the analysis time where the interval signal for concentrations starts and stops
+        internal_std (str): column name for the internal standard analyte (e.g., 29Si)
+        despike (bool, optional): Whether or not to despike all analyte signals using the standard deviation filter from `LaserTRAM.despike_data()`. Defaults to False
+        output_report (bool, optional): Whether or not to create a 1-row pandas DataFrame output report in the following format. Defaults to True.
+
 
     """
     # assign data to the spot
@@ -368,31 +316,12 @@ def oxide_to_ppm(wt_percent, int_std):
     convert concentration internal standard analyte oxide in weight percent to
     concentration ppm for a 1D series of data
 
-    Parameters
-    ----------
-    wt_percent : array-like
-        the oxide values to be converted to ppm
-    int_std : string
-        the internal standard used in the experiment (e.g., '29Si', '43Ca',
-                                                      '47Ti')
-        currently supported elements:
+    Args:
+    wt_percent (array-like): the oxide values to be converted to ppm
+    int_std (str): the internal standard used in the experiment (e.g., '29Si', '43Ca','47Ti')
 
-            - 'SiO2'
-            - 'TiO2'
-            - 'Al2O3'
-            - 'Cr2O3'
-            - 'MnO'
-            - 'FeO'
-            - 'K2O'
-            - 'CaO'
-            - 'Na2O'
-            - 'NiO'
-            - 'MgO'
-
-    Returns
-    -------
-    ppm : array-like
-        concentrations in ppm the same shape as the wt_percent input
+    Returns:
+    ppm (array-like): concentrations in ppm the same shape as the wt_percent input
 
     """
 
@@ -450,17 +379,32 @@ def oxide_to_ppm(wt_percent, int_std):
 
 class LaserCalc:
     """
+    # LaserCalc
+
     The class `LaserCalc` which is devoted to calculating
     concentrations for laser ablation ICP-MS spot or
     line of spots data following the methodology of
-    Longerich et al., (1996). It should be used in conjunction
-    with the output from `LaserTRAM` class. The basic steps
-    are as follows:
+    Longerich et al., (1996) and Kent and Ungerer (2006). It should be used in conjunction
+    with the output from `LaserTRAM` class. The basic steps are as follows:
+
     1. upload SRM data
     2. upload `LaserTRAM` output
     3. set the calibration standard
     4. set the internal standard concentrations for the unknowns
     5. calculate the concentrations and uncertainties of all analyses
+
+    References
+
+
+    - Longerich, H. P., Jackson, S. E., & Günther, D. (1996). Inter-laboratory note.
+            Laser ablation inductively coupled plasma mass spectrometric transient signal
+            data acquisition and analyte concentration calculation. Journal of analytical
+            atomic spectrometry, 11(9), 899-904.
+    - Kent, A. J., & Ungerer, C. A. (2006). Analysis of light lithophile elements
+            (Li, Be, B) by laser ablation ICP-MS: comparison between magnetic sector and
+            quadrupole ICP-MS. American Mineralogist, 91(8-9), 1401-1411.
+
+
     """
 
     def __init__(self, name):
@@ -468,8 +412,7 @@ class LaserCalc:
 
 
         Args:
-            name (str): The name of the experiment
-            to be processed
+            name (str): The name of the experiment to be processed
         """
         self.name = name
 
@@ -478,13 +421,10 @@ class LaserCalc:
 
         Args:
             df (pandas DataFrame): pandas DataFrame of standard reference materials
-            should be in the format of:
-
-            |Standard|element 1|element 2|element 3|...|element n|
-            |--------|---------|---------|---------|---|---------|
-
-            Standard names must be exact names found in GEOREM:
-            http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp
+        where each row represents data for a standard reference material.
+        The first column should be named "Standard". All other columns are
+        for different elemental concentrations.Standard names must be exact
+        names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp
         """
 
         self.standards_data = df.set_index("Standard")
@@ -504,38 +444,8 @@ class LaserCalc:
         """load in output from `LaserTRAM` for calculation of concentrations
 
         Args:
-            df (pandas DataFrame): the output of `LaserTRAM.make_output_report()`
-            which produces a table that looks like the following:
+            df (pandas DataFrame): a 2D pandas DataFrame representing numerous concatenated calls to `LaserTRAM.make_output_report()`
 
-        |timestamp|Spot|bkgd_start|bkgd_stop|int_start|int_stop|norm|norm_cps|analyte vals and uncertainties -->|
-        |---------|----|----------|---------|---------|--------|----|--------|----------------------------------|
-
-        Each call to `LaserTRAM.make_output_report()` creates a 1-row dataframe like above, so to create a dataframe
-        that represents and entire analysis session something like the following will work:
-        ```python
-        bkgd_interval = (5, 8)
-        keep_interval = (25, 45)
-
-        int_std = "29Si"
-
-        my_spots = []
-        for sample in tqdm(samples):
-            spot = LaserTRAM(name=sample)
-            lt.process_spot(
-                spot,
-                raw_data=data.loc[sample, :],
-                bkgd=bkgd_interval,
-                keep=keep_interval,
-                internal_std=int_std,
-                despike=False,
-                output_report=True,
-            )
-            my_spots.append(spot)
-
-        processed_df = pd.DataFrame()
-        for spot in tqdm(my_spots):
-            processed_df = pd.concat([processed_df, spot.output_report])
-        ```
         """
 
         data = df.set_index("Spot")
@@ -605,7 +515,7 @@ class LaserCalc:
         standard for calculating concentrations.
 
         Args:
-            std (str): name of standard reference material (e.g., 'NIST-612','BCR-2G')
+            std (str): name of standard reference material (e.g., `NIST-612`,`BCR-2G`)
         """
         self.calibration_standard = std
 
@@ -626,32 +536,11 @@ class LaserCalc:
         )
 
     def drift_check(self, pval=0.01):
-        """Performs a drift check on all analytes in the experiment.
-
-        To check for drift in calibration standard normalized ratios over time,
-        a linear regression is applied to the calibration standard for each analyte,
-        where the dependent variable is the count rate normalized to the internal
-        standard and the independent variable is the timestamp associated with
-        each analysis.
-
-        We determine the significance of each regression by evaluating following null
-        hypothesis: there is no relationship between a given analyte's internal standard
-        normalized ratio and time. We reject this if both the following conditions are
-        true: The p-value for the coefficient (i.e., slope) is significant; The F-statisic
-        comparing the regression and observed data is greater than the critical F value.
-        By default, we set the threshold for p-value significance at .01 (i.e., we have
-        99\% confidence that we can reject the null hypothesis) in an effort to mitigate
-        drift correcting all but the most linear of changes in normalized count rates,
-        but this may be changed by the user. If the null hypothesis for a given analyte
-        is rejected, the analyte is linearly corrected for drift and the regression
-        parameters (e.g., slope and intercept) are used to calculate a normalized count
-        rate for the calibration standard at the point in time where an unknown was analyzed:
-
-        .. math::
-            {C_i}^u = {C_n}^u \frac{\left[\frac{{C_i}^{std}}{{C_n}^{std}}\right]}{\left[m_ix+b_i\right]}{N_i}^u
-
-        Where :math:`m` is the regression slope, :math:`x` is the analysis time, and :math:`b` is the
-        intercept for analyte :math:`i`.
+        """For each analyte in the experiment, perform a linear regression to
+        assess whether or not drift in the mass spectrometer is happening at a
+        significant level. Significance is determined by setting the `pval` threshold.
+        If the regression is statistically significant, it gets flagged for later
+        correct treatment in `calculate_concentrations`
 
         """
         calib_std_rmses = []
@@ -659,10 +548,14 @@ class LaserCalc:
         calib_std_intercepts = []
         drift_check = []
 
-        # For our calibration standard, calculate the concentration ratio of 
+        # For our calibration standard, calculate the concentration ratio of
         # each analyte to the element used as the internal standard
         std_conc_ratios = []
         myanalytes_nomass = []
+
+        f_pvals = []
+        f_vals = []
+        f_crits = []
         for j in range(len(self.analytes)):
             # Getting regression statistics on analyte normalized ratios through time
             # for the calibration standard. This is what we use to check to see if it needs
@@ -707,9 +600,13 @@ class LaserCalc:
             # confidence limit 99%
 
             # f value stuff
+
             fvalue = model.fvalue
+            f_vals.append(fvalue)
             f_pvalue = model.f_pvalue
+            f_pvals.append(f_pvalue)
             fcrit = stats.f.ppf(q=1 - pval, dfn=len(x) - 1, dfd=len(y) - 1)
+            f_crits.append(fcrit)
             if (f_pvalue < pval) and (fvalue > fcrit):
                 drift = "True"
                 drift_check.append(drift)
@@ -720,6 +617,9 @@ class LaserCalc:
         self.calibration_standard_stats = pd.DataFrame(
             {
                 "drift_correct": drift_check,
+                "f_pval": f_pvals,
+                "f_value": f_vals,
+                "f_crit_value": f_crits,
                 "rmse": calib_std_rmses,
                 "slope": calib_std_slopes,
                 "intercept": calib_std_intercepts,
@@ -732,8 +632,7 @@ class LaserCalc:
 
     def get_calibration_std_ratios(self):
         """
-        For the calibration standard, calculate the concentration ratio between
-        every analyte and the internal standard.
+        For the calibration standard, calculate the concentration ratio between every analyte and the internal standard.
         """
 
         # For our calibration standard, calculate the concentration ratio
@@ -773,14 +672,10 @@ class LaserCalc:
         in the calculated concentration.
 
         Args:
-            spots (pandas Series): pandas series containing the names of the spots to
-            have their internal standard concentration-uncertainty assigned. This is
-            the `Spot` column from the output of `LaserTRAM`.
+            spots (pandas Series): pandas series containing the names of the spots tohave their internal standard concentration-uncertainty assigned. This is the `Spot` column from the output of `LaserTRAM`.
 
-            concentrations (array-like): values representing the internal standard concentration.
-            Must be the same shape as `spots`.
-            uncertainties (array-like): values representing the internal standard relative
-            uncertainty in percent. Must be the same shape as `spots`.
+            concentrations (array-like): values representing the internal standard concentration. Must be the same shape as `spots`.
+            uncertainties (array-like): values representing the internal standard relative uncertainty in percent. Must be the same shape as `spots`.
         """
         self.data["internal_std_comp"] = 10
         self.data["internal_std_rel_unc"] = 1
@@ -801,38 +696,6 @@ class LaserCalc:
         using the user specified calibration standard and internal standard
         concentrations/uncertainties.
 
-        We calculate the concentration of analyte (:math`i`) in an unknown material
-        (:math`u`) using the following relationship from  Longerich et al., (1996) [1]_:
-        .. math::
-            {C_i}^u = \frac{{R_i}^u}{S}
-
-        Where :math:`{C_i}^u` and :math`{R_i}^u` are the concentration of analyte and count
-        rate of analyte (:math`i`) in the unknown material, respectively, and :math`S` is
-        the normalized sensitivity. When using naturally occuring internal standards,
-        :math`S` can be defined as:
-        .. math::
-            S = \frac{{R_i}^{std}}{{C_i}^{std}}\left[\frac{{R_{n}}^u}{{R_{n}}^{std}} \frac{{C_{n}}^{std}}{{C_{n}}^{u}} \right]
-
-        :math`{R_i}^{std}` and :math`{C_i}^{std}` are the count rate and and concentration
-        of analyte (:math`i`) in the calibration standard, :math:`{R_{n}}^u` and :math`{R_{n}}^{std}`
-        are the mean count rates of the internal standard in the unknown material and
-        calibration standard, :math`{C_{n}}^{u}` and :math`{C_{n}}^{std}` are the concentrations
-        of the internal standard in the unknown material and calibration standard.
-
-        Kent and Ungerer (2006) [2]_ re-arrange this relationship such that the count
-        rate expressions always contain unknown analytes in the numerator:
-        .. math::
-            {C_i}^u = {C_n}^u \frac{\left[\frac{{C_i}^{std}}{{C_n}^{std}}\right]}{\left[\frac{{R_i}^{std}}{{R_n}^{std}}\right]}\frac{{R_i}^u}{{R_{n}}^u}
-
-        References
-        ----------
-        .. [1] Longerich, H. P., Jackson, S. E., & Günther, D. (1996). Inter-laboratory note.
-               Laser ablation inductively coupled plasma mass spectrometric transient signal
-               data acquisition and analyte concentration calculation. Journal of analytical
-               atomic spectrometry, 11(9), 899-904.
-        .. [2] Kent, A. J., & Ungerer, C. A. (2006). Analysis of light lithophile elements
-               (Li, Be, B) by laser ablation ICP-MS: comparison between magnetic sector and
-               quadrupole ICP-MS. American Mineralogist, 91(8-9), 1401-1411.
         """
 
         secondary_standards = self.potential_calibration_standards.copy()
@@ -1013,31 +876,7 @@ class LaserCalc:
 
 def calculate_uncertainties(self):
     """
-    Calculate the uncertainties for each analysis
-
-    Calculating concentrations of a given analyte in an unknown material
-    can be considered a series of nested quotients and products. Therefore,
-    we quantify the overall uncertainty of a given analyte as \cite{taylor1997introduction}:
-    .. math::
-        \sigma_{C_i} = {C_i}^u \sqrt{ \left( \frac{\sigma_{{C_u}^{n}}}{{C_u}^{n}}\right)^2 + \left( \frac{\sigma_{{C_i}^{std}}}{{C_i}^{std}}\right)^2 + \left( \frac{\sigma_{{C_n}^{std}}}{{C_n}^{std}}\right)^2 + \left({RSE_i}^{std}\right)^2 + \left({RSE_i}^{u}\right)^2}
-
-    Where :math:`{RSE_i}^{std}` is defined as:
-    .. math::
-        {RSE_{i}}^{std} = \left[\frac{\frac{\sigma_i}{\sqrt{n_i}}}{\mu_i}\right]100 \label{eq11}
-
-
-    :math`\sigma_i` and :math`\mu_i` are the standard deviation and mean of all
-    of the calibration standard normalized ratios respectively and :math`n_i` is the
-    total number of calibration standard analyses for analyte (:math`i`).
-
-    For analytes where drift correction has been applied, :math:`{RSE_i}^{std}` is replaced with:
-    .. math::
-        100\left[\frac{RMSE_i}{\mu_i}\right]
-
-
-    \noindent Where :math`RMSE_i` is the Root Mean Squared Error as specified by the regressions
-    calculated by `LaserCalc.drift_check()`.
-
+    Calculate the uncertainties for each analysis.
 
     """
     # self.SRM_concentration_uncertainties = 1
@@ -1195,3 +1034,7 @@ def calculate_uncertainties(self):
     self.unknown_concentrations = pd.concat(
         [self.unknown_concentrations, srm_uncertainties], axis="columns"
     )
+
+
+# make an accuracy checking function
+# need to use analytes no mass to check SRM vals
