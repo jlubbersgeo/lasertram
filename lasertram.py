@@ -602,7 +602,7 @@ class LaserCalc:
 
     def set_calibration_standard(self, std):
         """Assign which standard reference material will be the calibration
-        standard for calculating concentrations. 
+        standard for calculating concentrations.
 
         Args:
             std (str): name of standard reference material (e.g., 'NIST-612','BCR-2G')
@@ -628,38 +628,39 @@ class LaserCalc:
     def drift_check(self, pval=0.01):
         """Performs a drift check on all analytes in the experiment.
 
-        To check for drift in calibration standard normalized ratios over time, 
-        a linear regression is applied to the calibration standard for each analyte, 
-        where the dependent variable is the count rate normalized to the internal 
-        standard and the independent variable is the timestamp associated with 
+        To check for drift in calibration standard normalized ratios over time,
+        a linear regression is applied to the calibration standard for each analyte,
+        where the dependent variable is the count rate normalized to the internal
+        standard and the independent variable is the timestamp associated with
         each analysis.
 
-        We determine the significance of each regression by evaluating following null 
-        hypothesis: there is no relationship between a given analyte's internal standard 
-        normalized ratio and time. We reject this if both the following conditions are 
-        true: The p-value for the coefficient (i.e., slope) is significant; The F-statisic 
-        comparing the regression and observed data is greater than the critical F value. 
-        By default, we set the threshold for p-value significance at .01 (i.e., we have 
-        99\% confidence that we can reject the null hypothesis) in an effort to mitigate 
-        drift correcting all but the most linear of changes in normalized count rates, 
-        but this may be changed by the user. If the null hypothesis for a given analyte 
-        is rejected, the analyte is linearly corrected for drift and the regression 
-        parameters (e.g., slope and intercept) are used to calculate a normalized count 
-        rate for the calibration standard at the point in time where an unknown was analyzed: 
+        We determine the significance of each regression by evaluating following null
+        hypothesis: there is no relationship between a given analyte's internal standard
+        normalized ratio and time. We reject this if both the following conditions are
+        true: The p-value for the coefficient (i.e., slope) is significant; The F-statisic
+        comparing the regression and observed data is greater than the critical F value.
+        By default, we set the threshold for p-value significance at .01 (i.e., we have
+        99\% confidence that we can reject the null hypothesis) in an effort to mitigate
+        drift correcting all but the most linear of changes in normalized count rates,
+        but this may be changed by the user. If the null hypothesis for a given analyte
+        is rejected, the analyte is linearly corrected for drift and the regression
+        parameters (e.g., slope and intercept) are used to calculate a normalized count
+        rate for the calibration standard at the point in time where an unknown was analyzed:
 
-        .. math:: 
+        .. math::
             {C_i}^u = {C_n}^u \frac{\left[\frac{{C_i}^{std}}{{C_n}^{std}}\right]}{\left[m_ix+b_i\right]}{N_i}^u
 
-        Where :math:`m` is the regression slope, :math:`x` is the analysis time, and :math:`b` is the 
+        Where :math:`m` is the regression slope, :math:`x` is the analysis time, and :math:`b` is the
         intercept for analyte :math:`i`.
-        
+
         """
         calib_std_rmses = []
         calib_std_slopes = []
         calib_std_intercepts = []
         drift_check = []
 
-        # For our calibration standard, calculate the concentration ratio of each analyte to the element used as the internal standard
+        # For our calibration standard, calculate the concentration ratio of 
+        # each analyte to the element used as the internal standard
         std_conc_ratios = []
         myanalytes_nomass = []
         for j in range(len(self.analytes)):
@@ -729,48 +730,52 @@ class LaserCalc:
             index=self.analytes,
         )
 
-    # def get_calibration_std_ratios(self):
+    def get_calibration_std_ratios(self):
+        """
+        For the calibration standard, calculate the concentration ratio between
+        every analyte and the internal standard.
+        """
 
-    #     # For our calibration standard, calculate the concentration ratio
-    #     # of each analyte to the element used as the internal standard
-    #     std_conc_ratios = []
-    #     myanalytes_nomass = []
+        # For our calibration standard, calculate the concentration ratio
+        # of each analyte to the element used as the internal standard
+        std_conc_ratios = []
+        myanalytes_nomass = []
 
-    #     for i in range(len(self.analytes)):
-    #         # strip the atomic number from our analyte data
-    #         nomass = re.split("(\d+)", self.analytes[i])[2]
-    #         # make it a list
-    #         myanalytes_nomass.append(nomass)
+        for i in range(len(self.analytes)):
+            # strip the atomic number from our analyte data
+            nomass = re.split("(\d+)", self.analytes[i])[2]
+            # make it a list
+            myanalytes_nomass.append(nomass)
 
-    #         # if our element is in the list of standard elements take the ratio
-    #         if nomass in self.standard_elements:
-    #             std_conc_ratios.append(
-    #                 self.standards_data.loc[self.calibration_standard, nomass]
-    #                 / self.standards_data.loc[
-    #                     self.calibration_standard,
-    #                     re.split(
-    #                         "(\d+)", self.calibration_std_data["norm"].unique()[0]
-    #                     )[2],
-    #                 ]
-    #             )
+            # if our element is in the list of standard elements take the ratio
+            if nomass in self.standard_elements:
+                std_conc_ratios.append(
+                    self.standards_data.loc[self.calibration_standard, nomass]
+                    / self.standards_data.loc[
+                        self.calibration_standard,
+                        re.split(
+                            "(\d+)", self.calibration_std_data["norm"].unique()[0]
+                        )[2],
+                    ]
+                )
 
-    #     # make our list an array for easier math going forward
-    #     # std_conc_ratios = pd.DataFrame(np.array(std_conc_ratios)[np.newaxis,:],columns = myanalytes)
-    #     self.calibration_standard_conc_ratios = np.array(std_conc_ratios)
+        # make our list an array for easier math going forward
+        # std_conc_ratios = pd.DataFrame(np.array(std_conc_ratios)[np.newaxis,:],columns = myanalytes)
+        self.calibration_standard_conc_ratios = np.array(std_conc_ratios)
 
     def set_internal_standard_concentrations(
         self, spots, concentrations, uncertainties
     ):
         """Assign the concentration and uncertainty of the internal standard analyte to
-        a series of spots. 
+        a series of spots.
 
         Briefly...a linear change in the concentration value reflects a linear change
         in the calculated concentration.
 
         Args:
-            spots (pandas Series): pandas series containing the names of the spots to 
-            have their internal standard concentration-uncertainty assigned. This is 
-            the `Spot` column from the output of `LaserTRAM`. 
+            spots (pandas Series): pandas series containing the names of the spots to
+            have their internal standard concentration-uncertainty assigned. This is
+            the `Spot` column from the output of `LaserTRAM`.
 
             concentrations (array-like): values representing the internal standard concentration.
             Must be the same shape as `spots`.
@@ -793,50 +798,48 @@ class LaserCalc:
     def calculate_concentrations(self):
         """
         Calculates the concentration and uncertainty of all spots in the experiment
-        using the user specified calibration standard and internal standard 
+        using the user specified calibration standard and internal standard
         concentrations/uncertainties.
 
-        We calculate the concentration of analyte (:math`i`) in an unknown material 
+        We calculate the concentration of analyte (:math`i`) in an unknown material
         (:math`u`) using the following relationship from  Longerich et al., (1996) [1]_:
         .. math::
-            {C_i}^u = \frac{{R_i}^u}{S} 
+            {C_i}^u = \frac{{R_i}^u}{S}
 
-        Where :math:`{C_i}^u` and :math`{R_i}^u` are the concentration of analyte and count 
-        rate of analyte (:math`i`) in the unknown material, respectively, and :math`S` is 
-        the normalized sensitivity. When using naturally occuring internal standards, 
+        Where :math:`{C_i}^u` and :math`{R_i}^u` are the concentration of analyte and count
+        rate of analyte (:math`i`) in the unknown material, respectively, and :math`S` is
+        the normalized sensitivity. When using naturally occuring internal standards,
         :math`S` can be defined as:
         .. math::
-            S = \frac{{R_i}^{std}}{{C_i}^{std}}\left[\frac{{R_{n}}^u}{{R_{n}}^{std}} \frac{{C_{n}}^{std}}{{C_{n}}^{u}} \right] 
+            S = \frac{{R_i}^{std}}{{C_i}^{std}}\left[\frac{{R_{n}}^u}{{R_{n}}^{std}} \frac{{C_{n}}^{std}}{{C_{n}}^{u}} \right]
 
-        :math`{R_i}^{std}` and :math`{C_i}^{std}` are the count rate and and concentration 
-        of analyte (:math`i`) in the calibration standard, :math:`{R_{n}}^u` and :math`{R_{n}}^{std}` 
-        are the mean count rates of the internal standard in the unknown material and 
-        calibration standard, :math`{C_{n}}^{u}` and :math`{C_{n}}^{std}` are the concentrations 
+        :math`{R_i}^{std}` and :math`{C_i}^{std}` are the count rate and and concentration
+        of analyte (:math`i`) in the calibration standard, :math:`{R_{n}}^u` and :math`{R_{n}}^{std}`
+        are the mean count rates of the internal standard in the unknown material and
+        calibration standard, :math`{C_{n}}^{u}` and :math`{C_{n}}^{std}` are the concentrations
         of the internal standard in the unknown material and calibration standard.
 
-        Kent and Ungerer (2006) [2]_ re-arrange this relationship such that the count 
+        Kent and Ungerer (2006) [2]_ re-arrange this relationship such that the count
         rate expressions always contain unknown analytes in the numerator:
         .. math::
             {C_i}^u = {C_n}^u \frac{\left[\frac{{C_i}^{std}}{{C_n}^{std}}\right]}{\left[\frac{{R_i}^{std}}{{R_n}^{std}}\right]}\frac{{R_i}^u}{{R_{n}}^u}
 
         References
         ----------
-        .. [1] Longerich, H. P., Jackson, S. E., & Günther, D. (1996). Inter-laboratory note. 
-               Laser ablation inductively coupled plasma mass spectrometric transient signal 
-               data acquisition and analyte concentration calculation. Journal of analytical 
+        .. [1] Longerich, H. P., Jackson, S. E., & Günther, D. (1996). Inter-laboratory note.
+               Laser ablation inductively coupled plasma mass spectrometric transient signal
+               data acquisition and analyte concentration calculation. Journal of analytical
                atomic spectrometry, 11(9), 899-904.
-        .. [2] Kent, A. J., & Ungerer, C. A. (2006). Analysis of light lithophile elements 
-               (Li, Be, B) by laser ablation ICP-MS: comparison between magnetic sector and 
+        .. [2] Kent, A. J., & Ungerer, C. A. (2006). Analysis of light lithophile elements
+               (Li, Be, B) by laser ablation ICP-MS: comparison between magnetic sector and
                quadrupole ICP-MS. American Mineralogist, 91(8-9), 1401-1411.
         """
-
 
         secondary_standards = self.potential_calibration_standards.copy()
         secondary_standards.remove(self.calibration_standard)
         self.secondary_standards = secondary_standards
         secondary_standards_concentrations_list = []
         unknown_concentrations_list = []
-
 
         for sample in secondary_standards:
             Cn_u = self.standards_data.loc[
@@ -1008,13 +1011,12 @@ class LaserCalc:
         calculate_uncertainties(self)
 
 
-
 def calculate_uncertainties(self):
     """
     Calculate the uncertainties for each analysis
-    
-    Calculating concentrations of a given analyte in an unknown material 
-    can be considered a series of nested quotients and products. Therefore, 
+
+    Calculating concentrations of a given analyte in an unknown material
+    can be considered a series of nested quotients and products. Therefore,
     we quantify the overall uncertainty of a given analyte as \cite{taylor1997introduction}:
     .. math::
         \sigma_{C_i} = {C_i}^u \sqrt{ \left( \frac{\sigma_{{C_u}^{n}}}{{C_u}^{n}}\right)^2 + \left( \frac{\sigma_{{C_i}^{std}}}{{C_i}^{std}}\right)^2 + \left( \frac{\sigma_{{C_n}^{std}}}{{C_n}^{std}}\right)^2 + \left({RSE_i}^{std}\right)^2 + \left({RSE_i}^{u}\right)^2}
@@ -1024,8 +1026,8 @@ def calculate_uncertainties(self):
         {RSE_{i}}^{std} = \left[\frac{\frac{\sigma_i}{\sqrt{n_i}}}{\mu_i}\right]100 \label{eq11}
 
 
-    :math`\sigma_i` and :math`\mu_i` are the standard deviation and mean of all 
-    of the calibration standard normalized ratios respectively and :math`n_i` is the 
+    :math`\sigma_i` and :math`\mu_i` are the standard deviation and mean of all
+    of the calibration standard normalized ratios respectively and :math`n_i` is the
     total number of calibration standard analyses for analyte (:math`i`).
 
     For analytes where drift correction has been applied, :math:`{RSE_i}^{std}` is replaced with:
