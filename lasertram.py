@@ -871,170 +871,204 @@ class LaserCalc:
         ] * self.unknown_concentrations.shape[0]
         self.unknown_concentrations.index.name = "sample"
 
-        calculate_uncertainties(self)
+        self.calculate_uncertainties()
 
+    def calculate_uncertainties(self):
+        """
+        Calculate the uncertainties for each analysis.
 
-def calculate_uncertainties(self):
-    """
-    Calculate the uncertainties for each analysis.
+        """
+        # self.SRM_concentration_uncertainties = 1
+        # self.unknown_concentration_uncertainties = 1
+        myuncertainties = [analyte + "_se" for analyte in self.analytes]
+        srm_rel_uncertainties_list = []
+        unk_rel_uncertainties_list = []
+        # use RMSE of regression for elements where drift correction is applied rather than the standard error
+        # of the mean of all the calibration standard normalized ratios
+        rse_i_std = []
+        for analyte in self.analytes:
+            if "True" in self.calibration_standard_stats.loc[analyte, "drift_correct"]:
+                rse_i_std.append(
+                    100
+                    * self.calibration_standard_stats.loc[analyte, "rmse"]
+                    / self.calibration_standard_stats.loc[analyte, "mean"]
+                )
+            else:
+                rse_i_std.append(
+                    self.calibration_standard_stats.loc[analyte, "percent_std_err"]
+                )
 
-    """
-    # self.SRM_concentration_uncertainties = 1
-    # self.unknown_concentration_uncertainties = 1
-    myuncertainties = [analyte + "_se" for analyte in self.analytes]
-    srm_rel_uncertainties_list = []
-    unk_rel_uncertainties_list = []
-    # use RMSE of regression for elements where drift correction is applied rather than the standard error
-    # of the mean of all the calibration standard normalized ratios
-    rse_i_std = []
-    for analyte in self.analytes:
-        if "True" in self.calibration_standard_stats.loc[analyte, "drift_correct"]:
-            rse_i_std.append(
+        rse_i_std = np.array(rse_i_std)
+
+        for sample in self.secondary_standards:
+            # concentration of internal standard in unknown uncertainties
+            int_std_element = re.split(
+                "(\d+)", self.calibration_std_data["norm"].unique()[0]
+            )[2]
+            t1 = (
+                self.standards_data.loc[sample, f"{int_std_element}_std"]
+                / self.standards_data.loc[sample, f"{int_std_element}"]
+            ) ** 2
+
+            # concentration of internal standard in calibration standard uncertainties
+            t2 = (
+                self.standards_data.loc[
+                    self.calibration_standard, f"{int_std_element}_std"
+                ]
+                / self.standards_data.loc[
+                    self.calibration_standard, f"{int_std_element}"
+                ]
+            ) ** 2
+
+            # concentration of each analyte in calibration standard uncertainties
+            std_conc_stds = []
+            for i in range(len(self.analytes)):
+                # strip the atomic number from our analyte data
+                nomass = re.split("(\d+)", self.analytes[i])[2]
+
+                # if our element is in the list of standard elements take the ratio
+                if nomass in self.standard_elements:
+                    std_conc_stds.append(
+                        (
+                            self.standards_data.loc[
+                                self.calibration_standard, f"{nomass}_std"
+                            ]
+                            / self.standards_data.loc[self.calibration_standard, nomass]
+                        )
+                        ** 2
+                    )
+
+            std_conc_stds = np.array(std_conc_stds)
+
+            # Overall uncertainties
+            # Need to loop through each row?
+
+            rel_uncertainty = pd.DataFrame(
+                np.sqrt(
+                    np.array(
+                        t1
+                        + t2
+                        + std_conc_stds
+                        + (rse_i_std[np.newaxis, :] / 100) ** 2
+                        + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
+                    ).astype(np.float64)
+                )
+            )
+            rel_uncertainty.columns = myuncertainties
+            srm_rel_uncertainties_list.append(rel_uncertainty)
+
+        srm_rel_uncertainties = pd.concat(srm_rel_uncertainties_list)
+
+        srm_uncertainties = pd.DataFrame(
+            srm_rel_uncertainties.values
+            * self.SRM_concentrations.loc[:, self.analytes].values,
+            columns=myuncertainties,
+            index=self.SRM_concentrations.index,
+        )
+
+        self.SRM_concentrations = pd.concat(
+            [self.SRM_concentrations, srm_uncertainties], axis="columns"
+        )
+
+        ######################################
+
+        for sample in self.samples_nostandards:
+            # concentration of internal standard in unknown uncertainties
+            int_std_element = re.split(
+                "(\d+)", self.calibration_std_data["norm"].unique()[0]
+            )[2]
+            # concentration of internal standard in unknown uncertainties
+            t1 = (self.data.loc[sample, "internal_std_rel_unc"] / 100) ** 2
+            t1 = np.array(t1)
+            t1 = t1[:, np.newaxis]
+
+            # concentration of internal standard in calibration standard uncertainties
+            t2 = (
+                self.standards_data.loc[
+                    self.calibration_standard, f"{int_std_element}_std"
+                ]
+                / self.standards_data.loc[
+                    self.calibration_standard, f"{int_std_element}"
+                ]
+            ) ** 2
+
+            # concentration of each analyte in calibration standard uncertainties
+            std_conc_stds = []
+            for i in range(len(self.analytes)):
+                # strip the atomic number from our analyte data
+                nomass = re.split("(\d+)", self.analytes[i])[2]
+
+                # if our element is in the list of standard elements take the ratio
+                if nomass in self.standard_elements:
+                    std_conc_stds.append(
+                        (
+                            self.standards_data.loc[
+                                self.calibration_standard, f"{nomass}_std"
+                            ]
+                            / self.standards_data.loc[self.calibration_standard, nomass]
+                        )
+                        ** 2
+                    )
+
+            std_conc_stds = np.array(std_conc_stds)
+
+            # Overall uncertainties
+            # Need to loop through each row?
+
+            rel_uncertainty = pd.DataFrame(
+                np.sqrt(
+                    np.array(
+                        t1
+                        + t2
+                        + std_conc_stds
+                        + (rse_i_std[np.newaxis, :] / 100) ** 2
+                        + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
+                    ).astype(np.float64)
+                )
+            )
+            rel_uncertainty.columns = myuncertainties
+            unk_rel_uncertainties_list.append(rel_uncertainty)
+
+        unk_rel_uncertainties = pd.concat(unk_rel_uncertainties_list)
+
+        srm_uncertainties = pd.DataFrame(
+            unk_rel_uncertainties.values
+            * self.unknown_concentrations.loc[:, self.analytes].values,
+            columns=myuncertainties,
+            index=self.unknown_concentrations.index,
+        )
+
+        self.unknown_concentrations = pd.concat(
+            [self.unknown_concentrations, srm_uncertainties], axis="columns"
+        )
+
+    # make an accuracy checking function
+    # need to use analytes no mass to check SRM vals
+    def get_secondary_standard_accuracies(self):
+        """
+        calculate the accuracy of each secondary standard where accuracy is 100 * measured / accepted value
+
+        Here `accepted` value is the GEOREM preferred value for that SRM analyte pair.
+
+        """
+        df_list = []
+
+        nomass = [
+            re.split("(\d+)", self.analytes[i])[2] for i in range(len(self.analytes))
+        ]
+
+        for standard in self.secondary_standards:
+            df = pd.DataFrame(
                 100
-                * self.calibration_standard_stats.loc[analyte, "rmse"]
-                / self.calibration_standard_stats.loc[analyte, "mean"]
+                * self.SRM_concentrations.loc[standard, self.analytes].values
+                / self.standards_data.loc[standard, nomass].values[np.newaxis, :],
+                columns=self.analytes,
+                index=self.SRM_concentrations.loc[standard, :].index,
             )
-        else:
-            rse_i_std.append(
-                self.calibration_standard_stats.loc[analyte, "percent_std_err"]
+            df.insert(0, "Spot", self.SRM_concentrations.loc[standard, "Spot"])
+            df.insert(
+                0, "timestamp", self.SRM_concentrations.loc[standard, "timestamp"]
             )
+            df_list.append(df)
 
-    rse_i_std = np.array(rse_i_std)
-
-    for sample in self.secondary_standards:
-        # concentration of internal standard in unknown uncertainties
-        int_std_element = re.split(
-            "(\d+)", self.calibration_std_data["norm"].unique()[0]
-        )[2]
-        t1 = (
-            self.standards_data.loc[sample, f"{int_std_element}_std"]
-            / self.standards_data.loc[sample, f"{int_std_element}"]
-        ) ** 2
-
-        # concentration of internal standard in calibration standard uncertainties
-        t2 = (
-            self.standards_data.loc[self.calibration_standard, f"{int_std_element}_std"]
-            / self.standards_data.loc[self.calibration_standard, f"{int_std_element}"]
-        ) ** 2
-
-        # concentration of each analyte in calibration standard uncertainties
-        std_conc_stds = []
-        for i in range(len(self.analytes)):
-            # strip the atomic number from our analyte data
-            nomass = re.split("(\d+)", self.analytes[i])[2]
-
-            # if our element is in the list of standard elements take the ratio
-            if nomass in self.standard_elements:
-                std_conc_stds.append(
-                    (
-                        self.standards_data.loc[
-                            self.calibration_standard, f"{nomass}_std"
-                        ]
-                        / self.standards_data.loc[self.calibration_standard, nomass]
-                    )
-                    ** 2
-                )
-
-        std_conc_stds = np.array(std_conc_stds)
-
-        # Overall uncertainties
-        # Need to loop through each row?
-
-        rel_uncertainty = pd.DataFrame(
-            np.sqrt(
-                np.array(
-                    t1
-                    + t2
-                    + std_conc_stds
-                    + (rse_i_std[np.newaxis, :] / 100) ** 2
-                    + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
-                ).astype(np.float64)
-            )
-        )
-        rel_uncertainty.columns = myuncertainties
-        srm_rel_uncertainties_list.append(rel_uncertainty)
-
-    srm_rel_uncertainties = pd.concat(srm_rel_uncertainties_list)
-
-    srm_uncertainties = pd.DataFrame(
-        srm_rel_uncertainties.values
-        * self.SRM_concentrations.loc[:, self.analytes].values,
-        columns=myuncertainties,
-        index=self.SRM_concentrations.index,
-    )
-
-    self.SRM_concentrations = pd.concat(
-        [self.SRM_concentrations, srm_uncertainties], axis="columns"
-    )
-
-    ######################################
-
-    for sample in self.samples_nostandards:
-        # concentration of internal standard in unknown uncertainties
-        int_std_element = re.split(
-            "(\d+)", self.calibration_std_data["norm"].unique()[0]
-        )[2]
-        # concentration of internal standard in unknown uncertainties
-        t1 = (self.data.loc[sample, "internal_std_rel_unc"] / 100) ** 2
-        t1 = np.array(t1)
-        t1 = t1[:, np.newaxis]
-
-        # concentration of internal standard in calibration standard uncertainties
-        t2 = (
-            self.standards_data.loc[self.calibration_standard, f"{int_std_element}_std"]
-            / self.standards_data.loc[self.calibration_standard, f"{int_std_element}"]
-        ) ** 2
-
-        # concentration of each analyte in calibration standard uncertainties
-        std_conc_stds = []
-        for i in range(len(self.analytes)):
-            # strip the atomic number from our analyte data
-            nomass = re.split("(\d+)", self.analytes[i])[2]
-
-            # if our element is in the list of standard elements take the ratio
-            if nomass in self.standard_elements:
-                std_conc_stds.append(
-                    (
-                        self.standards_data.loc[
-                            self.calibration_standard, f"{nomass}_std"
-                        ]
-                        / self.standards_data.loc[self.calibration_standard, nomass]
-                    )
-                    ** 2
-                )
-
-        std_conc_stds = np.array(std_conc_stds)
-
-        # Overall uncertainties
-        # Need to loop through each row?
-
-        rel_uncertainty = pd.DataFrame(
-            np.sqrt(
-                np.array(
-                    t1
-                    + t2
-                    + std_conc_stds
-                    + (rse_i_std[np.newaxis, :] / 100) ** 2
-                    + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
-                ).astype(np.float64)
-            )
-        )
-        rel_uncertainty.columns = myuncertainties
-        unk_rel_uncertainties_list.append(rel_uncertainty)
-
-    unk_rel_uncertainties = pd.concat(unk_rel_uncertainties_list)
-
-    srm_uncertainties = pd.DataFrame(
-        unk_rel_uncertainties.values
-        * self.unknown_concentrations.loc[:, self.analytes].values,
-        columns=myuncertainties,
-        index=self.unknown_concentrations.index,
-    )
-
-    self.unknown_concentrations = pd.concat(
-        [self.unknown_concentrations, srm_uncertainties], axis="columns"
-    )
-
-
-# make an accuracy checking function
-# need to use analytes no mass to check SRM vals
+        self.SRM_accuracies = pd.concat(df_list)
