@@ -1,13 +1,13 @@
 """
-    The API for LaserTRAM-DB
+    The API for the package `lasertram`
     This will largely be comprised of two classes:
 
-    - LaserTRAM: for taking raw counts per second data from a
+    - `LaserTRAM`: for taking raw counts per second data from a
     Laser Ablation Inductively Coupled Plasma Mass Spectrometry (LA-ICP-MS)
     experiment, choosing an interval to be turned into a concentration, normalizing
     that interval to an internal standard and outputting that value + other metadata
 
-    - LaserCalc: for taking the output from `LaserTRAM` along with user input
+    - `LaserCalc`: for taking the output from `LaserTRAM` along with user input
     to calculate concentrations for a series of `LaserTRAM` spot objects along
     with statistics on calibration standards
 
@@ -78,6 +78,7 @@ class LaserTRAM:
             bkgd (tuple): (start, stop) pair of values corresponding to the analysis time where the background signal starts and stops
             keep (tuple): (start, stop) pair of values correpsonding to the analysis time where the interval signal for concentrations starts and stops
         """
+
         self.bkgd_start = bkgd[0]
         self.bkgd_stop = bkgd[1]
         self.int_start = keep[0]
