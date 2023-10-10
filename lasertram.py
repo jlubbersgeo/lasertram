@@ -1096,11 +1096,13 @@ class LaserCalc:
         for standard in self.secondary_standards:
             df = pd.DataFrame(
                 100
-                * self.SRM_concentrations.loc[standard, self.analytes].values
+                * self.SRM_concentrations.loc[standard, self.analytes]
+                .replace("b.d.l.", np.nan)
+                .values
                 / self.standards_data.loc[standard, nomass].values[np.newaxis, :],
                 columns=self.analytes,
                 index=self.SRM_concentrations.loc[standard, :].index,
-            )
+            ).fillna("b.d.l.")
             df.insert(0, "Spot", self.SRM_concentrations.loc[standard, "Spot"])
             if "timestamp" in self.data.columns:
                 df.insert(
