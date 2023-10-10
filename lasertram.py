@@ -771,6 +771,8 @@ class LaserCalc:
                 if drift_df.shape[0] == 1:
                     drift_df["sample"] = sample
                     drift_df.set_index("sample", inplace=True)
+            else:
+                drift_df = pd.DataFrame()
 
             for column in drift_df.columns.tolist():
                 if type(concentrations) == pd.Series:
