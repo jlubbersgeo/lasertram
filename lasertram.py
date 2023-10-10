@@ -524,11 +524,11 @@ class LaserCalc:
         # Calibration standard information
         # mean
         self.calibration_std_means = self.calibration_std_data.loc[
-            :, self.analytes + [analyte + "_se" for analyte in self.analytes]
+            :, self.analytes
         ].mean()
         # std deviation
         self.calibration_std_stdevs = self.calibration_std_data.loc[
-            :, self.analytes + [analyte + "_se" for analyte in self.analytes]
+            :, self.analytes
         ].std()
         # relative standard error
         self.calibration_std_ses = 100 * (
@@ -576,7 +576,7 @@ class LaserCalc:
             else:
                 x = self.calibration_std_data["index"]
 
-            y = self.calibration_std_data[self.analytes[j]]
+            y = self.calibration_std_data[self.analytes[j]].astype("float64")
 
             X = sm.add_constant(x)
             # Note the difference in argument order
@@ -664,7 +664,10 @@ class LaserCalc:
         self.calibration_standard_conc_ratios = np.array(std_conc_ratios)
 
     def set_internal_standard_concentrations(
-        self, spots, concentrations, uncertainties
+        self,
+        spots=None,
+        concentrations=None,
+        uncertainties=None,
     ):
         """Assign the concentration and uncertainty of the internal standard analyte to
         a series of spots.
@@ -678,6 +681,11 @@ class LaserCalc:
             concentrations (array-like): values representing the internal standard concentration. Must be the same shape as `spots`.
             uncertainties (array-like): values representing the internal standard relative uncertainty in percent. Must be the same shape as `spots`.
         """
+        if spots is None:
+            spots = (self.data["Spot"],)
+            concentrations = (np.full(self.data["Spot"].shape[0], 10),)
+            uncertainties = (np.full(self.data["Spot"].shape[0], 1),)
+
         self.data["internal_std_comp"] = 10
         self.data["internal_std_rel_unc"] = 1
         df = self.data.reset_index().set_index("Spot")
@@ -815,7 +823,7 @@ class LaserCalc:
                         )
                     else:
                         frac = slope * self.data.loc[sample, "index"] + intercept
-
+                    frac = np.array(frac)
                     drift_concentrations = (
                         Cn_u[:, np.newaxis]
                         * (Cin_std[j] / frac)[:, np.newaxis]
@@ -857,16 +865,31 @@ class LaserCalc:
         self.SRM_concentrations.insert(
             0, "Spot", list(self.data.loc[self.secondary_standards, "Spot"])
         )
-        self.SRM_concentrations.insert(
-            0, "timestamp", list(self.data.loc[self.secondary_standards, "timestamp"])
-        )
+        if "timestamp" in self.data.columns.tolist():
+            self.SRM_concentrations.insert(
+                0,
+                "timestamp",
+                list(self.data.loc[self.secondary_standards, "timestamp"]),
+            )
+        else:
+            self.SRM_concentrations.insert(
+                0, "index", list(self.data.loc[self.secondary_standards, "index"])
+            )
         self.unknown_concentrations = pd.concat(unknown_concentrations_list)
         self.unknown_concentrations.insert(
             0, "Spot", list(self.data.loc[self.samples_nostandards, "Spot"])
         )
-        self.unknown_concentrations.insert(
-            0, "timestamp", list(self.data.loc[self.samples_nostandards, "timestamp"])
-        )
+        if "timestamp" in self.data.columns.tolist():
+            self.unknown_concentrations.insert(
+                0,
+                "timestamp",
+                list(self.data.loc[self.samples_nostandards, "timestamp"]),
+            )
+        else:
+            self.unknown_concentrations.insert(
+                0, "index", list(self.data.loc[self.samples_nostandards, "index"])
+            )
+
         self.unknown_concentrations.index = [
             "unknown"
         ] * self.unknown_concentrations.shape[0]
@@ -1067,9 +1090,13 @@ class LaserCalc:
                 index=self.SRM_concentrations.loc[standard, :].index,
             )
             df.insert(0, "Spot", self.SRM_concentrations.loc[standard, "Spot"])
-            df.insert(
-                0, "timestamp", self.SRM_concentrations.loc[standard, "timestamp"]
-            )
+            if "timestamp" in self.data.columns:
+                df.insert(
+                    0, "timestamp", self.SRM_concentrations.loc[standard, "timestamp"]
+                )
+            else:
+                df.insert(0, "index", self.SRM_concentrations.loc[standard, "index"])
+
             df_list.append(df)
 
         self.SRM_accuracies = pd.concat(df_list)
