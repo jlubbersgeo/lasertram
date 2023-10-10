@@ -864,9 +864,19 @@ class LaserCalc:
             unknown_concentrations_list.append(concentrations)
 
         self.SRM_concentrations = pd.concat(secondary_standards_concentrations_list)
+        self.unknown_concentrations = pd.concat(unknown_concentrations_list)
+
+        self.calculate_uncertainties()
+
+        # ADD IN SPOT METADATA NOW
+
+        self.unknown_concentrations[self.unknown_concentrations < 0] = "b.d.l."
+        self.SRM_concentrations[self.SRM_concentrations < 0] = "b.d.l."
+
         self.SRM_concentrations.insert(
             0, "Spot", list(self.data.loc[self.secondary_standards, "Spot"])
         )
+
         if "timestamp" in self.data.columns.tolist():
             self.SRM_concentrations.insert(
                 0,
@@ -877,7 +887,6 @@ class LaserCalc:
             self.SRM_concentrations.insert(
                 0, "index", list(self.data.loc[self.secondary_standards, "index"])
             )
-        self.unknown_concentrations = pd.concat(unknown_concentrations_list)
         self.unknown_concentrations.insert(
             0, "Spot", list(self.data.loc[self.samples_nostandards, "Spot"])
         )
@@ -896,8 +905,6 @@ class LaserCalc:
             "unknown"
         ] * self.unknown_concentrations.shape[0]
         self.unknown_concentrations.index.name = "sample"
-
-        self.calculate_uncertainties()
 
     def calculate_uncertainties(self):
         """
@@ -1056,7 +1063,10 @@ class LaserCalc:
             unk_rel_uncertainties_list.append(rel_uncertainty)
 
         unk_rel_uncertainties = pd.concat(unk_rel_uncertainties_list)
-
+        overall_uncertainties = (
+            unk_rel_uncertainties.values
+            * self.unknown_concentrations.loc[:, self.analytes].values
+        )
         srm_uncertainties = pd.DataFrame(
             unk_rel_uncertainties.values
             * self.unknown_concentrations.loc[:, self.analytes].values,
