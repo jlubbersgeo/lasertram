@@ -1,0 +1,545 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../lasertram_tutorial/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>Background - lasertram Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bd3936ea.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#background-theory" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="lasertram Documentation" class="md-header__button md-logo" aria-label="lasertram Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            lasertram Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Background
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="lasertram Documentation" class="md-nav__button md-logo" aria-label="lasertram Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    lasertram Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    lasertram Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#calculating-concentrations" class="md-nav__link">
+    Calculating concentrations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#normalizing-to-an-internal-standard" class="md-nav__link">
+    Normalizing to an internal standard
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detection-limits" class="md-nav__link">
+    Detection Limits
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drift-correction" class="md-nav__link">
+    Drift correction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uncertainties" class="md-nav__link">
+    Uncertainties
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concentrations-of-internal-standard-in-unknown" class="md-nav__link">
+    Concentrations of internal standard in unknown
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lasertram_tutorial/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to-guides/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#calculating-concentrations" class="md-nav__link">
+    Calculating concentrations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#normalizing-to-an-internal-standard" class="md-nav__link">
+    Normalizing to an internal standard
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detection-limits" class="md-nav__link">
+    Detection Limits
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#drift-correction" class="md-nav__link">
+    Drift correction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uncertainties" class="md-nav__link">
+    Uncertainties
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concentrations-of-internal-standard-in-unknown" class="md-nav__link">
+    Concentrations of internal standard in unknown
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="background-theory">Background Theory</h1>
+<h2 id="calculating-concentrations">Calculating concentrations</h2>
+<p>We calculate the concentration of analyte (<span class="arithmatex">\(i\)</span>) in an unknown material (<span class="arithmatex">\(u\)</span>) using the following relationship from Longerich et al., (1996):</p>
+<div class="arithmatex">\[
+{C_i}^u = \frac{{R_i}^u}{S}
+\]</div>
+<p>Where <span class="arithmatex">\({C_i}^u\)</span> and <span class="arithmatex">\({R_i}^u\)</span> are the concentration of analyte and count rate of analyte (<span class="arithmatex">\(i\)</span>) in the unknown material, respectively, and <span class="arithmatex">\(S\)</span> is the normalized sensitivity. When using naturally occuring internal standards, <span class="arithmatex">\(S\)</span> can be defined as:</p>
+<div class="arithmatex">\[
+S = \frac{{R_i}^{std}}{{C_i}^{std}}\left[\frac{{R_{n}}^u}{{R_{n}}^{std}} \frac{{C_{n}}^{std}}{{C_{n}}^{u}} \right]
+\]</div>
+<p><span class="arithmatex">\({R_i}^{std}\)</span> and <span class="arithmatex">\({C_i}^{std}\)</span> are the count rate and and concentration of analyte (<span class="arithmatex">\(i\)</span>) in the calibration standard, <span class="arithmatex">\({R_{n}}^u\)</span> and <span class="arithmatex">\({R_{n}}^{std}\)</span> are the mean count rates of the internal standard in the unknown material and calibration standard, <span class="arithmatex">\({C_{n}}^{u}\)</span> and <span class="arithmatex">\({C_{n}}^{std}\)</span> are the concentrations of the internal standard in the unknown material and calibration standard.</p>
+<p>Kent and Ungerer (2006) re-arrange this relationship such that the count rate expressions always contain unknown analytes in the numerator:</p>
+<div class="arithmatex">\[
+{C_i}^u = {C_n}^u \frac{\left[\frac{{C_i}^{std}}{{C_n}^{std}}\right]}{\left[\frac{{R_i}^{std}}{{R_n}^{std}}\right]}\frac{{R_i}^u}{{R*{n}}^u}
+\]</div>
+<h2 id="normalizing-to-an-internal-standard">Normalizing to an internal standard</h2>
+<p>The purpose of <code>lasertram</code> is to give the user complete control over which portion of the analytical spectra gets used in calculating concentrations (e.g., filtering out portions of the signal not reflective of the material under investigation). In complex natural materials, selection of this interval and an overall judgement about data quality require an operator to make a decision. This software is optimized to allow that decision to be made as efficient as possible.</p>
+<p>When a given interval from the analytical spectra has been chosen, every analyte is normalized to a chosen internal standard. <code>lasertram</code> allows for any analyte in the experiment to be used as the internal standard (see caveats on this in the <a href="../how-to-guides/">How-To</a> section). Prior to normalization to an internal standard, raw data first has the background analyte levels subtracted from it. Background is determined by taking the median counts per second value for each analyte over the user specified background range. Once data have been background subtracted, each normalized ratio is calculated the following way:</p>
+<div class="arithmatex">\[
+N_i = median\left[\frac{cps_{i}}{cps_{is}}\right]
+\]</div>
+<p>Where <span class="arithmatex">\(cps_i\)</span> is the background subtracted counts per second data for analyte (<span class="arithmatex">\(i\)</span>), and <span class="arithmatex">\(cps_{is}\)</span> is the background subtracted counts per second data for the internal standard. Since counts per second is analogous to count rate above in Equation 3, we can simplify the above relationship to now reflect our <span class="arithmatex">\(N_i\)</span> values:</p>
+<div class="arithmatex">\[
+{C_i}^u = {C_n}^u \frac{\left[\frac{{C_i}^{std}}{{C_n}^{std}}\right]}{{N_{i}}^{std}}{N_{i}}^u
+\]</div>
+<p>Here, <span class="arithmatex">\({N_{i}}^{std}\)</span> and <span class="arithmatex">\({N_{i}}^{u}\)</span> are the normalized counts per second value of analyte <span class="arithmatex">\(i\)</span> in the calibration standard and unknown, respectively. The uncertainty for any given normalized ratio is expressed as:</p>
+<div class="arithmatex">\[
+SE = \frac{\sigma _{N_i}}{\sqrt{n}}
+\]</div>
+<p><span class="arithmatex">\(\sigma_N\)</span> is the standard deviation of a given analyte's normalized ratio for the interval and <span class="arithmatex">\(n\)</span> is the number of time steps in the interval (i.e., cycles through the mass range). The relative standard error is then:</p>
+<div class="arithmatex">\[
+{RSE_i}^u = \left[\frac{SE}{N_i}\right]100
+\]</div>
+<h2 id="detection-limits">Detection Limits</h2>
+<p>Count rate detection limits for each analyte are determined similar to Longerich et al., (1996):</p>
+<div class="arithmatex">\[
+LOD = 3\sigma\ _{b} + b
+\]</div>
+<p>where <span class="arithmatex">\(b\)</span> is the background median counts per second value for a given analyte. This is standard practice in LA-ICP-MS data reduction. To reflect this in data output, measurements that are below detection limit will have values that say "b.d.l." rather than concentrations.</p>
+<h2 id="drift-correction">Drift correction</h2>
+<p>To check for drift in calibration standard normalized ratios over time, a linear regression is applied to the calibration standard for each analyte, where the dependent variable is the count rate normalized to the internal standard and the independent variable is the timestamp associated with each analysis.</p>
+<p>We determine the significance of each regression by evaluating following null hypothesis: there is no relationship between a given analyte's internal standard normalized ratio and time. We reject this if both the following conditions are true: The p-value for the coefficient (i.e., slope) is significant; The F-statisic comparing the regression and observed data is greater than the critical F value. By default, we set the threshold for p-value significance at .01 (i.e., we have 99\% confidence that we can reject the null hypothesis) in an effort to mitigate drift correcting all but the most linear of changes in normalized count rates, but this may be changed by the user. If the null hypothesis for a given analyte is rejected, the analyte is linearly corrected for drift and the regression parameters (e.g., slope and intercept) are used to calculate a normalized count rate for the calibration standard at the point in time where an unknown was analyzed:</p>
+<div class="arithmatex">\[
+{C_i}^u = {C_n}^u \frac{\left[\frac{{C_i}^{std}}{{C_n}^{std}}\right]}{\left[m_ix+b_i\right]}{N_i}^u
+\]</div>
+<p>Where <span class="arithmatex">\(m\)</span> is the regression slope, <span class="arithmatex">\(x\)</span> is the analysis time, and <span class="arithmatex">\(b\)</span> is the intercept for analyte <span class="arithmatex">\(i\)</span>.</p>
+<h2 id="uncertainties">Uncertainties</h2>
+<p>Calculating concentrations of a given analyte in an unknown material can be considered a series of nested quotients and products. Therefore, we quantify the overall uncertainty of a given analyte as (Taylor, 1997):</p>
+<div class="arithmatex">\[
+\sigma_{{C_i}} = {C_i}^u \sqrt{ \left( \frac{\sigma_{{C_n}^{u}}}{{C_n}^{u}}\right)^2 + \left( \frac{\sigma_{{C_i}^{std}}}{{C_i}^{std}}\right)^2 + \left( \frac{\sigma_{{C_n}^{std}}}{{C_n}^{std}}\right)^2 + \left({RSE_i}^{std}\right)^2 + \left({RSE_i}^{u}\right)^2}
+\]</div>
+<p>Where <span class="arithmatex">\({RSE_i}^{std}\)</span> is defined as:</p>
+<div class="arithmatex">\[
+{RSE\_{i}}^{std} = \left[\frac{\frac{\sigma_i}{\sqrt{n_i}}}{\mu_i}\right]100
+\]</div>
+<p><span class="arithmatex">\(\sigma_i\)</span> and <span class="arithmatex">\(\mu_i\)</span> are the standard deviation and mean of all of the calibration standard normalized ratios respectively and <span class="arithmatex">\(n_i\)</span> is the total number of calibration standard analyses for analyte (<span class="arithmatex">\(i\)</span>).</p>
+<p>For analytes where drift correction has been applied, <span class="arithmatex">\({RSE_i}^{std}\)</span> is replaced with:</p>
+<div class="arithmatex">\[
+100\left[\frac{RMSE_i}{\mu_i}\right]
+\]</div>
+<p>Where <span class="arithmatex">\(RMSE_i\)</span> is the Root Mean Squared Error as specified in the Drift Correction section.</p>
+<h2 id="concentrations-of-internal-standard-in-unknown">Concentrations of internal standard in unknown</h2>
+<p>To calculate concentrations of a given analyte list in an unknown sample, the concentration of the internal standard must be known. LaserCalc takes these concentrations in the form of wt\% oxide and utilizes user interaction to input concentrations of the internal standard and its relative uncertainty. A default value of 10\% is used for this, but may and <b>should</b> be updated by the user.</p>
+<h2 id="references">References</h2>
+<ol>
+<li><a href="https://pubs.rsc.org/en/content/articlepdf/1996/ja/ja9961100899">Longerich, H. P., Jackson, S. E., &amp; Günther, D. (1996). Inter-laboratory note. Laser ablation inductively coupled plasma mass spectrometric transient signal data acquisition and analyte concentration calculation. Journal of analytical atomic spectrometry, 11(9), 899-904.</a></li>
+<li><a href="https://pubs.geoscienceworld.org/msa/ammin/article/91/8-9/1401/134304/Analysis-of-light-lithophile-elements-Li-Be-B-by">Kent, A. J., &amp; Ungerer, C. A. (2006). Analysis of light lithophile elements (Li, Be, B) by laser ablation ICP-MS: comparison between magnetic sector and quadrupole ICP-MS. American Mineralogist, 91(8-9), 1401-1411.</a></li>
+</ol>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
