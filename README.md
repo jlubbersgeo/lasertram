@@ -4,7 +4,7 @@ Welcome to the repository for `lasertram`, a package for the time resolved analy
 
 ## Documentation
 
-please see the documentation page for more!
+please see the [Documentation](https://jlubbersgeo.github.io/lasertram/) for more!
 
 ## Installation
 
