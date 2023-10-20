@@ -9,6 +9,12 @@ This site contains the project documentation for `lasertram` (laser <b><i>T</i><
 
 - `lasertram` is the backend engine to [LaserTRAM-DB](https://github.com/jlubbersgeo/laserTRAM-DB), a dashboard for interactively and transparently processing LA-ICP-MS data.
 
+## Get started
+
+```
+pip install lasertram
+```
+
 ## Table of Contents
 
 1. [Background](explantion.md)
