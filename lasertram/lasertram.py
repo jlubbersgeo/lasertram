@@ -213,6 +213,10 @@ class LaserTRAM:
         """
         apply a standard deviation filter to all specified
         analytes.
+
+
+        Args:
+            analyte_list (str or list, optional):analyte to despike (e.g., '7Li'). Or list of analytes to despike (e.g., ['7Li','88Sr']). If 'all', despikes all analytes in the experiment. Defaults to "all".
         """
 
         def despike_signal(data, analyte, passes=2):

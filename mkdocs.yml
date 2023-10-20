@@ -6,7 +6,7 @@ theme:
 nav:
   - lasertram Documentation: index.md
   - Background: explanation.md
-  - Tutorials: tutorials.md
+  - Tutorials: lasertram_tutorial.ipynb
   - How-To Guides: how-to-guides.md
   - API reference: reference.md
 

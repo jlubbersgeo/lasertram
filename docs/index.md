@@ -12,6 +12,6 @@ This site contains the project documentation for `lasertram` (laser <b><i>T</i><
 ## Table of Contents
 
 1. [Background](explantion.md)
-2. [Tutorials](tutorials.md)
+2. [Tutorials](lasertram_tutorial.ipynb)
 3. [How-To guide](how-to-guides.md)
 4. [API reference](reference.md)

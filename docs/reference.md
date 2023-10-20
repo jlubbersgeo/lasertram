@@ -1,1 +1,1 @@
-::: lasertram
+::: lasertram.lasertram
