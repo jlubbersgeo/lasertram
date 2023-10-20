@@ -69,7 +69,7 @@ class LaserTRAM:
         """
         self.int_std = int_std
 
-    def assign_intervals(self, bkgd, keep):
+    def assign_intervals(self, bkgd, keep, omit=None):
         """assigns the intervals to be used as background
         as well as the portion of the ablation interval to
         be used in calculating concentrations
@@ -77,6 +77,7 @@ class LaserTRAM:
         Args:
             bkgd (tuple): (start, stop) pair of values corresponding to the analysis time where the background signal starts and stops
             keep (tuple): (start, stop) pair of values correpsonding to the analysis time where the interval signal for concentrations starts and stops
+            omit (tuple): (start, stop) pair of values corresponding to the analysis time to be omitted from the `keep` interval. Defaults to None.
         """
 
         self.bkgd_start = bkgd[0]
@@ -88,6 +89,20 @@ class LaserTRAM:
         self.bkgd_stop_idx = np.where(self.data["Time"] > self.bkgd_stop)[0][0]
         self.int_start_idx = np.where(self.data["Time"] > self.int_start)[0][0]
         self.int_stop_idx = np.where((self.data["Time"] > self.int_stop))[0][0]
+
+        self.omitted_region = False
+
+        if omit:
+            self.omit_start = omit[0]
+            self.omit_stop = omit[1]
+            self.omit_start_idx = (
+                np.where(self.data["Time"] > self.omit_start)[0][0] - self.int_start_idx
+            )
+            self.omit_stop_idx = (
+                np.where(self.data["Time"] > self.omit_stop)[0][0] - self.int_start_idx
+            )
+
+            self.omitted_region = True
 
     def get_bkgd_data(self):
         """
@@ -139,6 +154,23 @@ class LaserTRAM:
             self.data_matrix[self.bkgd_start_idx : self.bkgd_stop_idx, 1:], axis=0
         )
 
+        if self.omitted_region is True:
+            self.bkgd_subtract_normal_data = np.delete(
+                self.bkgd_correct_data,
+                np.arange(self.omit_start_idx, self.omit_stop_idx),
+                axis=0,
+            ) / np.delete(
+                self.bkgd_correct_data[:, self.int_std_loc][:, None],
+                np.arange(self.omit_start_idx, self.omit_stop_idx),
+                axis=0,
+            )
+
+        else:
+            self.bkgd_subtract_normal_data = (
+                self.bkgd_correct_data
+                / self.bkgd_correct_data[:, self.int_std_loc][:, None]
+            )
+
         self.bkgd_subtract_normal_data = (
             self.bkgd_correct_data
             / self.bkgd_correct_data[:, self.int_std_loc][:, None]
@@ -162,18 +194,28 @@ class LaserTRAM:
         create an output report for the spot processing. This is a
         pandas DataFrame that has the following format:
 
-        |timestamp|Spot|bkgd_start|bkgd_stop|int_start|int_stop|norm|norm_cps|analyte vals and uncertainties -->|
-        |---------|----|----------|---------|---------|--------|----|--------|----------------------------------|
+        |timestamp|Spot|despiked|omitted_region|bkgd_start|bkgd_stop|int_start|int_stop|norm|norm_cps|analyte vals and uncertainties -->|
+        |---------|----|--------|--------------|----------|---------|---------|--------|----|--------|----------------------------------|
         """
         if self.despiked is True:
             despike_col = self.despiked_elements
         else:
             despike_col = "None"
+
+        if self.omitted_region is True:
+            omitted_col = (
+                self.data["Time"][self.omit_start_idx + self.int_start_idx],
+                self.data["Time"][self.omit_stop_idx + self.int_start_idx],
+            )
+        else:
+            omitted_col = "None"
+
         spot_data = pd.DataFrame(
             [
                 self.timestamp,
                 self.name,
                 despike_col,
+                omitted_col,
                 self.data["Time"][self.bkgd_start_idx],
                 self.data["Time"][self.bkgd_stop_idx],
                 self.data["Time"][self.int_start_idx],
@@ -186,6 +228,7 @@ class LaserTRAM:
             "timestamp",
             "Spot",
             "despiked",
+            "omitted_region",
             "bkgd_start",
             "bkgd_stop",
             "int_start",
@@ -277,7 +320,14 @@ class LaserTRAM:
 
 
 def process_spot(
-    spot, raw_data, bkgd, keep, internal_std, despike=False, output_report=True
+    spot,
+    raw_data,
+    bkgd,
+    keep,
+    internal_std,
+    omit=None,
+    despike=False,
+    output_report=True,
 ):
     """a function to incorporate all the methods of the `LaserTRAM` class
     so a spot can be processed in an efficient and compact way.
@@ -288,6 +338,7 @@ def process_spot(
         bkgd (tuple): (start, stop) pair of values corresponding to the analysis time where the background signal starts and stops
         keep (tuple): (start, stop) pair of values correpsonding to the analysis time where the interval signal for concentrations starts and stops
         internal_std (str): column name for the internal standard analyte (e.g., 29Si)
+        omit (tuple): (start, stop) pair of values corresponding to the analysis time to be omitted from the `keep` interval. Defaults to None.
         despike (bool, optional): Whether or not to despike all analyte signals using the standard deviation filter from `LaserTRAM.despike_data()`. Defaults to False
         output_report (bool, optional): Whether or not to create a 1-row pandas DataFrame output report in the following format. Defaults to True.
 
@@ -301,7 +352,7 @@ def process_spot(
     # assign the internal standard analyte
     spot.assign_int_std(internal_std)
     # assign intervals for background and ablation signal
-    spot.assign_intervals(bkgd=bkgd, keep=keep)
+    spot.assign_intervals(bkgd=bkgd, keep=keep, omit=omit)
     # assign and save the median background values
     spot.get_bkgd_data()
     # remove the median background values from the ablation interval
