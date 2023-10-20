@@ -17,7 +17,7 @@ pip install lasertram
 
 ## Table of Contents
 
-1. [Background](explantion.md)
+1. [Background](explanation.md)
 2. [Tutorials](lasertram_tutorial.ipynb)
 3. [How-To guide](how-to-guides.md)
 4. [API reference](reference.md)
