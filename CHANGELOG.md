@@ -12,7 +12,6 @@
 - moved all test data to `test_data` folder
 - created `tests` folder for future tests to be held
 - created `CHANGELOG.md`
--
 
 ## v0.0.5 (10/20/2023)
 
