@@ -557,6 +557,7 @@ class LaserCalc:
                 or "long" in analyte
                 or "timestamp" in analyte
                 or "despiked" in analyte
+                or "omitted_region" in analyte
             )
         ]
         analytes_nomass = []
