@@ -9,6 +9,7 @@ nav:
   - Tutorials: lasertram_tutorial.ipynb
   - How-To Guides: how-to-guides.md
   - API reference: reference.md
+  - Release Notes: CHANGELOG.md
 
 markdown_extensions:
   - pymdownx.arithmatex:
