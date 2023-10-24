@@ -1534,7 +1534,8 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
 <span class="normal">1168</span>
 <span class="normal">1169</span>
 <span class="normal">1170</span>
-<span class="normal">1171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LaserCalc</span><span class="p">:</span>
+<span class="normal">1171</span>
+<span class="normal">1172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LaserCalc</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    # LaserCalc</span>
 
@@ -1658,6 +1659,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
                 <span class="ow">or</span> <span class="s2">&quot;long&quot;</span> <span class="ow">in</span> <span class="n">analyte</span>
                 <span class="ow">or</span> <span class="s2">&quot;timestamp&quot;</span> <span class="ow">in</span> <span class="n">analyte</span>
                 <span class="ow">or</span> <span class="s2">&quot;despiked&quot;</span> <span class="ow">in</span> <span class="n">analyte</span>
+                <span class="ow">or</span> <span class="s2">&quot;omitted_region&quot;</span> <span class="ow">in</span> <span class="n">analyte</span>
             <span class="p">)</span>
         <span class="p">]</span>
         <span class="n">analytes_nomass</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2373,8 +2375,7 @@ concentrations/uncertainties.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">757</span>
-<span class="normal">758</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">758</span>
 <span class="normal">759</span>
 <span class="normal">760</span>
 <span class="normal">761</span>
@@ -2578,7 +2579,8 @@ concentrations/uncertainties.</p>
 <span class="normal">959</span>
 <span class="normal">960</span>
 <span class="normal">961</span>
-<span class="normal">962</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">962</span>
+<span class="normal">963</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the concentration and uncertainty of all spots in the experiment</span>
 <span class="sd">    using the user specified calibration standard and internal standard</span>
@@ -2808,8 +2810,7 @@ concentrations/uncertainties.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 964</span>
-<span class="normal"> 965</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 965</span>
 <span class="normal"> 966</span>
 <span class="normal"> 967</span>
 <span class="normal"> 968</span>
@@ -2978,7 +2979,8 @@ concentrations/uncertainties.</p>
 <span class="normal">1131</span>
 <span class="normal">1132</span>
 <span class="normal">1133</span>
-<span class="normal">1134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_uncertainties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">1134</span>
+<span class="normal">1135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_uncertainties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the uncertainties for each analysis.</span>
 
@@ -3177,8 +3179,7 @@ correct treatment in <code>calculate_concentrations</code></p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">594</span>
-<span class="normal">595</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">595</span>
 <span class="normal">596</span>
 <span class="normal">597</span>
 <span class="normal">598</span>
@@ -3270,7 +3271,8 @@ correct treatment in <code>calculate_concentrations</code></p>
 <span class="normal">684</span>
 <span class="normal">685</span>
 <span class="normal">686</span>
-<span class="normal">687</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">drift_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+<span class="normal">687</span>
+<span class="normal">688</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">drift_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;For each analyte in the experiment, perform a linear regression to</span>
 <span class="sd">    assess whether or not drift in the mass spectrometer is happening at a</span>
 <span class="sd">    significant level. Significance is determined by setting the `pval` threshold.</span>
@@ -3491,8 +3493,7 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">689</span>
-<span class="normal">690</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">690</span>
 <span class="normal">691</span>
 <span class="normal">692</span>
 <span class="normal">693</span>
@@ -3521,7 +3522,8 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
 <span class="normal">716</span>
 <span class="normal">717</span>
 <span class="normal">718</span>
-<span class="normal">719</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_calibration_std_ratios</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">719</span>
+<span class="normal">720</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_calibration_std_ratios</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For the calibration standard, calculate the concentration ratio between every analyte and the internal standard.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3674,7 +3676,8 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
 <span class="normal">564</span>
 <span class="normal">565</span>
 <span class="normal">566</span>
-<span class="normal">567</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+<span class="normal">567</span>
+<span class="normal">568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;load in output from `LaserTRAM` for calculation of concentrations</span>
 
 <span class="sd">    Args:</span>
@@ -3735,6 +3738,7 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
             <span class="ow">or</span> <span class="s2">&quot;long&quot;</span> <span class="ow">in</span> <span class="n">analyte</span>
             <span class="ow">or</span> <span class="s2">&quot;timestamp&quot;</span> <span class="ow">in</span> <span class="n">analyte</span>
             <span class="ow">or</span> <span class="s2">&quot;despiked&quot;</span> <span class="ow">in</span> <span class="n">analyte</span>
+            <span class="ow">or</span> <span class="s2">&quot;omitted_region&quot;</span> <span class="ow">in</span> <span class="n">analyte</span>
         <span class="p">)</span>
     <span class="p">]</span>
     <span class="n">analytes_nomass</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3768,8 +3772,7 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1138</span>
-<span class="normal">1139</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1139</span>
 <span class="normal">1140</span>
 <span class="normal">1141</span>
 <span class="normal">1142</span>
@@ -3801,7 +3804,8 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
 <span class="normal">1168</span>
 <span class="normal">1169</span>
 <span class="normal">1170</span>
-<span class="normal">1171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_secondary_standard_accuracies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">1171</span>
+<span class="normal">1172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_secondary_standard_accuracies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    calculate the accuracy of each secondary standard where accuracy is 100 * measured / accepted value</span>
 
@@ -3890,8 +3894,7 @@ standard for calculating concentrations.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">569</span>
-<span class="normal">570</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">570</span>
 <span class="normal">571</span>
 <span class="normal">572</span>
 <span class="normal">573</span>
@@ -3913,7 +3916,8 @@ standard for calculating concentrations.</p>
 <span class="normal">589</span>
 <span class="normal">590</span>
 <span class="normal">591</span>
-<span class="normal">592</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_calibration_standard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">std</span><span class="p">):</span>
+<span class="normal">592</span>
+<span class="normal">593</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_calibration_standard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">std</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assign which standard reference material will be the calibration</span>
 <span class="sd">    standard for calculating concentrations.</span>
 
@@ -4022,8 +4026,7 @@ in the calculated concentration.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">721</span>
-<span class="normal">722</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">722</span>
 <span class="normal">723</span>
 <span class="normal">724</span>
 <span class="normal">725</span>
@@ -4056,7 +4059,8 @@ in the calculated concentration.</p>
 <span class="normal">752</span>
 <span class="normal">753</span>
 <span class="normal">754</span>
-<span class="normal">755</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_internal_standard_concentrations</span><span class="p">(</span>
+<span class="normal">755</span>
+<span class="normal">756</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_internal_standard_concentrations</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">spots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">concentrations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
