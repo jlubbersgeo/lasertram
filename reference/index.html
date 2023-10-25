@@ -4476,6 +4476,8 @@ to one individual spot analysis.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;Time&quot;</span><span class="p">:]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="c1"># need to add check for if this exists otherwise there is no timestamp attribute</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">assign_int_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">int_std</span><span class="p">):</span>
@@ -4589,11 +4591,6 @@ to one individual spot analysis.</p>
                 <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_std_loc</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_subtract_normal_data</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span>
-            <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_std_loc</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_med</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_subtract_normal_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_med</span><span class="p">[</span>
             <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">threshold</span>
@@ -4622,8 +4619,8 @@ to one individual spot analysis.</p>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">omitted_region</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">omitted_col</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">omit_start_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">omit_stop_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">omit_start_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">omit_stop_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">omitted_col</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
@@ -4634,10 +4631,10 @@ to one individual spot analysis.</p>
                 <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">despike_col</span><span class="p">,</span>
                 <span class="n">omitted_col</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_start_idx</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_stop_idx</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">int_stop_idx</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_start_idx</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_stop_idx</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">int_stop_idx</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">int_std</span><span class="p">,</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_std_loc</span><span class="p">]),</span>
             <span class="p">]</span>
@@ -4667,6 +4664,9 @@ to one individual spot analysis.</p>
             <span class="p">],</span>
             <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;bkgd_start&quot;</span><span class="p">,</span> <span class="s2">&quot;bkgd_stop&quot;</span><span class="p">,</span> <span class="s2">&quot;int_start&quot;</span><span class="p">,</span> <span class="s2">&quot;int_stop&quot;</span><span class="p">,</span> <span class="s2">&quot;norm_cps&quot;</span><span class="p">]:</span>
+            <span class="n">spot_data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">spot_data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output_report</span> <span class="o">=</span> <span class="n">spot_data</span>
 
@@ -4869,14 +4869,14 @@ analyte</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assign_int_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">int_std</span><span class="p">):</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assign_int_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">int_std</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;assigns the spot an internal standard</span>
 <span class="sd">    analyte</span>
 
@@ -4968,9 +4968,7 @@ be used in calculating concentrations</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 74</span>
 <span class="normal"> 75</span>
 <span class="normal"> 76</span>
 <span class="normal"> 77</span>
@@ -5001,7 +4999,9 @@ be used in calculating concentrations</p>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
-<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assign_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bkgd</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">omit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assign_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bkgd</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">omit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;assigns the intervals to be used as background</span>
 <span class="sd">    as well as the portion of the ablation interval to</span>
 <span class="sd">    be used in calculating concentrations</span>
@@ -5245,16 +5245,16 @@ background signal that gets subtracted from the ablation signal</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
-<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bkgd_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bkgd_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    uses the intervals assigned in `assign_intervals` to take the median</span>
 <span class="sd">    value of all analytes within that range and use them as the</span>
@@ -5329,7 +5329,9 @@ background signal that gets subtracted from the ablation signal</p>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
-<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;assigns raw counts/sec data to the object</span>
 
 <span class="sd">    Args:</span>
@@ -5340,6 +5342,8 @@ background signal that gets subtracted from the ablation signal</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">data_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;Time&quot;</span><span class="p">:]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c1"># need to add check for if this exists otherwise there is no timestamp attribute</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
           </details>
@@ -5367,9 +5371,7 @@ background.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
@@ -5377,7 +5379,9 @@ background.</p>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
-<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_detection_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_detection_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates detection limits in counts per second for each analyte. This</span>
 <span class="sd">    is defined as the value that is three standard deviations away from the</span>
@@ -5445,7 +5449,10 @@ pandas DataFrame that has the following format:</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
@@ -5521,8 +5528,8 @@ pandas DataFrame that has the following format:</p>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">omitted_region</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">omitted_col</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">omit_start_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">omit_stop_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">omit_start_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">omit_stop_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">omitted_col</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
@@ -5533,10 +5540,10 @@ pandas DataFrame that has the following format:</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">despike_col</span><span class="p">,</span>
             <span class="n">omitted_col</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_start_idx</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_stop_idx</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">int_stop_idx</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_start_idx</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_stop_idx</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">int_start_idx</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">int_stop_idx</span><span class="p">],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">int_std</span><span class="p">,</span>
             <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_std_loc</span><span class="p">]),</span>
         <span class="p">]</span>
@@ -5566,6 +5573,9 @@ pandas DataFrame that has the following format:</p>
         <span class="p">],</span>
         <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;bkgd_start&quot;</span><span class="p">,</span> <span class="s2">&quot;bkgd_stop&quot;</span><span class="p">,</span> <span class="s2">&quot;int_start&quot;</span><span class="p">,</span> <span class="s2">&quot;int_stop&quot;</span><span class="p">,</span> <span class="s2">&quot;norm_cps&quot;</span><span class="p">]:</span>
+        <span class="n">spot_data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">spot_data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">output_report</span> <span class="o">=</span> <span class="n">spot_data</span>
 </code></pre></div></td></tr></table></div>
@@ -5597,9 +5607,7 @@ of the mean.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
 <span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
@@ -5643,10 +5651,7 @@ of the mean.</p>
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">normalize_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">normalize_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    normalize the analytes from the &quot;keep&quot; portion of the signal</span>
 <span class="sd">    the internal standard analyte. This is done by simply</span>
@@ -5678,11 +5683,6 @@ of the mean.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span>
             <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_std_loc</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_subtract_normal_data</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span>
-        <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">int_std_loc</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span>
-    <span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_med</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bkgd_subtract_normal_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">bkgd_correct_med</span><span class="p">[</span>
@@ -5721,16 +5721,16 @@ from the signal in the "keep" interval established in <code>assign_intervals</co
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
-<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">subtract_bkgd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">subtract_bkgd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    subtract the median background values calculated in `get_bkgd_data`</span>
 <span class="sd">    from the signal in the &quot;keep&quot; interval established in `assign_intervals`</span>
