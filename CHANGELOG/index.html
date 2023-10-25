@@ -9,10 +9,8 @@
       
       
       
-        <link rel="prev" href="../lasertram_tutorial/">
+        <link rel="prev" href="../reference/">
       
-      
-        <link rel="next" href="../reference/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -20,7 +18,7 @@
     
     
       
-        <title>How-To Guides - lasertram Documentation</title>
+        <title>Release Notes - lasertram Documentation</title>
       
     
     
@@ -66,6 +64,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#release-notes" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -98,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              How-To Guides
+              Release Notes
             
           </span>
         </div>
@@ -205,16 +208,9 @@
       
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../how-to-guides/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -223,7 +219,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -251,9 +246,29 @@
       
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../CHANGELOG/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Release Notes
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -262,6 +277,74 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading" class="md-nav__link">
+    Upgrading
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance-team" class="md-nav__link">
+    Maintenance team
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v007-10242023" class="md-nav__link">
+    v0.0.7 (10/24/2023)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.0.7 (10/24/2023)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v005-10202023" class="md-nav__link">
+    v0.0.5 (10/20/2023)
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -283,6 +366,64 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading" class="md-nav__link">
+    Upgrading
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance-team" class="md-nav__link">
+    Maintenance team
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v007-10242023" class="md-nav__link">
+    v0.0.7 (10/24/2023)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.0.7 (10/24/2023)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fix" class="md-nav__link">
+    Fix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v005-10202023" class="md-nav__link">
+    v0.0.5 (10/20/2023)
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -297,9 +438,38 @@
                   
 
 
-  <h1>How-To Guides</h1>
-
-
+<h1 id="release-notes">Release Notes</h1>
+<h2 id="upgrading">Upgrading</h2>
+<p>You can always update to the latest version of <code>lasertram</code> using pip:</p>
+<pre><code>pip install --upgrade lasertram
+</code></pre>
+<p>or install a specific version:</p>
+<pre><code>pip install lasertram==version-number
+</code></pre>
+<p>To check which version of <code>lasertram</code> you have installed:</p>
+<pre><code>pip show lasertram
+</code></pre>
+<h2 id="maintenance-team">Maintenance team</h2>
+<p>Current and past maintainers of <code>lasertram</code>:</p>
+<ul>
+<li><a href="https://github.com/jlubbersgeo">@jlubbersgeo</a></li>
+</ul>
+<h2 id="v007-10242023">v0.0.7 (10/24/2023)</h2>
+<h3 id="fix">Fix</h3>
+<ul>
+<li>Fixed <code>omitted_region</code> being counted as experiment analyte</li>
+</ul>
+<h3 id="documentation">Documentation</h3>
+<ul>
+<li>fixed filepath issues and typos in Basic Useage tutorial</li>
+<li>moved all test data to <code>test_data</code> folder</li>
+<li>created <code>tests</code> folder for future tests to be held</li>
+<li>created <code>CHANGELOG.md</code></li>
+</ul>
+<h2 id="v005-10202023">v0.0.5 (10/20/2023)</h2>
+<ul>
+<li>First release of <code>lasertram</code> for public use.</li>
+</ul>
 
 
 
