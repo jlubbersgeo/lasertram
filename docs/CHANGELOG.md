@@ -34,27 +34,27 @@ Current and past maintainers of `lasertram`:
 - Future proofed output report for deprecated pandas indexing. Now properly uses `.iloc`
 - Fixed interval `dtype` inconsistencies so they are all type `float64` rather than `object`
 
-### Documentation
+### :books: Documentation
 
 - Added general motivation to documentation landing page
 
-### New Features
+### :rocket: New Features
 
 - Added required dependencies to `setup.cfg`
 
 ## v0.0.7 (10/24/2023)
 
-### Bug Fixes
+### :bug: Bug Fixes
 
 - Fixed `omitted_region` being counted as experiment analyte
 
-### Documentation
+### :books: Documentation
 
 - fixed filepath issues and typos in Basic Useage tutorial
 - moved all test data to `test_data` folder
 - created `tests` folder for future tests to be held
 - created `CHANGELOG.md`
 
-## v0.0.5 (10/20/2023)
+## :tada: v0.0.5 (10/20/2023)
 
 - First release of `lasertram` for public use.
