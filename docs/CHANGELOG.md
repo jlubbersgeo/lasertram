@@ -26,9 +26,25 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v0.0.8 (10/25/2023)
+
+### :bug: Bug Fixes
+
+- Fixed bug that overwrote and ignored omission interval in `LaserTRAM.normalize_interval()`
+- Future proofed output report for deprecated pandas indexing. Now properly uses `.iloc`
+- Fixed interval `dtype` inconsistencies so they are all type `float64` rather than `object`
+
+### Documentation
+
+- Added general motivation to documentation landing page
+
+### New Features
+
+- Added required dependencies to `setup.cfg`
+
 ## v0.0.7 (10/24/2023)
 
-### Fix
+### Bug Fixes
 
 - Fixed `omitted_region` being counted as experiment analyte
 

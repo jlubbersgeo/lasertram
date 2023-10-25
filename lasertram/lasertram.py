@@ -58,6 +58,8 @@ class LaserTRAM:
         self.data["Time"] = self.data["Time"] / 1000
         self.data_matrix = self.data.iloc[:, 1:].to_numpy()
         self.analytes = self.data.loc[:, "Time":].columns.tolist()[1:]
+
+        # need to add check for if this exists otherwise there is no timestamp attribute
         self.timestamp = str(self.data.loc[:, "timestamp"].unique()[0])
 
     def assign_int_std(self, int_std):
@@ -171,11 +173,6 @@ class LaserTRAM:
                 / self.bkgd_correct_data[:, self.int_std_loc][:, None]
             )
 
-        self.bkgd_subtract_normal_data = (
-            self.bkgd_correct_data
-            / self.bkgd_correct_data[:, self.int_std_loc][:, None]
-        )
-
         self.bkgd_correct_med = np.median(self.bkgd_subtract_normal_data, axis=0)
         self.bkgd_correct_med[
             np.median(self.bkgd_correct_data, axis=0) <= threshold
@@ -204,8 +201,8 @@ class LaserTRAM:
 
         if self.omitted_region is True:
             omitted_col = (
-                self.data["Time"][self.omit_start_idx + self.int_start_idx],
-                self.data["Time"][self.omit_stop_idx + self.int_start_idx],
+                self.data["Time"].iloc[self.omit_start_idx + self.int_start_idx],
+                self.data["Time"].iloc[self.omit_stop_idx + self.int_start_idx],
             )
         else:
             omitted_col = "None"
@@ -216,10 +213,10 @@ class LaserTRAM:
                 self.name,
                 despike_col,
                 omitted_col,
-                self.data["Time"][self.bkgd_start_idx],
-                self.data["Time"][self.bkgd_stop_idx],
-                self.data["Time"][self.int_start_idx],
-                self.data["Time"][self.int_stop_idx],
+                self.data["Time"].iloc[self.bkgd_start_idx],
+                self.data["Time"].iloc[self.bkgd_stop_idx],
+                self.data["Time"].iloc[self.int_start_idx],
+                self.data["Time"].iloc[self.int_stop_idx],
                 self.int_std,
                 np.median(self.bkgd_correct_data[:, self.int_std_loc]),
             ]
@@ -249,6 +246,9 @@ class LaserTRAM:
             ],
             axis="columns",
         )
+
+        for col in ["bkgd_start", "bkgd_stop", "int_start", "int_stop", "norm_cps"]:
+            spot_data[col] = spot_data[col].astype(np.float64)
 
         self.output_report = spot_data
 
