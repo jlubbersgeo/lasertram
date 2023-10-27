@@ -26,6 +26,18 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v0.0.9 (10/26/2023)
+
+### :bug: Bug Fixes
+
+- fixed type issue with internal standard compositions being defaulted to `int`
+- fixed pandas indexing in `drift_check()` to support future move to `.iloc`
+
+### :sparkles: Features
+
+- added support for both GUI (LaserTRAM-DB) and API (`lasertram.LaserTRAM`) outputs to be used as inputs into `lasertram.LaserCalc()`
+- changed all naming instances of `calibration_standard` to `calibration_std`. Previously some there were a mix of attributes that had one or the other. Now anything that deals with the calibration standard (e.g., `self.calibration_std_stats`) will always have `calibration_std` in the name for consistency.
+
 ## v0.0.8 (10/25/2023)
 
 ### :bug: Bug Fixes
