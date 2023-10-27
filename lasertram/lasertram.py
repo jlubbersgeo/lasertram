@@ -484,7 +484,7 @@ class LaserCalc:
         """
 
         self.standards_data = df.set_index("Standard")
-        self.database_standards = self.standards_data.index.unique()
+        self.database_standards = self.standards_data.index.unique().to_list()
         # Get a list of all of the elements supported in the published standard datasheet
         # Get a second list for the same elements but their corresponding uncertainty columns
         self.standard_elements = [
@@ -503,11 +503,14 @@ class LaserCalc:
             df (pandas DataFrame): a 2D pandas DataFrame representing numerous concatenated calls to `LaserTRAM.make_output_report()`
 
         """
+        # check if first row is nan (output from GUI does this).
+        # If so, remove it
+        df = df[df.iloc[:, 0].isna() == False]
 
         data = df.set_index("Spot")
         data.insert(loc=1, column="index", value=np.arange(1, len(data) + 1))
 
-        self.spots = data.index.unique().tolist()
+        self.spots = data.index.unique().dropna().tolist()
 
         # Check for potential calibration standards. This will let us know what our options
         # are for choosing calibration standards by looking for spots that have the same string
@@ -574,7 +577,7 @@ class LaserCalc:
         Args:
             std (str): name of standard reference material (e.g., `NIST-612`,`BCR-2G`)
         """
-        self.calibration_standard = std
+        self.calibration_std = std
 
         self.calibration_std_data = self.data.loc[std, :]
         # Calibration standard information
@@ -632,7 +635,7 @@ class LaserCalc:
             else:
                 x = self.calibration_std_data["index"]
 
-            y = self.calibration_std_data[self.analytes[j]].astype("float64")
+            y = self.calibration_std_data.loc[:, self.analytes[j]].astype("float64")
 
             X = sm.add_constant(x)
             # Note the difference in argument order
@@ -646,12 +649,12 @@ class LaserCalc:
             calib_std_rmses.append(RMSE)
 
             if model.params.shape[0] < 2:
-                calib_std_slopes.append(model.params[0])
+                calib_std_slopes.append(model.params.loc["x1"])
                 calib_std_intercepts.append(0)
 
             else:
-                calib_std_slopes.append(model.params[1])
-                calib_std_intercepts.append(model.params[0])
+                calib_std_slopes.append(model.params.loc["x1"])
+                calib_std_intercepts.append(model.params.loc["const"])
 
             # new stuff
             # confidence limit 99%
@@ -671,7 +674,7 @@ class LaserCalc:
                 drift = "False"
                 drift_check.append(drift)
 
-        self.calibration_standard_stats = pd.DataFrame(
+        self.calibration_std_stats = pd.DataFrame(
             {
                 "drift_correct": drift_check,
                 "f_pval": f_pvals,
@@ -706,9 +709,9 @@ class LaserCalc:
             # if our element is in the list of standard elements take the ratio
             if nomass in self.standard_elements:
                 std_conc_ratios.append(
-                    self.standards_data.loc[self.calibration_standard, nomass]
+                    self.standards_data.loc[self.calibration_std, nomass]
                     / self.standards_data.loc[
-                        self.calibration_standard,
+                        self.calibration_std,
                         re.split(
                             "(\d+)", self.calibration_std_data["norm"].unique()[0]
                         )[2],
@@ -717,7 +720,7 @@ class LaserCalc:
 
         # make our list an array for easier math going forward
         # std_conc_ratios = pd.DataFrame(np.array(std_conc_ratios)[np.newaxis,:],columns = myanalytes)
-        self.calibration_standard_conc_ratios = np.array(std_conc_ratios)
+        self.calibration_std_conc_ratios = np.array(std_conc_ratios)
 
     def set_internal_standard_concentrations(
         self,
@@ -742,8 +745,8 @@ class LaserCalc:
             concentrations = (np.full(self.data["Spot"].shape[0], 10),)
             uncertainties = (np.full(self.data["Spot"].shape[0], 1),)
 
-        self.data["internal_std_comp"] = 10
-        self.data["internal_std_rel_unc"] = 1
+        self.data["internal_std_comp"] = 10.0
+        self.data["internal_std_rel_unc"] = 1.0
         df = self.data.reset_index().set_index("Spot")
 
         for spot, concentration, uncertainty in zip(
@@ -764,7 +767,7 @@ class LaserCalc:
         """
 
         secondary_standards = self.potential_calibration_standards.copy()
-        secondary_standards.remove(self.calibration_standard)
+        secondary_standards.remove(self.calibration_std)
         self.secondary_standards = secondary_standards
         secondary_standards_concentrations_list = []
         unknown_concentrations_list = []
@@ -777,8 +780,8 @@ class LaserCalc:
                     self.calibration_std_data["norm"].unique()[0],
                 )[2],
             ]
-            Cin_std = self.calibration_standard_conc_ratios
-            Ni_std = self.calibration_standard_stats["mean"][self.analytes]
+            Cin_std = self.calibration_std_conc_ratios
+            Ni_std = self.calibration_std_stats["mean"][self.analytes]
             Ni_u = self.data.loc[sample, self.analytes]
 
             concentrations = Cn_u * (Cin_std / Ni_std) * Ni_u
@@ -788,9 +791,9 @@ class LaserCalc:
             for j, analyte, slope, intercept, drift in zip(
                 range(len(self.analytes)),
                 self.analytes,
-                self.calibration_standard_stats["slope"],
-                self.calibration_standard_stats["intercept"],
-                self.calibration_standard_stats["drift_correct"],
+                self.calibration_std_stats["slope"],
+                self.calibration_std_stats["intercept"],
+                self.calibration_std_stats["drift_correct"],
             ):
                 if "True" in drift:
                     if "timestamp" in self.data.columns.tolist():
@@ -850,8 +853,8 @@ class LaserCalc:
                 self.data.loc[sample, "internal_std_comp"],
                 self.data.loc[sample, "norm"].unique()[0],
             ).to_numpy()
-            Cin_std = self.calibration_standard_conc_ratios
-            Ni_std = self.calibration_standard_stats["mean"][self.analytes].to_numpy()
+            Cin_std = self.calibration_std_conc_ratios
+            Ni_std = self.calibration_std_stats["mean"][self.analytes].to_numpy()
             Ni_u = self.data.loc[sample, self.analytes].to_numpy()
 
             concentrations = pd.DataFrame(
@@ -863,9 +866,9 @@ class LaserCalc:
             for j, analyte, slope, intercept, drift in zip(
                 range(len(self.analytes)),
                 self.analytes,
-                self.calibration_standard_stats["slope"],
-                self.calibration_standard_stats["intercept"],
-                self.calibration_standard_stats["drift_correct"],
+                self.calibration_std_stats["slope"],
+                self.calibration_std_stats["intercept"],
+                self.calibration_std_stats["drift_correct"],
             ):
                 if "True" in drift:
                     if "timestamp" in self.data.columns.tolist():
@@ -976,15 +979,15 @@ class LaserCalc:
         # of the mean of all the calibration standard normalized ratios
         rse_i_std = []
         for analyte in self.analytes:
-            if "True" in self.calibration_standard_stats.loc[analyte, "drift_correct"]:
+            if "True" in self.calibration_std_stats.loc[analyte, "drift_correct"]:
                 rse_i_std.append(
                     100
-                    * self.calibration_standard_stats.loc[analyte, "rmse"]
-                    / self.calibration_standard_stats.loc[analyte, "mean"]
+                    * self.calibration_std_stats.loc[analyte, "rmse"]
+                    / self.calibration_std_stats.loc[analyte, "mean"]
                 )
             else:
                 rse_i_std.append(
-                    self.calibration_standard_stats.loc[analyte, "percent_std_err"]
+                    self.calibration_std_stats.loc[analyte, "percent_std_err"]
                 )
 
         rse_i_std = np.array(rse_i_std)
@@ -1001,12 +1004,8 @@ class LaserCalc:
 
             # concentration of internal standard in calibration standard uncertainties
             t2 = (
-                self.standards_data.loc[
-                    self.calibration_standard, f"{int_std_element}_std"
-                ]
-                / self.standards_data.loc[
-                    self.calibration_standard, f"{int_std_element}"
-                ]
+                self.standards_data.loc[self.calibration_std, f"{int_std_element}_std"]
+                / self.standards_data.loc[self.calibration_std, f"{int_std_element}"]
             ) ** 2
 
             # concentration of each analyte in calibration standard uncertainties
@@ -1020,9 +1019,9 @@ class LaserCalc:
                     std_conc_stds.append(
                         (
                             self.standards_data.loc[
-                                self.calibration_standard, f"{nomass}_std"
+                                self.calibration_std, f"{nomass}_std"
                             ]
-                            / self.standards_data.loc[self.calibration_standard, nomass]
+                            / self.standards_data.loc[self.calibration_std, nomass]
                         )
                         ** 2
                     )
@@ -1073,12 +1072,8 @@ class LaserCalc:
 
             # concentration of internal standard in calibration standard uncertainties
             t2 = (
-                self.standards_data.loc[
-                    self.calibration_standard, f"{int_std_element}_std"
-                ]
-                / self.standards_data.loc[
-                    self.calibration_standard, f"{int_std_element}"
-                ]
+                self.standards_data.loc[self.calibration_std, f"{int_std_element}_std"]
+                / self.standards_data.loc[self.calibration_std, f"{int_std_element}"]
             ) ** 2
 
             # concentration of each analyte in calibration standard uncertainties
@@ -1092,9 +1087,9 @@ class LaserCalc:
                     std_conc_stds.append(
                         (
                             self.standards_data.loc[
-                                self.calibration_standard, f"{nomass}_std"
+                                self.calibration_std, f"{nomass}_std"
                             ]
-                            / self.standards_data.loc[self.calibration_standard, nomass]
+                            / self.standards_data.loc[self.calibration_std, nomass]
                         )
                         ** 2
                     )
@@ -1119,11 +1114,8 @@ class LaserCalc:
             unk_rel_uncertainties_list.append(rel_uncertainty)
 
         unk_rel_uncertainties = pd.concat(unk_rel_uncertainties_list)
-        overall_uncertainties = (
-            unk_rel_uncertainties.values
-            * self.unknown_concentrations.loc[:, self.analytes].values
-        )
-        srm_uncertainties = pd.DataFrame(
+
+        unknown_uncertainties = pd.DataFrame(
             unk_rel_uncertainties.values
             * self.unknown_concentrations.loc[:, self.analytes].values,
             columns=myuncertainties,
@@ -1131,7 +1123,7 @@ class LaserCalc:
         )
 
         self.unknown_concentrations = pd.concat(
-            [self.unknown_concentrations, srm_uncertainties], axis="columns"
+            [self.unknown_concentrations, unknown_uncertainties], axis="columns"
         )
 
     # make an accuracy checking function

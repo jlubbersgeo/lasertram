@@ -8,7 +8,7 @@ import pytest
 from lasertram import lasertram as lt
 from lasertram.lasertram import LaserCalc, LaserTRAM
 
-###########UNIT TESTS##############
+###########LASERTRAM UNIT TESTS##############
 spreadsheet_path = r"tests\spot_test_timestamp_raw_data.xlsx"
 
 
@@ -368,3 +368,679 @@ def test_process_spot(load_data):
     )
 
     pd.testing.assert_frame_equal(spot.output_report, spot2.output_report)
+
+
+def test_oxide_to_ppm():
+    """
+    test that oxides wt% are being converted to elemental ppm
+    properly. Test
+    """
+
+    analytes = ["29Si", "27Al", "CaO"]
+    oxide_vals = np.array([65.0, 15.0, 8.0])
+
+    result = {}
+    for analyte, oxide in zip(analytes, oxide_vals):
+        result[analyte] = lt.oxide_to_ppm(oxide, analyte)
+
+    expected = {
+        "29Si": 303833.8631559676,
+        "27Al": 107957.04626864659,
+        "CaO": 34304.891110317745,
+    }
+
+    assert (
+        result == expected
+    ), "concentrations from oxides not being calculated properly"
+
+
+###############LASERCALC UNIT TESTS#########################
+SRM_path = r"tests\laicpms_stds_tidy.xlsx"
+
+
+@pytest.fixture
+def load_SRM_data():
+    data = pd.read_excel(SRM_path)
+    return data
+
+
+LT_complete_path = r"tests\spot_test_timestamp_lasertram_complete.xlsx"
+
+
+@pytest.fixture
+def load_LTcomplete_data():
+    data = pd.read_excel(LT_complete_path)
+    return data
+
+
+def test_get_SRM_comps(load_SRM_data):
+    concentrations = LaserCalc(name="test")
+    concentrations.get_SRM_comps(load_SRM_data)
+
+    assert concentrations.standard_elements == [
+        "Ag",
+        "Al",
+        "As",
+        "Au",
+        "B",
+        "Ba",
+        "Be",
+        "Bi",
+        "Br",
+        "Ca",
+        "Cd",
+        "Ce",
+        "Cl",
+        "Co",
+        "Cr",
+        "Cs",
+        "Cu",
+        "Dy",
+        "Er",
+        "Eu",
+        "F",
+        "Fe",
+        "Ga",
+        "Gd",
+        "Ge",
+        "Hf",
+        "Ho",
+        "In",
+        "K",
+        "La",
+        "Li",
+        "Lu",
+        "Mg",
+        "Mn",
+        "Mo",
+        "Na",
+        "Nb",
+        "Nd",
+        "Ni",
+        "P",
+        "Pb",
+        "Pr",
+        "Rb",
+        "Re",
+        "S",
+        "Sb",
+        "Sc",
+        "Se",
+        "Si",
+        "Sm",
+        "Sn",
+        "Sr",
+        "Ta",
+        "Tb",
+        "Th",
+        "Ti",
+        "Tl",
+        "Tm",
+        "U",
+        "V",
+        "W",
+        "Y",
+        "Yb",
+        "Zn",
+        "Zr",
+        "SiO2",
+        "TiO2",
+        "Sl2O3",
+        "FeO",
+        "MgO",
+        "MnO",
+        "CaO",
+        "Na2O",
+        "K2O",
+        "P2O5",
+    ], "standard elements not being accessed properly"
+    assert concentrations.database_standards == [
+        "BCR-2G",
+        "BHVO-2G",
+        "BIR-1G",
+        "GSA-1G",
+        "GSC-1G",
+        "GSD-1G",
+        "GSE-1G",
+        "NIST-610",
+        "NIST-612",
+        "BM9021-G",
+        "GOR128-G",
+        "GOR132-G",
+        "ATHO-G",
+        "KL2-G",
+        "ML3B-G",
+        "T1-G",
+        "StHs680-G",
+    ], "standard names not being read in properly"
+
+
+def test_get_data(load_SRM_data, load_LTcomplete_data):
+    concentrations = LaserCalc(name="test")
+    concentrations.get_SRM_comps(load_SRM_data)
+    concentrations.get_data(load_LTcomplete_data)
+
+    assert concentrations.spots == [
+        "BCR-2G_1",
+        "BCR-2G_2",
+        "ATHO-G_1",
+        "ATHO-G_2",
+        "BHVO-2G_1",
+        "BHVO-2G_2",
+        "unknown_nist-612_1",
+        "unknown_nist-612_2",
+        "BCR-2G_3",
+        "ATHO-G_3",
+        "BCR-2G_4",
+        "ATHO-G_4",
+        "BCR-2G_5",
+        "ATHO-G_5",
+        "BCR-2G_6",
+        "ATHO-G_6",
+        "BCR-2G_7",
+        "ATHO-G_7",
+        "BCR-2G_8",
+        "ATHO-G_8",
+        "BHVO-2G_3",
+        "unknown_nist-612_3",
+        "BCR-2G_9",
+        "ATHO-G_9",
+        "BCR-2G_10",
+        "ATHO-G_10",
+        "BCR-2G_11",
+        "ATHO-G_11",
+        "BCR-2G_12",
+        "ATHO-G_12",
+        "BCR-2G_13",
+        "ATHO-G_13",
+        "BCR-2G_14",
+        "BCR-2G_15",
+        "ATHO-G_14",
+        "ATHO-G_15",
+        "BHVO-2G_4",
+        "BHVO-2G_5",
+        "unknown_nist-612_4",
+        "unknown_nist-612_5",
+    ], "analysis spots not found correctly"
+    assert concentrations.potential_calibration_standards == [
+        "ATHO-G",
+        "BCR-2G",
+        "BHVO-2G",
+    ], "potential calibration standards not found correctly"
+    assert concentrations.samples_nostandards == [
+        "unknown"
+    ], "unknown analyses not found correctly"
+    assert concentrations.elements == [
+        "Li",
+        "Mg",
+        "Al",
+        "Si",
+        "Ca",
+        "Ti",
+        "Fe",
+        "Sr",
+        "Ba",
+        "La",
+        "Ce",
+        "Eu",
+        "Pb",
+    ], "analyte to element conversion not correct"
+
+
+def test_set_calibration_standard(load_SRM_data, load_LTcomplete_data):
+    """
+    test whether or not calibration standard data is properly assigned
+    """
+    concentrations = LaserCalc(name="test")
+    concentrations.get_SRM_comps(load_SRM_data)
+    concentrations.get_data(load_LTcomplete_data)
+    concentrations.set_calibration_standard("BCR-2G")
+    test_means = pd.Series(
+        {
+            "7Li": 0.05095309567485837,
+            "24Mg": 85.83785949961276,
+            "27Al": 337.3903538168668,
+            "29Si": 26.146972020239836,
+            "43Ca": 1.0,
+            "48Ti": 112.35818866678622,
+            "57Fe": 33.27331379718277,
+            "88Sr": 9.571563094542862,
+            "138Ba": 21.393678102682294,
+            "139La": 0.8326420933512372,
+            "140Ce": 1.9742222315043418,
+            "153Eu": 0.05251069362909363,
+            "208Pb": 0.2672836117732711,
+        }
+    )
+    test_ses = pd.Series(
+        {
+            "7Li": 0.558565709206677,
+            "24Mg": 0.38138022061850435,
+            "27Al": 0.4573559099297444,
+            "29Si": 0.6994253098217633,
+            "43Ca": 0.0,
+            "48Ti": 0.1988979755580142,
+            "57Fe": 0.5621273015720097,
+            "88Sr": 0.49500279644282247,
+            "138Ba": 0.90397731151757,
+            "139La": 0.7938673732133003,
+            "140Ce": 0.9547499642078431,
+            "153Eu": 0.7394818175678296,
+            "208Pb": 0.8311922109557456,
+        }
+    )
+
+    assert concentrations.calibration_std == "BCR-2G"
+    pd.testing.assert_series_equal(concentrations.calibration_std_means, test_means)
+    pd.testing.assert_series_equal(concentrations.calibration_std_ses, test_ses)
+
+
+def test_drift_check(load_SRM_data, load_LTcomplete_data):
+    """
+    test whether or not drift is accounted for properly
+    """
+    concentrations = LaserCalc(name="test")
+    concentrations.get_SRM_comps(load_SRM_data)
+    concentrations.get_data(load_LTcomplete_data)
+    concentrations.set_calibration_standard("BCR-2G")
+    concentrations.drift_check()
+    test_ses = pd.Series(
+        {
+            "7Li": "False",
+            "24Mg": "True",
+            "27Al": "True",
+            "29Si": "True",
+            "43Ca": "False",
+            "48Ti": "False",
+            "57Fe": "True",
+            "88Sr": "True",
+            "138Ba": "True",
+            "139La": "True",
+            "140Ce": "True",
+            "153Eu": "True",
+            "208Pb": "True",
+        }
+    )
+    test_ses.name = "drift_correct"
+    pd.testing.assert_series_equal(
+        test_ses, concentrations.calibration_std_stats["drift_correct"]
+    ), "analytes not being drift corrected properly"
+
+
+def test_get_calibration_std_ratios(load_SRM_data, load_LTcomplete_data):
+    """
+    test that the concentration ratio between every analyte and the internal
+    standard is accurate
+    """
+
+    concentrations = LaserCalc(name="test")
+    concentrations.get_SRM_comps(load_SRM_data)
+    concentrations.get_data(load_LTcomplete_data)
+    concentrations.set_calibration_standard("BCR-2G")
+    concentrations.drift_check()
+    concentrations.get_calibration_std_ratios()
+
+    test_ratios = np.array(
+        [
+            1.78368272e-04,
+            4.25488849e-01,
+            1.40550695e00,
+            5.03990796e00,
+            1.00000000e00,
+            2.79443626e-01,
+            1.91023584e00,
+            6.77799433e-03,
+            1.35361700e-02,
+            4.89521813e-04,
+            1.05633654e-03,
+            3.90428329e-05,
+            2.18005666e-04,
+        ]
+    )
+    assert np.allclose(
+        concentrations.calibration_std_conc_ratios, test_ratios
+    ), "calibration standard concentration ratios are not correct, check again"
+
+
+def test_set_internal_standard_concentrations(load_SRM_data, load_LTcomplete_data):
+    """
+    test to make sure concentration of the internal standard is being set correctly
+    """
+
+    concentrations = LaserCalc(name="test")
+    concentrations.get_SRM_comps(load_SRM_data)
+    concentrations.get_data(load_LTcomplete_data)
+    concentrations.set_calibration_standard("BCR-2G")
+    concentrations.drift_check()
+    concentrations.get_calibration_std_ratios()
+    concentrations.set_internal_standard_concentrations(
+        concentrations.data["Spot"],
+        np.full(concentrations.data["Spot"].shape[0], 71.9),
+        np.full(concentrations.data["Spot"].shape[0], 1),
+    )
+
+    assert np.allclose(
+        concentrations.data.loc["unknown", "internal_std_comp"].values,
+        np.array([71.9, 71.9, 71.9, 71.9, 71.9]),
+    ), "internal standard concentrations for unknowns not set properly"
+    assert np.allclose(
+        concentrations.data.loc["unknown", "internal_std_rel_unc"].values,
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0]),
+    ), "internal standard concentration uncertainties for unknowns not set properly"
+
+
+def test_calculate_concentrations(load_SRM_data, load_LTcomplete_data):
+    """
+    test to make sure concentrations are calculated correctly
+    """
+
+    concentrations = LaserCalc(name="test")
+    concentrations.get_SRM_comps(load_SRM_data)
+    concentrations.get_data(load_LTcomplete_data)
+    concentrations.set_calibration_standard("BCR-2G")
+    concentrations.drift_check()
+    concentrations.get_calibration_std_ratios()
+    concentrations.set_internal_standard_concentrations(
+        concentrations.data["Spot"],
+        np.full(concentrations.data["Spot"].shape[0], 71.9),
+        np.full(concentrations.data["Spot"].shape[0], 1),
+    )
+    concentrations.calculate_concentrations()
+
+    test_unknown_concentrations = pd.DataFrame(
+        [
+            {
+                "timestamp": "2021-03-01T22:15:56.000000000",
+                "Spot": "unknown_nist-612_1",
+                "7Li": 207.58205449833375,
+                "24Mg": 375.9041094947969,
+                "27Al": 62599.11382390356,
+                "29Si": 1898256.5921452672,
+                "43Ca": 513866.3266579882,
+                "48Ti": 2611.316937677469,
+                "57Fe": 327.57890580947793,
+                "88Sr": 489.9462645872854,
+                "138Ba": 234.4110430915169,
+                "139La": 229.6609961756181,
+                "140Ce": 231.311641090213,
+                "153Eu": 226.74379802104772,
+                "208Pb": 214.4793293705701,
+                "7Li_se": 23.457200886517615,
+                "24Mg_se": 32.46670630987515,
+                "27Al_se": 2254.387393435266,
+                "29Si_se": 45271.52823314575,
+                "43Ca_se": 12434.277214052305,
+                "48Ti_se": 192.14934992254877,
+                "57Fe_se": 23.129641254856494,
+                "88Sr_se": 11.13267716088216,
+                "138Ba_se": 5.3603206434413115,
+                "139La_se": 5.476858396651021,
+                "140Ce_se": 5.176215023317281,
+                "153Eu_se": 5.605400613215481,
+                "208Pb_se": 20.230964078384577,
+            },
+            {
+                "timestamp": "2021-03-01T22:17:12.999000000",
+                "Spot": "unknown_nist-612_2",
+                "7Li": 209.06241656705257,
+                "24Mg": 368.5288462830524,
+                "27Al": 62700.18216934566,
+                "29Si": 1889902.4124392755,
+                "43Ca": 513866.3266579882,
+                "48Ti": 2584.862677980655,
+                "57Fe": 314.7478981350732,
+                "88Sr": 485.6654338716087,
+                "138Ba": 232.68028900645848,
+                "139La": 227.92641774625443,
+                "140Ce": 230.99105056495816,
+                "153Eu": 227.00096869676517,
+                "208Pb": 212.19698209171742,
+                "7Li_se": 23.624411347548133,
+                "24Mg_se": 12.135084373929159,
+                "27Al_se": 2258.8756945878913,
+                "29Si_se": 45110.42262240762,
+                "43Ca_se": 12434.277214052305,
+                "48Ti_se": 189.7426953800166,
+                "57Fe_se": 12.76043772087462,
+                "88Sr_se": 11.032762905909145,
+                "138Ba_se": 5.308217164973913,
+                "139La_se": 5.418392408993304,
+                "140Ce_se": 5.18273167788242,
+                "153Eu_se": 5.634739949477251,
+                "208Pb_se": 20.01912074319983,
+            },
+            {
+                "timestamp": "2021-03-02T00:32:12.000000000",
+                "Spot": "unknown_nist-612_3",
+                "7Li": 211.661619810332,
+                "24Mg": 369.7103681340728,
+                "27Al": 61134.56508097334,
+                "29Si": 1833782.6965243507,
+                "43Ca": 513866.3266579882,
+                "48Ti": 2600.625450456699,
+                "57Fe": 300.9029235545256,
+                "88Sr": 485.97056026250135,
+                "138Ba": 235.88527773280674,
+                "139La": 229.8565286717672,
+                "140Ce": 230.5293159759712,
+                "153Eu": 225.86829618815372,
+                "208Pb": 216.92719783397186,
+                "7Li_se": 23.926147326430055,
+                "24Mg_se": 12.120561573992989,
+                "27Al_se": 2200.035012020141,
+                "29Si_se": 43859.95135867492,
+                "43Ca_se": 12434.277214052305,
+                "48Ti_se": 190.8929253916731,
+                "57Fe_se": 12.845814287713937,
+                "88Sr_se": 11.048774527275869,
+                "138Ba_se": 5.381494143181964,
+                "139La_se": 5.4570269986760085,
+                "140Ce_se": 5.1499298169528895,
+                "153Eu_se": 5.567809986743265,
+                "208Pb_se": 20.45566332189426,
+            },
+            {
+                "timestamp": "2021-03-02T02:44:04.000000000",
+                "Spot": "unknown_nist-612_4",
+                "7Li": 208.1141728704961,
+                "24Mg": 373.2245442918232,
+                "27Al": 61535.64836974937,
+                "29Si": 1848995.4811800483,
+                "43Ca": 513866.3266579882,
+                "48Ti": 2585.311614429285,
+                "57Fe": 295.7365807741927,
+                "88Sr": 487.3907248754375,
+                "138Ba": 234.27585578953685,
+                "139La": 227.77742247999876,
+                "140Ce": 228.57724688795787,
+                "153Eu": 224.68524555796338,
+                "208Pb": 219.03746703576175,
+                "7Li_se": 23.530038289080682,
+                "24Mg_se": 12.223570745692397,
+                "27Al_se": 2217.6046613996673,
+                "29Si_se": 44384.44662899679,
+                "43Ca_se": 12434.277214052305,
+                "48Ti_se": 189.81761514248365,
+                "57Fe_se": 58.23344513283139,
+                "88Sr_se": 11.07035361410948,
+                "138Ba_se": 5.34827669044824,
+                "139La_se": 5.417558954516482,
+                "140Ce_se": 5.122494906686536,
+                "153Eu_se": 5.586420849604132,
+                "208Pb_se": 20.65594898164351,
+            },
+            {
+                "timestamp": "2021-03-02T02:45:22.000000000",
+                "Spot": "unknown_nist-612_5",
+                "7Li": 208.0021823891214,
+                "24Mg": 372.68091572356707,
+                "27Al": 61137.35962927165,
+                "29Si": 1869701.7686653552,
+                "43Ca": 513866.3266579882,
+                "48Ti": 2556.404072442201,
+                "57Fe": 277.1823289762299,
+                "88Sr": 482.4571478802297,
+                "138Ba": 232.09812648377985,
+                "139La": 222.81901611170542,
+                "140Ce": 226.674801608158,
+                "153Eu": 223.83010332189676,
+                "208Pb": 216.22128744737935,
+                "7Li_se": 23.515734417054933,
+                "24Mg_se": 12.268494815718407,
+                "27Al_se": 2203.3401755653963,
+                "29Si_se": 44615.7297535611,
+                "43Ca_se": 12434.277214052305,
+                "48Ti_se": 187.67929976424563,
+                "57Fe_se": 11.83564142404549,
+                "88Sr_se": 10.98119522372554,
+                "138Ba_se": 5.304421473728012,
+                "139La_se": 5.303434339700193,
+                "140Ce_se": 5.064344113079541,
+                "153Eu_se": 5.537225826449885,
+                "208Pb_se": 20.391685788599492,
+            },
+        ]
+    )
+    test_unknown_concentrations.index = ["unknown"] * test_unknown_concentrations.shape[
+        0
+    ]
+    test_unknown_concentrations.index.name = "sample"
+
+    test_SRM_concentrations = pd.DataFrame(
+        [
+            {
+                "timestamp": "2021-03-01T22:10:47.999000000",
+                "Spot": "ATHO-G_1",
+                "7Li": 25.81744018515236,
+                "24Mg": 579.1203858200361,
+                "27Al": 66573.81985653027,
+                "29Si": 356151.33226708096,
+                "43Ca": 12149.799885648943,
+                "48Ti": 1546.7969166023204,
+                "57Fe": 24368.052774644304,
+                "88Sr": 95.93421857679373,
+                "138Ba": 548.0963736274922,
+                "139La": 57.00444892071998,
+                "140Ce": 121.08702224217807,
+                "153Eu": 2.7926972025277355,
+                "208Pb": 5.639772926125088,
+                "7Li_se": 2.951486943862664,
+                "24Mg_se": 21.497848169408744,
+                "27Al_se": 2635.9503360618914,
+                "29Si_se": 10400.216595564447,
+                "43Ca_se": 342.9898164757125,
+                "48Ti_se": 116.3332500005449,
+                "57Fe_se": 874.594068034649,
+                "88Sr_se": 2.6949611315303903,
+                "138Ba_se": 15.388547429810092,
+                "139La_se": 1.6526603214315219,
+                "140Ce_se": 3.3817793092788118,
+                "153Eu_se": 0.09079560833981733,
+                "208Pb_se": 0.6553840387269524,
+            },
+            {
+                "timestamp": "2021-03-01T22:12:05.000000000",
+                "Spot": "ATHO-G_2",
+                "7Li": 25.854562240659416,
+                "24Mg": 576.2972227801915,
+                "27Al": 66174.11201124413,
+                "29Si": 352671.9080687457,
+                "43Ca": 12149.799885648943,
+                "48Ti": 1555.1089547084653,
+                "57Fe": 24138.049743047202,
+                "88Sr": 95.78763845519435,
+                "138Ba": 550.408641930586,
+                "139La": 57.43836192819776,
+                "140Ce": 122.91460266142933,
+                "153Eu": 2.8218407563769374,
+                "208Pb": 5.713687284506415,
+                "7Li_se": 2.9578175450357205,
+                "24Mg_se": 20.729952231225656,
+                "27Al_se": 2603.7293174408505,
+                "29Si_se": 10166.547068755182,
+                "43Ca_se": 342.9898164757125,
+                "48Ti_se": 116.77746273475508,
+                "57Fe_se": 855.8745610317629,
+                "88Sr_se": 2.6630775350080635,
+                "138Ba_se": 15.200668377102298,
+                "139La_se": 1.6425945478652604,
+                "140Ce_se": 3.3618990976024192,
+                "153Eu_se": 0.08985730422730541,
+                "208Pb_se": 0.5490102600658079,
+            },
+            {
+                "timestamp": "2021-03-02T02:41:28.000000000",
+                "Spot": "BHVO-2G_4",
+                "7Li": 4.024593214720714,
+                "24Mg": 44366.476235376525,
+                "27Al": 71763.68995988581,
+                "29Si": 244197.30315501872,
+                "43Ca": 81475.12864493996,
+                "48Ti": 16829.215429171712,
+                "57Fe": 88638.22463388307,
+                "88Sr": 402.5613712527907,
+                "138Ba": 131.94863924234724,
+                "139La": 15.284105034707935,
+                "140Ce": 37.468464199826016,
+                "153Eu": 2.076862251038057,
+                "208Pb": 1.8767279716890939,
+                "7Li_se": 0.4683812589848144,
+                "24Mg_se": 1419.605890851989,
+                "27Al_se": 2574.0526852690286,
+                "29Si_se": 5790.043250888171,
+                "43Ca_se": 1932.2930073874898,
+                "48Ti_se": 1233.457530277853,
+                "57Fe_se": 2801.461177043928,
+                "88Sr_se": 9.040158510227755,
+                "138Ba_se": 2.991182476077185,
+                "139La_se": 0.37140881746898735,
+                "140Ce_se": 0.8259040920441594,
+                "153Eu_se": 0.057409119254989156,
+                "208Pb_se": 0.18886744030142424,
+            },
+            {
+                "timestamp": "2021-03-02T02:42:45.999000000",
+                "Spot": "BHVO-2G_5",
+                "7Li": 4.2809620800304256,
+                "24Mg": 44295.92560565091,
+                "27Al": 71581.55172053768,
+                "29Si": 246300.52034322754,
+                "43Ca": 81475.12864493996,
+                "48Ti": 16758.749560341766,
+                "57Fe": 88825.16417683096,
+                "88Sr": 406.027654866846,
+                "138Ba": 132.14344009000718,
+                "139La": 15.19366825548261,
+                "140Ce": 37.35400405818966,
+                "153Eu": 2.1162913433696207,
+                "208Pb": 1.9512157976817952,
+                "7Li_se": 0.4962596101382965,
+                "24Mg_se": 1418.6305522177533,
+                "27Al_se": 2588.192223835008,
+                "29Si_se": 5804.5536804239755,
+                "43Ca_se": 1932.2930073874898,
+                "48Ti_se": 1228.8521961530887,
+                "57Fe_se": 2815.4884022280294,
+                "88Sr_se": 9.08408517641062,
+                "138Ba_se": 2.9583172282671333,
+                "139La_se": 0.3612599667553517,
+                "140Ce_se": 0.8369507642388556,
+                "153Eu_se": 0.06020763647917922,
+                "208Pb_se": 0.1867453391361122,
+            },
+        ]
+    )
+
+    test_SRM_concentrations.index = ["ATHO-G", "ATHO-G", "BHVO-2G", "BHVO-2G"]
+    test_SRM_concentrations.index.name = "sample"
+
+    pd.testing.assert_frame_equal(
+        test_unknown_concentrations,
+        concentrations.unknown_concentrations,
+        check_index_type=False,
+    )
+    pd.testing.assert_frame_equal(
+        test_SRM_concentrations,
+        concentrations.SRM_concentrations.iloc[[0, 1, 18, 19], :],
+        check_index_type=False,
+    )
