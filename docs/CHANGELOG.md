@@ -26,6 +26,13 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v0.0.10 (1/11/2024)
+
+### :sparkles: Features
+
+- added support for both internal and external precision on output.
+  - Now on output uncertainties are displayed with column header suffixes as either `_exterr` or `interr` to reflect overall uncertainties that incorporate the uncertainty in the calibration standard accepted value or those that don't, respectively. The vast majority of use cases should utilize `_exterr` values unless one is comparing datasets processed with the same calibration standard.
+
 ## v0.0.9 (10/26/2023)
 
 ### :bug: Bug Fixes

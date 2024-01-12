@@ -970,11 +970,12 @@ class LaserCalc:
         Calculate the uncertainties for each analysis.
 
         """
-        # self.SRM_concentration_uncertainties = 1
-        # self.unknown_concentration_uncertainties = 1
+
         myuncertainties = [analyte + "_se" for analyte in self.analytes]
-        srm_rel_uncertainties_list = []
-        unk_rel_uncertainties_list = []
+        srm_rel_ext_uncertainties_list = []
+        unk_rel_ext_uncertainties_list = []
+        srm_rel_int_uncertainties_list = []
+        unk_rel_int_uncertainties_list = []
         # use RMSE of regression for elements where drift correction is applied rather than the standard error
         # of the mean of all the calibration standard normalized ratios
         rse_i_std = []
@@ -1031,7 +1032,7 @@ class LaserCalc:
             # Overall uncertainties
             # Need to loop through each row?
 
-            rel_uncertainty = pd.DataFrame(
+            rel_ext_uncertainty = pd.DataFrame(
                 np.sqrt(
                     np.array(
                         t1
@@ -1042,20 +1043,40 @@ class LaserCalc:
                     ).astype(np.float64)
                 )
             )
-            rel_uncertainty.columns = myuncertainties
-            srm_rel_uncertainties_list.append(rel_uncertainty)
+            rel_int_uncertainty = pd.DataFrame(
+                np.sqrt(
+                    np.array(
+                        +t2
+                        + std_conc_stds
+                        + (rse_i_std[np.newaxis, :] / 100) ** 2
+                        + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
+                    ).astype(np.float64)
+                )
+            )
+            rel_ext_uncertainty.columns = [f"{a}_exterr" for a in self.analytes]
+            srm_rel_ext_uncertainties_list.append(rel_ext_uncertainty)
+            rel_int_uncertainty.columns = [f"{a}_interr" for a in self.analytes]
+            srm_rel_int_uncertainties_list.append(rel_int_uncertainty)
 
-        srm_rel_uncertainties = pd.concat(srm_rel_uncertainties_list)
+        srm_rel_ext_uncertainties = pd.concat(srm_rel_ext_uncertainties_list)
+        srm_rel_int_uncertainties = pd.concat(srm_rel_int_uncertainties_list)
 
-        srm_uncertainties = pd.DataFrame(
-            srm_rel_uncertainties.values
+        srm_ext_uncertainties = pd.DataFrame(
+            srm_rel_ext_uncertainties.values
             * self.SRM_concentrations.loc[:, self.analytes].values,
-            columns=myuncertainties,
+            columns=[f"{a}_exterr" for a in self.analytes],
+            index=self.SRM_concentrations.index,
+        )
+        srm_int_uncertainties = pd.DataFrame(
+            srm_rel_int_uncertainties.values
+            * self.SRM_concentrations.loc[:, self.analytes].values,
+            columns=[f"{a}_interr" for a in self.analytes],
             index=self.SRM_concentrations.index,
         )
 
         self.SRM_concentrations = pd.concat(
-            [self.SRM_concentrations, srm_uncertainties], axis="columns"
+            [self.SRM_concentrations, srm_ext_uncertainties, srm_int_uncertainties],
+            axis="columns",
         )
 
         ######################################
@@ -1099,7 +1120,7 @@ class LaserCalc:
             # Overall uncertainties
             # Need to loop through each row?
 
-            rel_uncertainty = pd.DataFrame(
+            rel_ext_uncertainty = pd.DataFrame(
                 np.sqrt(
                     np.array(
                         t1
@@ -1110,20 +1131,45 @@ class LaserCalc:
                     ).astype(np.float64)
                 )
             )
-            rel_uncertainty.columns = myuncertainties
-            unk_rel_uncertainties_list.append(rel_uncertainty)
+            rel_int_uncertainty = pd.DataFrame(
+                np.sqrt(
+                    np.array(
+                        +t2
+                        + std_conc_stds
+                        + (rse_i_std[np.newaxis, :] / 100) ** 2
+                        + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
+                    ).astype(np.float64)
+                )
+            )
+            rel_ext_uncertainty.columns = [f"{a}_exterr" for a in self.analytes]
+            unk_rel_ext_uncertainties_list.append(rel_ext_uncertainty)
+            rel_int_uncertainty.columns = [f"{a}_interr" for a in self.analytes]
+            unk_rel_int_uncertainties_list.append(rel_int_uncertainty)
 
-        unk_rel_uncertainties = pd.concat(unk_rel_uncertainties_list)
+        unk_rel_ext_uncertainties = pd.concat(unk_rel_ext_uncertainties_list)
+        unk_rel_int_uncertainties = pd.concat(unk_rel_int_uncertainties_list)
 
-        unknown_uncertainties = pd.DataFrame(
-            unk_rel_uncertainties.values
+        unknown_ext_uncertainties = pd.DataFrame(
+            unk_rel_ext_uncertainties.values
             * self.unknown_concentrations.loc[:, self.analytes].values,
-            columns=myuncertainties,
+            columns=[f"{a}_exterr" for a in self.analytes],
+            index=self.unknown_concentrations.index,
+        )
+
+        unknown_int_uncertainties = pd.DataFrame(
+            unk_rel_int_uncertainties.values
+            * self.unknown_concentrations.loc[:, self.analytes].values,
+            columns=[f"{a}_interr" for a in self.analytes],
             index=self.unknown_concentrations.index,
         )
 
         self.unknown_concentrations = pd.concat(
-            [self.unknown_concentrations, unknown_uncertainties], axis="columns"
+            [
+                self.unknown_concentrations,
+                unknown_ext_uncertainties,
+                unknown_int_uncertainties,
+            ],
+            axis="columns",
         )
 
     # make an accuracy checking function
