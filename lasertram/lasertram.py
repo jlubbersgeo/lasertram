@@ -566,7 +566,7 @@ class LaserCalc:
         analytes_nomass = []
         for i in range(len(self.analytes)):
             # strip the atomic number from our analyte data
-            nomass = re.split("(\d+)", self.analytes[i])[2]
+            nomass = re.split(r"(\d+)", self.analytes[i])[2]
             analytes_nomass.append(nomass)
         self.elements = analytes_nomass
 
@@ -633,7 +633,7 @@ class LaserCalc:
                 # x = np.insert(x, 0, 0).astype(np.float64)
 
             else:
-                x = self.calibration_std_data["index"]
+                x = self.calibration_std_data["index"].to_numpy()
 
             y = self.calibration_std_data.loc[:, self.analytes[j]].astype("float64")
 
@@ -702,7 +702,7 @@ class LaserCalc:
 
         for i in range(len(self.analytes)):
             # strip the atomic number from our analyte data
-            nomass = re.split("(\d+)", self.analytes[i])[2]
+            nomass = re.split(r"(\d+)", self.analytes[i])[2]
             # make it a list
             myanalytes_nomass.append(nomass)
 
@@ -713,7 +713,7 @@ class LaserCalc:
                     / self.standards_data.loc[
                         self.calibration_std,
                         re.split(
-                            "(\d+)", self.calibration_std_data["norm"].unique()[0]
+                            r"(\d+)", self.calibration_std_data["norm"].unique()[0]
                         )[2],
                     ]
                 )
@@ -776,7 +776,7 @@ class LaserCalc:
             Cn_u = self.standards_data.loc[
                 sample,
                 re.split(
-                    "(\d+)",
+                    r"(\d+)",
                     self.calibration_std_data["norm"].unique()[0],
                 )[2],
             ]
@@ -996,7 +996,7 @@ class LaserCalc:
         for sample in self.secondary_standards:
             # concentration of internal standard in unknown uncertainties
             int_std_element = re.split(
-                "(\d+)", self.calibration_std_data["norm"].unique()[0]
+                r"(\d+)", self.calibration_std_data["norm"].unique()[0]
             )[2]
             t1 = (
                 self.standards_data.loc[sample, f"{int_std_element}_std"]
@@ -1013,7 +1013,7 @@ class LaserCalc:
             std_conc_stds = []
             for i in range(len(self.analytes)):
                 # strip the atomic number from our analyte data
-                nomass = re.split("(\d+)", self.analytes[i])[2]
+                nomass = re.split(r"(\d+)", self.analytes[i])[2]
 
                 # if our element is in the list of standard elements take the ratio
                 if nomass in self.standard_elements:
@@ -1084,7 +1084,7 @@ class LaserCalc:
         for sample in self.samples_nostandards:
             # concentration of internal standard in unknown uncertainties
             int_std_element = re.split(
-                "(\d+)", self.calibration_std_data["norm"].unique()[0]
+                r"(\d+)", self.calibration_std_data["norm"].unique()[0]
             )[2]
             # concentration of internal standard in unknown uncertainties
             t1 = (self.data.loc[sample, "internal_std_rel_unc"] / 100) ** 2
@@ -1101,7 +1101,7 @@ class LaserCalc:
             std_conc_stds = []
             for i in range(len(self.analytes)):
                 # strip the atomic number from our analyte data
-                nomass = re.split("(\d+)", self.analytes[i])[2]
+                nomass = re.split(r"(\d+)", self.analytes[i])[2]
 
                 # if our element is in the list of standard elements take the ratio
                 if nomass in self.standard_elements:
@@ -1184,7 +1184,7 @@ class LaserCalc:
         df_list = []
 
         nomass = [
-            re.split("(\d+)", self.analytes[i])[2] for i in range(len(self.analytes))
+            re.split(r"(\d+)", self.analytes[i])[2] for i in range(len(self.analytes))
         ]
 
         for standard in self.secondary_standards:

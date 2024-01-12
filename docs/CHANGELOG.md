@@ -26,6 +26,17 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v0.0.11 (1/12/2024)
+
+### :bug: Bug Fixes
+
+- Fixed issue in `drift_check()` where data do not have a timestamp and the index of analysis was being treated as a pandas Series. It is now a numpy array for consistency and better compatibility with the statsmodels package.
+- Updated analyte indexing for regex deprecation warning related to string literals.
+
+### :books: Documentation
+
+- Updated Basic Usage page to reflect new uncertainty output implemented in `v0.0.10`
+
 ## v0.0.10 (1/11/2024)
 
 ### :sparkles: Features
