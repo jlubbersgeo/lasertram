@@ -26,6 +26,12 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v0.0.12 (1/12/2024)
+
+### :bug: Bug Fixes
+
+- Fixed issue with `calculate_uncertainties()` internal error calculation dropping the wrong terms
+
 ## v0.0.11 (1/12/2024)
 
 ### :bug: Bug Fixes

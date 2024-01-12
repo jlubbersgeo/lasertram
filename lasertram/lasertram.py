@@ -1046,8 +1046,9 @@ class LaserCalc:
             rel_int_uncertainty = pd.DataFrame(
                 np.sqrt(
                     np.array(
-                        +t2
-                        + std_conc_stds
+                        t1
+                        # +t2
+                        # + std_conc_stds
                         + (rse_i_std[np.newaxis, :] / 100) ** 2
                         + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
                     ).astype(np.float64)
@@ -1134,8 +1135,9 @@ class LaserCalc:
             rel_int_uncertainty = pd.DataFrame(
                 np.sqrt(
                     np.array(
-                        +t2
-                        + std_conc_stds
+                        t1
+                        # +t2
+                        # + std_conc_stds
                         + (rse_i_std[np.newaxis, :] / 100) ** 2
                         + (self.data.loc[sample, myuncertainties].to_numpy() / 100) ** 2
                     ).astype(np.float64)
