@@ -1727,7 +1727,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
         <span class="n">analytes_nomass</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)):</span>
             <span class="c1"># strip the atomic number from our analyte data</span>
-            <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
             <span class="n">analytes_nomass</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nomass</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">analytes_nomass</span>
 
@@ -1794,7 +1794,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
                 <span class="c1"># x = np.insert(x, 0, 0).astype(np.float64)</span>
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 
             <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
 
@@ -1863,7 +1863,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)):</span>
             <span class="c1"># strip the atomic number from our analyte data</span>
-            <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
             <span class="c1"># make it a list</span>
             <span class="n">myanalytes_nomass</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nomass</span><span class="p">)</span>
 
@@ -1874,7 +1874,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
                     <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">standards_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std</span><span class="p">,</span>
                         <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
-                            <span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
                         <span class="p">)[</span><span class="mi">2</span><span class="p">],</span>
                     <span class="p">]</span>
                 <span class="p">)</span>
@@ -1937,7 +1937,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
             <span class="n">Cn_u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">standards_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="n">sample</span><span class="p">,</span>
                 <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
-                    <span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span>
+                    <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="p">)[</span><span class="mi">2</span><span class="p">],</span>
             <span class="p">]</span>
@@ -2157,7 +2157,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
         <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_standards</span><span class="p">:</span>
             <span class="c1"># concentration of internal standard in unknown uncertainties</span>
             <span class="n">int_std_element</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
-                <span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
             <span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
             <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">standards_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">int_std_element</span><span class="si">}</span><span class="s2">_std&quot;</span><span class="p">]</span>
@@ -2174,7 +2174,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
             <span class="n">std_conc_stds</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)):</span>
                 <span class="c1"># strip the atomic number from our analyte data</span>
-                <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
 
                 <span class="c1"># if our element is in the list of standard elements take the ratio</span>
                 <span class="k">if</span> <span class="n">nomass</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_elements</span><span class="p">:</span>
@@ -2245,7 +2245,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
         <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_nostandards</span><span class="p">:</span>
             <span class="c1"># concentration of internal standard in unknown uncertainties</span>
             <span class="n">int_std_element</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
-                <span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
             <span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
             <span class="c1"># concentration of internal standard in unknown uncertainties</span>
             <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
@@ -2262,7 +2262,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
             <span class="n">std_conc_stds</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)):</span>
                 <span class="c1"># strip the atomic number from our analyte data</span>
-                <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
 
                 <span class="c1"># if our element is in the list of standard elements take the ratio</span>
                 <span class="k">if</span> <span class="n">nomass</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_elements</span><span class="p">:</span>
@@ -2345,7 +2345,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
         <span class="n">df_list</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="n">nomass</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">))</span>
+            <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">))</span>
         <span class="p">]</span>
 
         <span class="k">for</span> <span class="n">standard</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_standards</span><span class="p">:</span>
@@ -2695,7 +2695,7 @@ concentrations/uncertainties.</p>
         <span class="n">Cn_u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">standards_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">sample</span><span class="p">,</span>
             <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
-                <span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
             <span class="p">)[</span><span class="mi">2</span><span class="p">],</span>
         <span class="p">]</span>
@@ -3143,7 +3143,7 @@ concentrations/uncertainties.</p>
     <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_standards</span><span class="p">:</span>
         <span class="c1"># concentration of internal standard in unknown uncertainties</span>
         <span class="n">int_std_element</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
-            <span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">standards_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">int_std_element</span><span class="si">}</span><span class="s2">_std&quot;</span><span class="p">]</span>
@@ -3160,7 +3160,7 @@ concentrations/uncertainties.</p>
         <span class="n">std_conc_stds</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)):</span>
             <span class="c1"># strip the atomic number from our analyte data</span>
-            <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
 
             <span class="c1"># if our element is in the list of standard elements take the ratio</span>
             <span class="k">if</span> <span class="n">nomass</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_elements</span><span class="p">:</span>
@@ -3231,7 +3231,7 @@ concentrations/uncertainties.</p>
     <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_nostandards</span><span class="p">:</span>
         <span class="c1"># concentration of internal standard in unknown uncertainties</span>
         <span class="n">int_std_element</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
-            <span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
         <span class="c1"># concentration of internal standard in unknown uncertainties</span>
         <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
@@ -3248,7 +3248,7 @@ concentrations/uncertainties.</p>
         <span class="n">std_conc_stds</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)):</span>
             <span class="c1"># strip the atomic number from our analyte data</span>
-            <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
 
             <span class="c1"># if our element is in the list of standard elements take the ratio</span>
             <span class="k">if</span> <span class="n">nomass</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_elements</span><span class="p">:</span>
@@ -3477,7 +3477,7 @@ correct treatment in <code>calculate_concentrations</code></p>
             <span class="c1"># x = np.insert(x, 0, 0).astype(np.float64)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
 
@@ -3702,7 +3702,7 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)):</span>
         <span class="c1"># strip the atomic number from our analyte data</span>
-        <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
         <span class="c1"># make it a list</span>
         <span class="n">myanalytes_nomass</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nomass</span><span class="p">)</span>
 
@@ -3713,7 +3713,7 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
                 <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">standards_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std</span><span class="p">,</span>
                     <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
-                        <span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="p">)[</span><span class="mi">2</span><span class="p">],</span>
                 <span class="p">]</span>
             <span class="p">)</span>
@@ -3917,7 +3917,7 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
     <span class="n">analytes_nomass</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)):</span>
         <span class="c1"># strip the atomic number from our analyte data</span>
-        <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">nomass</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">analytes_nomass</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nomass</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">analytes_nomass</span>
 </code></pre></div></td></tr></table></div>
@@ -3988,7 +3988,7 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
     <span class="n">df_list</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="n">nomass</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">))</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">))</span>
     <span class="p">]</span>
 
     <span class="k">for</span> <span class="n">standard</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_standards</span><span class="p">:</span>
