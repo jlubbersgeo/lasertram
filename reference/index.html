@@ -1594,7 +1594,9 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
 <span class="normal">1207</span>
 <span class="normal">1208</span>
 <span class="normal">1209</span>
-<span class="normal">1210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LaserCalc</span><span class="p">:</span>
+<span class="normal">1210</span>
+<span class="normal">1211</span>
+<span class="normal">1212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LaserCalc</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    # LaserCalc</span>
 
@@ -2207,8 +2209,9 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
             <span class="n">rel_int_uncertainty</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
                     <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                        <span class="o">+</span><span class="n">t2</span>
-                        <span class="o">+</span> <span class="n">std_conc_stds</span>
+                        <span class="n">t1</span>
+                        <span class="c1"># +t2</span>
+                        <span class="c1"># + std_conc_stds</span>
                         <span class="o">+</span> <span class="p">(</span><span class="n">rse_i_std</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
                         <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="n">myuncertainties</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
                     <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
@@ -2295,8 +2298,9 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
             <span class="n">rel_int_uncertainty</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
                     <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                        <span class="o">+</span><span class="n">t2</span>
-                        <span class="o">+</span> <span class="n">std_conc_stds</span>
+                        <span class="n">t1</span>
+                        <span class="c1"># +t2</span>
+                        <span class="c1"># + std_conc_stds</span>
                         <span class="o">+</span> <span class="p">(</span><span class="n">rse_i_std</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
                         <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="n">myuncertainties</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
                     <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
@@ -3112,7 +3116,9 @@ concentrations/uncertainties.</p>
 <span class="normal">1170</span>
 <span class="normal">1171</span>
 <span class="normal">1172</span>
-<span class="normal">1173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_uncertainties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">1173</span>
+<span class="normal">1174</span>
+<span class="normal">1175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_uncertainties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the uncertainties for each analysis.</span>
 
@@ -3193,8 +3199,9 @@ concentrations/uncertainties.</p>
         <span class="n">rel_int_uncertainty</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                    <span class="o">+</span><span class="n">t2</span>
-                    <span class="o">+</span> <span class="n">std_conc_stds</span>
+                    <span class="n">t1</span>
+                    <span class="c1"># +t2</span>
+                    <span class="c1"># + std_conc_stds</span>
                     <span class="o">+</span> <span class="p">(</span><span class="n">rse_i_std</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
                     <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="n">myuncertainties</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
@@ -3281,8 +3288,9 @@ concentrations/uncertainties.</p>
         <span class="n">rel_int_uncertainty</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                    <span class="o">+</span><span class="n">t2</span>
-                    <span class="o">+</span> <span class="n">std_conc_stds</span>
+                    <span class="n">t1</span>
+                    <span class="c1"># +t2</span>
+                    <span class="c1"># + std_conc_stds</span>
                     <span class="o">+</span> <span class="p">(</span><span class="n">rse_i_std</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
                     <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="n">myuncertainties</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
@@ -3945,9 +3953,7 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
 
           <details class="quote">
             <summary>Source code in <code>lasertram\lasertram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1177</span>
-<span class="normal">1178</span>
-<span class="normal">1179</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1179</span>
 <span class="normal">1180</span>
 <span class="normal">1181</span>
 <span class="normal">1182</span>
@@ -3978,7 +3984,9 @@ names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp</p
 <span class="normal">1207</span>
 <span class="normal">1208</span>
 <span class="normal">1209</span>
-<span class="normal">1210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_secondary_standard_accuracies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">1210</span>
+<span class="normal">1211</span>
+<span class="normal">1212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_secondary_standard_accuracies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    calculate the accuracy of each secondary standard where accuracy is 100 * measured / accepted value</span>
 
