@@ -26,6 +26,12 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v0.0.13 (4/08/2024)
+
+### :bug: Bug Fixes
+
+- Fixed undeclared list instantiation in `LaserTRAM.despike()`.
+
 ## v0.0.12 (1/12/2024)
 
 ### :bug: Bug Fixes

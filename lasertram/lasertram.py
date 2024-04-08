@@ -16,6 +16,7 @@
     jlubbers@usgs.gov
 
 """
+
 import re
 
 import mendeleev
@@ -309,6 +310,7 @@ class LaserTRAM:
                 filter_list = analyte_list
 
         self.despiked_elements = filter_list
+        despiked = []
         for analyte in filter_list:
             despiked.append(despike_signal(self.data, analyte))
 
