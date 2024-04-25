@@ -28,7 +28,7 @@ Current and past maintainers of `lasertram`:
 
 ## v0.1.0 (4/25/2024)
 
-### :style: :improvement: Style Improvement
+### :art: :tada: :mega: Code structure change
 
 A re-organization of the package structure was completed to set up for further growth. This has created the following modules for `lasertram`: 
 
