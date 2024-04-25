@@ -26,6 +26,43 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v0.1.0 (4/25/2024)
+
+### :style: :improvement: Style Improvement
+
+A re-organization of the package structure was completed to set up for further growth. This has created the following modules for `lasertram`: 
+
+  - `tram`: holds the class 'LaserTRAM`
+  - `calc`: holds the class `LaserCalc`
+  - `helpers`: holds the submodules `batch` and `conversions`, for batch processing and unit conversions, respectively. 
+  - 
+An example folder structure for this is as follows: 
+
+
+```
+└── 📁lasertram
+    └── 📁calc
+        └── calc.py
+        └── __init__.py
+    └── 📁helpers
+        └── batch.py
+        └── conversions.py
+        └── __init__.py
+    └── 📁tram
+        └── tram.py
+        └── __init__.py
+    └── __init__.py
+```
+The only real effect on the user is the change in import statements to now be the following:
+```python
+from lasertram import LaserTRAM, LaserCalc, batch
+```
+or to import an entire module:
+```python
+from from lasertram.helpers import batch, conversions
+
+```
+
 ## v0.0.13 (4/08/2024)
 
 ### :bug: Bug Fixes

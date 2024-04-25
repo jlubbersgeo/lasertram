@@ -1,12 +1,12 @@
 """
 various tests for the package lasertram
 """
+
 import numpy as np
 import pandas as pd
 import pytest
 
-from lasertram import lasertram as lt
-from lasertram.lasertram import LaserCalc, LaserTRAM
+from lasertram import LaserCalc, LaserTRAM, batch, conversions
 
 ###########LASERTRAM UNIT TESTS##############
 spreadsheet_path = r"tests\spot_test_timestamp_raw_data.xlsx"
@@ -82,7 +82,6 @@ def test_get_bkgd_data(load_data):
     """
     test that background signal is being assigned properly
     """
-
     spot = LaserTRAM(name="test")
 
     samples = load_data.index.unique().dropna().tolist()
@@ -212,10 +211,10 @@ def test_normalize_interval(load_data):
     spot.subtract_bkgd()
     spot.get_detection_limits()
     spot.normalize_interval()
-    assert spot.bkgd_subtract_normal_data.shape[0] == (
-        spot.int_stop_idx - spot.int_start_idx
-    ) - (
-        spot.omit_stop_idx - spot.omit_start_idx
+    assert (
+        spot.bkgd_subtract_normal_data.shape[0]
+        == (spot.int_stop_idx - spot.int_start_idx)
+        - (spot.omit_stop_idx - spot.omit_start_idx)
     ), "background subtracted and normalized data is not the right shape. Likely a region omission problem"
 
     assert np.allclose(
@@ -356,7 +355,7 @@ def test_process_spot(load_data):
     spot.make_output_report()
 
     spot2 = LaserTRAM(name="test")
-    lt.process_spot(
+    batch.process_spot(
         spot2,
         raw_data=load_data.loc[samples[0], :],
         bkgd=bkgd_interval,
@@ -381,7 +380,7 @@ def test_oxide_to_ppm():
 
     result = {}
     for analyte, oxide in zip(analytes, oxide_vals):
-        result[analyte] = lt.oxide_to_ppm(oxide, analyte)
+        result[analyte] = conversions.oxide_to_ppm(oxide, analyte)
 
     expected = {
         "29Si": 303833.8631559676,
@@ -662,9 +661,12 @@ def test_drift_check(load_SRM_data, load_LTcomplete_data):
         }
     )
     test_ses.name = "drift_correct"
-    pd.testing.assert_series_equal(
-        test_ses, concentrations.calibration_std_stats["drift_correct"]
-    ), "analytes not being drift corrected properly"
+    (
+        pd.testing.assert_series_equal(
+            test_ses, concentrations.calibration_std_stats["drift_correct"]
+        ),
+        "analytes not being drift corrected properly",
+    )
 
 
 def test_get_calibration_std_ratios(load_SRM_data, load_LTcomplete_data):
