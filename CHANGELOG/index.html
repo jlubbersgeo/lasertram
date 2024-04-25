@@ -308,6 +308,26 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#v010-4252024" class="md-nav__link">
+    v0.1.0 (4/25/2024)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.0 (4/25/2024)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#code-structure-change" class="md-nav__link">
+    Code structure change
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v0013-4082024" class="md-nav__link">
     v0.0.13 (4/08/2024)
   </a>
@@ -538,6 +558,26 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#v010-4252024" class="md-nav__link">
+    v0.1.0 (4/25/2024)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.0 (4/25/2024)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#code-structure-change" class="md-nav__link">
+    Code structure change
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v0013-4082024" class="md-nav__link">
     v0.0.13 (4/08/2024)
   </a>
@@ -750,6 +790,35 @@
 <ul>
 <li><a href="https://github.com/jlubbersgeo">@jlubbersgeo</a></li>
 </ul>
+<h2 id="v010-4252024">v0.1.0 (4/25/2024)</h2>
+<h3 id="code-structure-change"><img alt="🎨" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f3a8.svg" title=":art:" /> <img alt="🎉" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f389.svg" title=":tada:" /> <img alt="📣" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f4e3.svg" title=":mega:" /> Code structure change</h3>
+<p>A re-organization of the package structure was completed to set up for further growth. This has created the following modules for <code>lasertram</code>: </p>
+<ul>
+<li><code>tram</code>: holds the class 'LaserTRAM`</li>
+<li><code>calc</code>: holds the class <code>LaserCalc</code></li>
+<li><code>helpers</code>: holds the submodules <code>batch</code> and <code>conversions</code>, for batch processing and unit conversions, respectively. </li>
+<li>An example folder structure for this is as follows: </li>
+</ul>
+<pre><code>└── 📁lasertram
+    └── 📁calc
+        └── calc.py
+        └── __init__.py
+    └── 📁helpers
+        └── batch.py
+        └── conversions.py
+        └── __init__.py
+    └── 📁tram
+        └── tram.py
+        └── __init__.py
+    └── __init__.py
+</code></pre>
+<p>The only real effect on the user is the change in import statements to now be the following:</p>
+<pre><code class="language-python">from lasertram import LaserTRAM, LaserCalc, batch
+</code></pre>
+<p>or to import an entire module:</p>
+<pre><code class="language-python">from from lasertram.helpers import batch, conversions
+
+</code></pre>
 <h2 id="v0013-4082024">v0.0.13 (4/08/2024)</h2>
 <h3 id="bug-fixes"><img alt="🐛" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f41b.svg" title=":bug:" /> Bug Fixes</h3>
 <ul>
