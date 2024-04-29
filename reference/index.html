@@ -434,8 +434,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lasertram.calc.LaserCalc.set_internal_standard_concentrations" class="md-nav__link">
-    set_internal_standard_concentrations()
+  <a href="#lasertram.calc.LaserCalc.set_int_std_concentrations" class="md-nav__link">
+    set_int_std_concentrations()
   </a>
   
 </li>
@@ -681,8 +681,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lasertram.calc.LaserCalc.set_internal_standard_concentrations" class="md-nav__link">
-    set_internal_standard_concentrations()
+  <a href="#lasertram.calc.LaserCalc.set_int_std_concentrations" class="md-nav__link">
+    set_int_std_concentrations()
   </a>
   
 </li>
@@ -3452,7 +3452,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
         <span class="c1"># std_conc_ratios = pd.DataFrame(np.array(std_conc_ratios)[np.newaxis,:],columns = myanalytes)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_conc_ratios</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">std_conc_ratios</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">set_internal_standard_concentrations</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">set_int_std_concentrations</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">spots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">concentrations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3475,18 +3475,18 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
             <span class="n">concentrations</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Spot&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">),)</span>
             <span class="n">uncertainties</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Spot&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">),)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;internal_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;int_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Spot&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">spot</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">uncertainty</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
             <span class="n">spots</span><span class="p">,</span> <span class="n">concentrations</span><span class="p">,</span> <span class="n">uncertainties</span>
         <span class="p">):</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">spot</span><span class="p">,</span> <span class="s2">&quot;internal_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">concentration</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">spot</span><span class="p">,</span> <span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uncertainty</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">spot</span><span class="p">,</span> <span class="s2">&quot;int_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">concentration</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">spot</span><span class="p">,</span> <span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uncertainty</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;internal_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;internal_std_comp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;int_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;int_std_comp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">calculate_concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3580,7 +3580,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
         <span class="c1">###############################</span>
         <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_nostandards</span><span class="p">:</span>
             <span class="n">Cn_u</span> <span class="o">=</span> <span class="n">conversions</span><span class="o">.</span><span class="n">oxide_to_ppm</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;internal_std_comp&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;int_std_comp&quot;</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
             <span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
             <span class="n">Cin_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_conc_ratios</span>
@@ -3818,7 +3818,7 @@ with the output from <code>LaserTRAM</code> class. The basic steps are as follow
                 <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
             <span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
             <span class="c1"># concentration of internal standard in unknown uncertainties</span>
-            <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
             <span class="n">t1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t1</span><span class="p">)</span>
             <span class="n">t1</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
 
@@ -4340,7 +4340,7 @@ concentrations/uncertainties.</p>
     <span class="c1">###############################</span>
     <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_nostandards</span><span class="p">:</span>
         <span class="n">Cn_u</span> <span class="o">=</span> <span class="n">conversions</span><span class="o">.</span><span class="n">oxide_to_ppm</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;internal_std_comp&quot;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;int_std_comp&quot;</span><span class="p">],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
         <span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
         <span class="n">Cin_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_conc_ratios</span>
@@ -4808,7 +4808,7 @@ concentrations/uncertainties.</p>
             <span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibration_std_data</span><span class="p">[</span><span class="s2">&quot;norm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
         <span class="c1"># concentration of internal standard in unknown uncertainties</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sample</span><span class="p">,</span> <span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
         <span class="n">t1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t1</span><span class="p">)</span>
         <span class="n">t1</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
 
@@ -5701,8 +5701,8 @@ standard for calculating concentrations.</p>
 
 
 
-<h2 id="lasertram.calc.LaserCalc.set_internal_standard_concentrations" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">set_internal_standard_concentrations</span><span class="p">(</span><span class="n">spots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">concentrations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uncertainties</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h2 id="lasertram.calc.LaserCalc.set_int_std_concentrations" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">set_int_std_concentrations</span><span class="p">(</span><span class="n">spots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">concentrations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uncertainties</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -5808,7 +5808,7 @@ in the calculated concentration.</p>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
-<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_internal_standard_concentrations</span><span class="p">(</span>
+<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_int_std_concentrations</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">spots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">concentrations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -5831,18 +5831,18 @@ in the calculated concentration.</p>
         <span class="n">concentrations</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Spot&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">),)</span>
         <span class="n">uncertainties</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Spot&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">),)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;internal_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.0</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;int_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Spot&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">spot</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">uncertainty</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
         <span class="n">spots</span><span class="p">,</span> <span class="n">concentrations</span><span class="p">,</span> <span class="n">uncertainties</span>
     <span class="p">):</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">spot</span><span class="p">,</span> <span class="s2">&quot;internal_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">concentration</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">spot</span><span class="p">,</span> <span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uncertainty</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">spot</span><span class="p">,</span> <span class="s2">&quot;int_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">concentration</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">spot</span><span class="p">,</span> <span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uncertainty</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;internal_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;internal_std_comp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;internal_std_rel_unc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;int_std_comp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;int_std_comp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;int_std_rel_unc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
@@ -5886,7 +5886,7 @@ For batch processing operations in laserTRAM</p>
 
 
 <h2 id="lasertram.helpers.batch.process_spot" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">process_spot</span><span class="p">(</span><span class="n">spot</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">,</span> <span class="n">bkgd</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">internal_std</span><span class="p">,</span> <span class="n">omit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">despike</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_report</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+          <code class="highlight language-python"><span class="n">process_spot</span><span class="p">(</span><span class="n">spot</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">,</span> <span class="n">bkgd</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">int_std</span><span class="p">,</span> <span class="n">omit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">despike</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_report</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 </h2>
 
@@ -6076,7 +6076,7 @@ so a spot can be processed in an efficient and compact way.</p>
     <span class="n">raw_data</span><span class="p">,</span>
     <span class="n">bkgd</span><span class="p">,</span>
     <span class="n">keep</span><span class="p">,</span>
-    <span class="n">internal_std</span><span class="p">,</span>
+    <span class="n">int_std</span><span class="p">,</span>
     <span class="n">omit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">despike</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">output_report</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -6102,7 +6102,7 @@ so a spot can be processed in an efficient and compact way.</p>
     <span class="k">if</span> <span class="n">despike</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">spot</span><span class="o">.</span><span class="n">despike_data</span><span class="p">(</span><span class="n">analyte_list</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
     <span class="c1"># assign the internal standard analyte</span>
-    <span class="n">spot</span><span class="o">.</span><span class="n">assign_int_std</span><span class="p">(</span><span class="n">internal_std</span><span class="p">)</span>
+    <span class="n">spot</span><span class="o">.</span><span class="n">assign_int_std</span><span class="p">(</span><span class="n">int_std</span><span class="p">)</span>
     <span class="c1"># assign intervals for background and ablation signal</span>
     <span class="n">spot</span><span class="o">.</span><span class="n">assign_intervals</span><span class="p">(</span><span class="n">bkgd</span><span class="o">=</span><span class="n">bkgd</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="n">keep</span><span class="p">,</span> <span class="n">omit</span><span class="o">=</span><span class="n">omit</span><span class="p">)</span>
     <span class="c1"># assign and save the median background values</span>

@@ -308,6 +308,33 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#v011-4292024" class="md-nav__link">
+    v0.1.1 (4/29/2024)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.1 (4/29/2024)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v010-4252024" class="md-nav__link">
     v0.1.0 (4/25/2024)
   </a>
@@ -383,7 +410,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#documentation" class="md-nav__link">
+  <a href="#documentation_1" class="md-nav__link">
     Documentation
   </a>
   
@@ -457,7 +484,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#documentation_1" class="md-nav__link">
+  <a href="#documentation_2" class="md-nav__link">
     Documentation
   </a>
   
@@ -491,7 +518,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#documentation_2" class="md-nav__link">
+  <a href="#documentation_3" class="md-nav__link">
     Documentation
   </a>
   
@@ -558,6 +585,33 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#v011-4292024" class="md-nav__link">
+    v0.1.1 (4/29/2024)
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.1.1 (4/29/2024)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v010-4252024" class="md-nav__link">
     v0.1.0 (4/25/2024)
   </a>
@@ -633,7 +687,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#documentation" class="md-nav__link">
+  <a href="#documentation_1" class="md-nav__link">
     Documentation
   </a>
   
@@ -707,7 +761,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#documentation_1" class="md-nav__link">
+  <a href="#documentation_2" class="md-nav__link">
     Documentation
   </a>
   
@@ -741,7 +795,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#documentation_2" class="md-nav__link">
+  <a href="#documentation_3" class="md-nav__link">
     Documentation
   </a>
   
@@ -790,6 +844,17 @@
 <ul>
 <li><a href="https://github.com/jlubbersgeo">@jlubbersgeo</a></li>
 </ul>
+<h2 id="v011-4292024">v0.1.1 (4/29/2024)</h2>
+<h3 id="documentation"><img alt="📚" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f4da.svg" title=":books:" /> Documentation</h3>
+<ul>
+<li>added <code>lasertram.__version__</code></li>
+</ul>
+<h3 id="_1"><img alt="🎉" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f389.svg" title=":tada:" /></h3>
+<ul>
+<li>changed naming of all functions that refer to standards for consistency</li>
+<li>Any attribute or method that references an internal standard uses <code>int_std</code></li>
+<li>Any attribute or method that references the calibration standard uses <code>calibration_std</code></li>
+</ul>
 <h2 id="v010-4252024">v0.1.0 (4/25/2024)</h2>
 <h3 id="code-structure-change"><img alt="🎨" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f3a8.svg" title=":art:" /> <img alt="🎉" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f389.svg" title=":tada:" /> <img alt="📣" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f4e3.svg" title=":mega:" /> Code structure change</h3>
 <p>A re-organization of the package structure was completed to set up for further growth. This has created the following modules for <code>lasertram</code>: </p>
@@ -797,8 +862,8 @@
 <li><code>tram</code>: holds the class 'LaserTRAM`</li>
 <li><code>calc</code>: holds the class <code>LaserCalc</code></li>
 <li><code>helpers</code>: holds the submodules <code>batch</code> and <code>conversions</code>, for batch processing and unit conversions, respectively. </li>
-<li>An example folder structure for this is as follows: </li>
 </ul>
+<p>An example folder structure for this is as follows: </p>
 <pre><code>└── 📁lasertram
     └── 📁calc
         └── calc.py
@@ -835,7 +900,7 @@
 <li>Fixed issue in <code>drift_check()</code> where data do not have a timestamp and the index of analysis was being treated as a pandas Series. It is now a numpy array for consistency and better compatibility with the statsmodels package.</li>
 <li>Updated analyte indexing for regex deprecation warning related to string literals.</li>
 </ul>
-<h3 id="documentation"><img alt="📚" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f4da.svg" title=":books:" /> Documentation</h3>
+<h3 id="documentation_1"><img alt="📚" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f4da.svg" title=":books:" /> Documentation</h3>
 <ul>
 <li>Updated Basic Usage page to reflect new uncertainty output implemented in <code>v0.0.10</code></li>
 </ul>
@@ -863,7 +928,7 @@
 <li>Future proofed output report for deprecated pandas indexing. Now properly uses <code>.iloc</code></li>
 <li>Fixed interval <code>dtype</code> inconsistencies so they are all type <code>float64</code> rather than <code>object</code></li>
 </ul>
-<h3 id="documentation_1"><img alt="📚" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f4da.svg" title=":books:" /> Documentation</h3>
+<h3 id="documentation_2"><img alt="📚" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f4da.svg" title=":books:" /> Documentation</h3>
 <ul>
 <li>Added general motivation to documentation landing page</li>
 </ul>
@@ -876,7 +941,7 @@
 <ul>
 <li>Fixed <code>omitted_region</code> being counted as experiment analyte</li>
 </ul>
-<h3 id="documentation_2"><img alt="📚" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f4da.svg" title=":books:" /> Documentation</h3>
+<h3 id="documentation_3"><img alt="📚" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f4da.svg" title=":books:" /> Documentation</h3>
 <ul>
 <li>fixed filepath issues and typos in Basic Useage tutorial</li>
 <li>moved all test data to <code>test_data</code> folder</li>
