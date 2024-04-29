@@ -361,7 +361,7 @@ def test_process_spot(load_data):
         bkgd=bkgd_interval,
         keep=keep_interval,
         omit=omit_interval,
-        internal_std="29Si",
+        int_std="29Si",
         despike=False,
         output_report=True,
     )
@@ -704,7 +704,7 @@ def test_get_calibration_std_ratios(load_SRM_data, load_LTcomplete_data):
     ), "calibration standard concentration ratios are not correct, check again"
 
 
-def test_set_internal_standard_concentrations(load_SRM_data, load_LTcomplete_data):
+def test_set_int_std_concentrations(load_SRM_data, load_LTcomplete_data):
     """
     test to make sure concentration of the internal standard is being set correctly
     """
@@ -715,18 +715,18 @@ def test_set_internal_standard_concentrations(load_SRM_data, load_LTcomplete_dat
     concentrations.set_calibration_standard("BCR-2G")
     concentrations.drift_check()
     concentrations.get_calibration_std_ratios()
-    concentrations.set_internal_standard_concentrations(
+    concentrations.set_int_std_concentrations(
         concentrations.data["Spot"],
         np.full(concentrations.data["Spot"].shape[0], 71.9),
         np.full(concentrations.data["Spot"].shape[0], 1),
     )
 
     assert np.allclose(
-        concentrations.data.loc["unknown", "internal_std_comp"].values,
+        concentrations.data.loc["unknown", "int_std_comp"].values,
         np.array([71.9, 71.9, 71.9, 71.9, 71.9]),
     ), "internal standard concentrations for unknowns not set properly"
     assert np.allclose(
-        concentrations.data.loc["unknown", "internal_std_rel_unc"].values,
+        concentrations.data.loc["unknown", "int_std_rel_unc"].values,
         np.array([1.0, 1.0, 1.0, 1.0, 1.0]),
     ), "internal standard concentration uncertainties for unknowns not set properly"
 
@@ -742,7 +742,7 @@ def test_calculate_concentrations(load_SRM_data, load_LTcomplete_data):
     concentrations.set_calibration_standard("BCR-2G")
     concentrations.drift_check()
     concentrations.get_calibration_std_ratios()
-    concentrations.set_internal_standard_concentrations(
+    concentrations.set_int_std_concentrations(
         concentrations.data["Spot"],
         np.full(concentrations.data["Spot"].shape[0], 71.9),
         np.full(concentrations.data["Spot"].shape[0], 1),

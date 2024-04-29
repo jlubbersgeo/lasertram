@@ -9,7 +9,7 @@ def process_spot(
     raw_data,
     bkgd,
     keep,
-    internal_std,
+    int_std,
     omit=None,
     despike=False,
     output_report=True,
@@ -35,7 +35,7 @@ def process_spot(
     if despike is True:
         spot.despike_data(analyte_list="all")
     # assign the internal standard analyte
-    spot.assign_int_std(internal_std)
+    spot.assign_int_std(int_std)
     # assign intervals for background and ablation signal
     spot.assign_intervals(bkgd=bkgd, keep=keep, omit=omit)
     # assign and save the median background values

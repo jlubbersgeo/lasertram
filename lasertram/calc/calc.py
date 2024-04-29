@@ -307,7 +307,7 @@ class LaserCalc:
         # std_conc_ratios = pd.DataFrame(np.array(std_conc_ratios)[np.newaxis,:],columns = myanalytes)
         self.calibration_std_conc_ratios = np.array(std_conc_ratios)
 
-    def set_internal_standard_concentrations(
+    def set_int_std_concentrations(
         self,
         spots=None,
         concentrations=None,
@@ -330,18 +330,18 @@ class LaserCalc:
             concentrations = (np.full(self.data["Spot"].shape[0], 10),)
             uncertainties = (np.full(self.data["Spot"].shape[0], 1),)
 
-        self.data["internal_std_comp"] = 10.0
-        self.data["internal_std_rel_unc"] = 1.0
+        self.data["int_std_comp"] = 10.0
+        self.data["int_std_rel_unc"] = 1.0
         df = self.data.reset_index().set_index("Spot")
 
         for spot, concentration, uncertainty in zip(
             spots, concentrations, uncertainties
         ):
-            df.loc[spot, "internal_std_comp"] = concentration
-            df.loc[spot, "internal_std_rel_unc"] = uncertainty
+            df.loc[spot, "int_std_comp"] = concentration
+            df.loc[spot, "int_std_rel_unc"] = uncertainty
 
-        self.data["internal_std_comp"] = df["internal_std_comp"].to_numpy()
-        self.data["internal_std_rel_unc"] = df["internal_std_rel_unc"].to_numpy()
+        self.data["int_std_comp"] = df["int_std_comp"].to_numpy()
+        self.data["int_std_rel_unc"] = df["int_std_rel_unc"].to_numpy()
 
     def calculate_concentrations(self):
         """
@@ -435,7 +435,7 @@ class LaserCalc:
         ###############################
         for sample in self.samples_nostandards:
             Cn_u = conversions.oxide_to_ppm(
-                self.data.loc[sample, "internal_std_comp"],
+                self.data.loc[sample, "int_std_comp"],
                 self.data.loc[sample, "norm"].unique()[0],
             ).to_numpy()
             Cin_std = self.calibration_std_conc_ratios
@@ -673,7 +673,7 @@ class LaserCalc:
                 r"(\d+)", self.calibration_std_data["norm"].unique()[0]
             )[2]
             # concentration of internal standard in unknown uncertainties
-            t1 = (self.data.loc[sample, "internal_std_rel_unc"] / 100) ** 2
+            t1 = (self.data.loc[sample, "int_std_rel_unc"] / 100) ** 2
             t1 = np.array(t1)
             t1 = t1[:, np.newaxis]
 

@@ -26,16 +26,28 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v0.1.1 (4/29/2024)
+
+### :books: Documentation
+
+- added `lasertram.__version__`
+
+### :tada:
+
+- changed naming of all functions that refer to standards for consistency
+  - Any attribute or method that references an internal standard uses `int_std`
+  - Any attribute or method that references the calibration standard uses `calibration_std`
+
 ## v0.1.0 (4/25/2024)
 
 ### :art: :tada: :mega: Code structure change
 
 A re-organization of the package structure was completed to set up for further growth. This has created the following modules for `lasertram`: 
 
-  - `tram`: holds the class 'LaserTRAM`
-  - `calc`: holds the class `LaserCalc`
-  - `helpers`: holds the submodules `batch` and `conversions`, for batch processing and unit conversions, respectively. 
-  - 
+- `tram`: holds the class 'LaserTRAM`
+- `calc`: holds the class `LaserCalc`
+- `helpers`: holds the submodules `batch` and `conversions`, for batch processing and unit conversions, respectively. 
+  
 An example folder structure for this is as follows: 
 
 
