@@ -190,6 +190,51 @@ def test_get_detection_limits(load_data):
     ), "detection limits not calculated correctly"
 
 
+def test_despike_data(load_data):
+    """
+    test to make sure data are despiked properly
+    """
+
+    spot = LaserTRAM(name="test")
+
+    samples = load_data.index.unique().dropna().tolist()
+
+    spot.get_data(load_data.loc[samples[0], :])
+
+    spot.assign_int_std("29Si")
+
+    bkgd_interval = (5, 10)
+    keep_interval = (20, 50)
+    omit_interval = (30, 35)
+
+    spot.assign_intervals(bkgd=bkgd_interval, keep=keep_interval, omit=omit_interval)
+    spot.get_bkgd_data()
+    spot.get_detection_limits()
+    spot.despike_data()
+
+    assert np.allclose(
+        spot.data_matrix[100],
+        np.array(
+            [
+                1.50457600e01,
+                8.00256082e03,
+                8.59074455e06,
+                3.89750189e07,
+                3.14335647e06,
+                1.11394144e05,
+                1.49526253e07,
+                4.07430164e06,
+                1.15808129e06,
+                2.17770296e06,
+                8.97208417e04,
+                2.42736116e05,
+                7.20207420e03,
+                3.48485091e04,
+            ]
+        ),
+    ), "data not despiked properly"
+
+
 def test_normalize_interval(load_data):
     """
     check that data are being normalized correctly
@@ -1303,4 +1348,112 @@ def test_calculate_concentrations(load_SRM_data, load_LTcomplete_data):
         test_SRM_concentrations,
         concentrations.SRM_concentrations.iloc[[0, 1, 18, 19], :],
         check_index_type=False,
+    )
+
+
+def test_SRM_accuracies(load_SRM_data, load_LTcomplete_data):
+    concentrations = LaserCalc(name="test")
+    concentrations.get_SRM_comps(load_SRM_data)
+    concentrations.get_data(load_LTcomplete_data)
+    concentrations.set_calibration_standard("BCR-2G")
+    concentrations.drift_check()
+    concentrations.get_calibration_std_ratios()
+    concentrations.set_int_std_concentrations(
+        concentrations.data["Spot"],
+        np.full(concentrations.data["Spot"].shape[0], 71.9),
+        np.full(concentrations.data["Spot"].shape[0], 1),
+    )
+    concentrations.calculate_concentrations()
+    concentrations.get_secondary_standard_accuracies()
+
+    test_SRM_accuracies = pd.DataFrame(
+        {
+            "timestamp": [
+                "2021-03-01T22:10:47.999000000",
+                "2021-03-01T22:12:05.000000000",
+                "2021-03-02T02:41:28.000000000",
+                "2021-03-02T02:42:45.999000000",
+            ],
+            "Spot": ["ATHO-G_1", "ATHO-G_2", "BHVO-2G_4", "BHVO-2G_5"],
+            "7Li": [
+                90.2707698781551,
+                90.40056727503291,
+                91.46802760728896,
+                97.2945927279642,
+            ],
+            "24Mg": [
+                93.23275958900813,
+                92.77825774894306,
+                103.18161415638338,
+                103.01753694150116,
+            ],
+            "27Al": [
+                103.10756771923903,
+                102.48851200312427,
+                99.7040383658651,
+                99.45098674583244,
+            ],
+            "29Si": [
+                100.77763624095759,
+                99.7930880605041,
+                105.9608257416244,
+                106.87344282267848,
+            ],
+            "43Ca": [100.0, 100.0, 100.0, 100.0],
+            "48Ti": [
+                101.18478182683648,
+                101.72851950388984,
+                103.24672042436633,
+                102.81441448062434,
+            ],
+            "57Fe": [
+                95.87003025946926,
+                94.96514065655767,
+                100.91422654205039,
+                101.12705638453254,
+            ],
+            "88Sr": [
+                101.94922271980967,
+                101.79345213369966,
+                101.65691193515897,
+                102.53223608014466,
+            ],
+            "138Ba": [
+                100.20043393612958,
+                100.62315209040588,
+                100.72415209391778,
+                100.87285503119428,
+            ],
+            "139La": [
+                102.52598726771596,
+                103.30640634591504,
+                100.55332259697359,
+                99.95834378627933,
+            ],
+            "140Ce": [
+                100.07191920724449,
+                101.58231624812865,
+                99.65017074334447,
+                99.34575547286384,
+            ],
+            "153Eu": [
+                101.18468125418963,
+                102.2406071182077,
+                100.33150971481345,
+                102.23629678402409,
+            ],
+            "208Pb": [
+                99.46689464030175,
+                100.77049884455356,
+                110.39576303999246,
+                114.77739986325912,
+            ],
+        }
+    )
+    test_SRM_accuracies.index = ["ATHO-G", "ATHO-G", "BHVO-2G", "BHVO-2G"]
+    test_SRM_accuracies.index.name = "sample"
+
+    pd.testing.assert_frame_equal(
+        test_SRM_accuracies,
+        concentrations.SRM_accuracies.iloc[[0, 1, 18, 19], :],
     )

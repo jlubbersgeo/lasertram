@@ -26,6 +26,16 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v0.1.2 (5/1/2024)
+
+### :bug: Bug Fixes
+
+- fixed indexing issue in `despike_data`
+
+### :books: Documentation
+
+- added more coverage in tests to now include `get_secondary_standard_accuracies` and `despike_data`
+
 ## v0.1.1 (4/29/2024)
 
 ### :books: Documentation

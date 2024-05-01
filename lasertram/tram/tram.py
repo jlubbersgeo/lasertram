@@ -11,6 +11,8 @@ metadata
 
 """
 
+import warnings
+
 import numpy as np
 import pandas as pd
 
@@ -289,20 +291,30 @@ class LaserTRAM:
 
         self.despiked = True
 
+        # analyte_list = "all"  # currently only supports despiking every element
+
         if analyte_list == "all":
             filter_list = self.analytes
         else:
-            if analyte_list is not type(list):
-                filter_list = [analyte_list]
-            else:
-                filter_list = analyte_list
+            warnings.warn(
+                "single element despiking currently not supported, falling back to 'all'"
+            )
+            # # this
+            # if analyte_list is not type(list):
+            #     filter_list = [analyte_list]
+            # else:
+            #     filter_list = analyte_list
+            filter_list = self.analytes
 
         self.despiked_elements = filter_list
         despiked = []
         for analyte in filter_list:
             despiked.append(despike_signal(self.data, analyte))
 
-        despiked = pd.DataFrame(np.array(despiked).T, columns=self.analytes)
+        despiked = pd.DataFrame(
+            np.array(despiked).T, columns=self.analytes, index=self.data.index
+        )
+        despiked.index.name = self.data.index.name
         despiked.insert(0, "Time", self.data["Time"])
 
         self.data = despiked
