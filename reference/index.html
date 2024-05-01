@@ -749,9 +749,7 @@ to one individual spot analysis.</p>
 
             <details class="quote">
               <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 18</span>
-<span class="normal"> 19</span>
-<span class="normal"> 20</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 20</span>
 <span class="normal"> 21</span>
 <span class="normal"> 22</span>
 <span class="normal"> 23</span>
@@ -1040,7 +1038,19 @@ to one individual spot analysis.</p>
 <span class="normal">306</span>
 <span class="normal">307</span>
 <span class="normal">308</span>
-<span class="normal">309</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LaserTRAM</span><span class="p">:</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LaserTRAM</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    # LaserTRAM</span>
 <span class="sd">    The class `LaserTRAM` which is devoted to the &quot;time resolved analysis&quot;</span>
@@ -1314,20 +1324,30 @@ to one individual spot analysis.</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">despiked</span> <span class="o">=</span> <span class="kc">True</span>
 
+        <span class="c1"># analyte_list = &quot;all&quot;  # currently only supports despiking every element</span>
+
         <span class="k">if</span> <span class="n">analyte_list</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
             <span class="n">filter_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">analyte_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
-                <span class="n">filter_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">analyte_list</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">filter_list</span> <span class="o">=</span> <span class="n">analyte_list</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;single element despiking currently not supported, falling back to &#39;all&#39;&quot;</span>
+            <span class="p">)</span>
+            <span class="c1"># # this</span>
+            <span class="c1"># if analyte_list is not type(list):</span>
+            <span class="c1">#     filter_list = [analyte_list]</span>
+            <span class="c1"># else:</span>
+            <span class="c1">#     filter_list = analyte_list</span>
+            <span class="n">filter_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">despiked_elements</span> <span class="o">=</span> <span class="n">filter_list</span>
         <span class="n">despiked</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">analyte</span> <span class="ow">in</span> <span class="n">filter_list</span><span class="p">:</span>
             <span class="n">despiked</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">despike_signal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">analyte</span><span class="p">))</span>
 
-        <span class="n">despiked</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">despiked</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)</span>
+        <span class="n">despiked</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">despiked</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span>
+        <span class="p">)</span>
+        <span class="n">despiked</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
         <span class="n">despiked</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">despiked</span>
@@ -1394,15 +1414,15 @@ to one individual spot analysis.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Args:</span>
@@ -1466,14 +1486,14 @@ analyte</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
-<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assign_int_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">int_std</span><span class="p">):</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assign_int_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">int_std</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;assigns the spot an internal standard</span>
 <span class="sd">    analyte</span>
 
@@ -1565,9 +1585,7 @@ be used in calculating concentrations</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
@@ -1598,7 +1616,9 @@ be used in calculating concentrations</p>
 <span class="normal">93</span>
 <span class="normal">94</span>
 <span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assign_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bkgd</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">omit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">assign_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bkgd</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">omit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;assigns the intervals to be used as background</span>
 <span class="sd">    as well as the portion of the ablation interval to</span>
 <span class="sd">    be used in calculating concentrations</span>
@@ -1687,9 +1707,7 @@ analytes.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
@@ -1752,7 +1770,19 @@ analytes.</p>
 <span class="normal">306</span>
 <span class="normal">307</span>
 <span class="normal">308</span>
-<span class="normal">309</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">despike_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analyte_list</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">):</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">despike_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analyte_list</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    apply a standard deviation filter to all specified</span>
 <span class="sd">    analytes.</span>
@@ -1800,20 +1830,30 @@ analytes.</p>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">despiked</span> <span class="o">=</span> <span class="kc">True</span>
 
+    <span class="c1"># analyte_list = &quot;all&quot;  # currently only supports despiking every element</span>
+
     <span class="k">if</span> <span class="n">analyte_list</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
         <span class="n">filter_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">analyte_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
-            <span class="n">filter_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">analyte_list</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">filter_list</span> <span class="o">=</span> <span class="n">analyte_list</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;single element despiking currently not supported, falling back to &#39;all&#39;&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># # this</span>
+        <span class="c1"># if analyte_list is not type(list):</span>
+        <span class="c1">#     filter_list = [analyte_list]</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     filter_list = analyte_list</span>
+        <span class="n">filter_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analytes</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">despiked_elements</span> <span class="o">=</span> <span class="n">filter_list</span>
     <span class="n">despiked</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">analyte</span> <span class="ow">in</span> <span class="n">filter_list</span><span class="p">:</span>
         <span class="n">despiked</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">despike_signal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">analyte</span><span class="p">))</span>
 
-    <span class="n">despiked</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">despiked</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">)</span>
+    <span class="n">despiked</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">despiked</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">analytes</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span>
+    <span class="p">)</span>
+    <span class="n">despiked</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
     <span class="n">despiked</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">])</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">despiked</span>
@@ -1844,16 +1884,16 @@ background signal that gets subtracted from the ablation signal</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bkgd_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_bkgd_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    uses the intervals assigned in `assign_intervals` to take the median</span>
 <span class="sd">    value of all analytes within that range and use them as the</span>
@@ -1917,9 +1957,7 @@ background signal that gets subtracted from the ablation signal</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
@@ -1930,7 +1968,9 @@ background signal that gets subtracted from the ablation signal</p>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;assigns raw counts/sec data to the object</span>
 
 <span class="sd">    Args:</span>
@@ -1970,9 +2010,7 @@ background.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
@@ -1980,7 +2018,9 @@ background.</p>
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
-<span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_detection_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_detection_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates detection limits in counts per second for each analyte. This</span>
 <span class="sd">    is defined as the value that is three standard deviations away from the</span>
@@ -2048,9 +2088,7 @@ pandas DataFrame that has the following format:</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
@@ -2112,7 +2150,9 @@ pandas DataFrame that has the following format:</p>
 <span class="normal">239</span>
 <span class="normal">240</span>
 <span class="normal">241</span>
-<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_output_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_output_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    create an output report for the spot processing. This is a</span>
 <span class="sd">    pandas DataFrame that has the following format:</span>
@@ -2206,9 +2246,7 @@ of the mean.</p>
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
@@ -2250,7 +2288,9 @@ of the mean.</p>
 <span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
-<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">normalize_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">normalize_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    normalize the analytes from the &quot;keep&quot; portion of the signal</span>
 <span class="sd">    the internal standard analyte. This is done by simply</span>
@@ -2320,16 +2360,16 @@ from the signal in the "keep" interval established in <code>assign_intervals</co
 
           <details class="quote">
             <summary>Source code in <code>lasertram\tram\tram.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">subtract_bkgd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">subtract_bkgd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    subtract the median background values calculated in `get_bkgd_data`</span>
 <span class="sd">    from the signal in the &quot;keep&quot; interval established in `assign_intervals`</span>
