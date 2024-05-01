@@ -6006,7 +6006,7 @@ so a spot can be processed in an efficient and compact way.</p>
           </td>
         </tr>
         <tr>
-          <td><code>internal_std</code></td>
+          <td><code>int_std</code></td>
           <td>
                 <code>str</code>
           </td>
@@ -6129,7 +6129,7 @@ so a spot can be processed in an efficient and compact way.</p>
 <span class="sd">        raw_data (pandas DataFrame): the raw counts per second dataframe to be assigned to the spot. Shape is (m x n) where m is the number of cycles through the mass range</span>
 <span class="sd">        bkgd (tuple): (start, stop) pair of values corresponding to the analysis time where the background signal starts and stops</span>
 <span class="sd">        keep (tuple): (start, stop) pair of values correpsonding to the analysis time where the interval signal for concentrations starts and stops</span>
-<span class="sd">        internal_std (str): column name for the internal standard analyte (e.g., 29Si)</span>
+<span class="sd">        int_std (str): column name for the internal standard analyte (e.g., 29Si)</span>
 <span class="sd">        omit (tuple): (start, stop) pair of values corresponding to the analysis time to be omitted from the `keep` interval. Defaults to None.</span>
 <span class="sd">        despike (bool, optional): Whether or not to despike all analyte signals using the standard deviation filter from `LaserTRAM.despike_data()`. Defaults to False</span>
 <span class="sd">        output_report (bool, optional): Whether or not to create a 1-row pandas DataFrame output report in the following format. Defaults to True.</span>
