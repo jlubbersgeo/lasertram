@@ -22,7 +22,7 @@ def process_spot(
         raw_data (pandas DataFrame): the raw counts per second dataframe to be assigned to the spot. Shape is (m x n) where m is the number of cycles through the mass range
         bkgd (tuple): (start, stop) pair of values corresponding to the analysis time where the background signal starts and stops
         keep (tuple): (start, stop) pair of values correpsonding to the analysis time where the interval signal for concentrations starts and stops
-        internal_std (str): column name for the internal standard analyte (e.g., 29Si)
+        int_std (str): column name for the internal standard analyte (e.g., 29Si)
         omit (tuple): (start, stop) pair of values corresponding to the analysis time to be omitted from the `keep` interval. Defaults to None.
         despike (bool, optional): Whether or not to despike all analyte signals using the standard deviation filter from `LaserTRAM.despike_data()`. Defaults to False
         output_report (bool, optional): Whether or not to create a 1-row pandas DataFrame output report in the following format. Defaults to True.
