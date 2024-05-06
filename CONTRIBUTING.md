@@ -11,6 +11,6 @@ If you have direct contributions you would like considered for incorporation
 into the project you can [fork this repository][2] and
 [submit a pull request][3] for review.
 
-[1]: https://code.usgs.gov/vsc/REDPy/issues
+[1]: https://code.usgs.gov/jlubbers/lasertram/-/issues
 [2]: https://docs.gitlab.com/ee/user/project/repository/forking_workflow.html#create-a-fork
 [3]: https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html
