@@ -8,17 +8,13 @@ test-coverage-style:
     before_script:
         - conda config --add channels conda-forge
         - conda create -n lasertram python>=3.10 
-        - conda install mendeleev numpy pandas scipy statsmodels openpyxl
         - source activate lasertram
         - pip install -e .
-        - pip install coverage pytest mock
-        # - pip install pycodestyle pydocstyle pylint
+        - pip install coverage pytest
     script:
         - coverage run -m pytest
         - coverage report
-        # - pycodestyle redpy
-        # - pydocstyle redpy
-        # - pylint redpy
+
     coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
 
 
