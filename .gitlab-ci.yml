@@ -11,7 +11,7 @@ test-coverage-style:
         - conda install mendeleev numpy pandas scipy statsmodels openpyxl
         - source activate lasertram
         - pip install -e .
-        # - pip install coverage pytest mock
+        - pip install coverage pytest mock
         # - pip install pycodestyle pydocstyle pylint
     script:
         - coverage run -m pytest
