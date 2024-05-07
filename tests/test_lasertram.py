@@ -10,7 +10,7 @@ from lasertram import LaserCalc, LaserTRAM, batch, conversions
 
 
 ###########LASERTRAM UNIT TESTS##############
-spreadsheet_path = r"spot_test_timestamp_raw_data.xlsx"
+spreadsheet_path = r"./tests/spot_test_timestamp_raw_data.xlsx"
 
 
 @pytest.fixture
@@ -440,7 +440,7 @@ def test_oxide_to_ppm():
 
 
 ###############LASERCALC UNIT TESTS#########################
-SRM_path = r"laicpms_stds_tidy.xlsx"
+SRM_path = r"./tests/laicpms_stds_tidy.xlsx"
 
 
 @pytest.fixture
@@ -449,7 +449,7 @@ def load_SRM_data():
     return data
 
 
-LT_complete_path = r"spot_test_timestamp_lasertram_complete.xlsx"
+LT_complete_path = r"./tests/spot_test_timestamp_lasertram_complete.xlsx"
 
 
 @pytest.fixture
