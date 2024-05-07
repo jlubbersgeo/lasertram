@@ -7,7 +7,8 @@ test-coverage-style:
     stage: test
     before_script:
         - conda config --add channels conda-forge
-        - conda create -n lasertram python>=3.10 mendeleev>=0.14.0 numpy>=1.25.2 pandas>=2.0.3 scipy>=1.11.1 statsmodels>=0.14.0 openpyxl>=3.0.0
+        - conda create -n lasertram python>=3.10 
+        - conda install mendeleev numpy pandas scipy statsmodels openpyxl
         - source activate lasertram
         - pip install -e .
         # - pip install coverage pytest mock
