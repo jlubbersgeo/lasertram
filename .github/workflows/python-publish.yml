@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/<package-name>  # Replace <package-name> with your PyPI project name
+      url: https://pypi.org/p/lasertram  # Replace <package-name> with your PyPI project name
     permissions:
       contents: write
       id-token: write  # IMPORTANT: mandatory for trusted publishing
@@ -79,7 +79,7 @@ jobs:
         name: python-package-distributions
         path: dist/
     - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v1.2.3
+      uses: sigstore/gh-action-sigstore-python@v2.1.1
       with:
         inputs: >-
           ./dist/*.tar.gz
@@ -103,7 +103,7 @@ jobs:
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/<package-name>
+      url: https://test.pypi.org/p/lasertram
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
