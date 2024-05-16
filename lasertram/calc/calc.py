@@ -116,7 +116,7 @@ class LaserCalc:
         """
         # check if first row is nan (output from GUI does this).
         # If so, remove it
-        df = df[df.iloc[:, 0].isna() is False]
+        df = df[df.iloc[:, 0].isna() == False]
 
         data = df.set_index("Spot")
         data.insert(loc=1, column="index", value=np.arange(1, len(data) + 1))
