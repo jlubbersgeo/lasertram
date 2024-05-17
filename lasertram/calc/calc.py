@@ -55,7 +55,33 @@ class LaserCalc:
         Args:
             name (str): The name of the experiment to be processed
         """
+        # all attributes in relative chronological order that they are created in
+        # if everything is done correctly. These all will get rewritten throughout the
+        # data processing pipeline but this allows us to see what all the potential attributes
+        # are going to be from the beginning (PEP convention)
         self.name = name
+        self.standards_data = None
+        self.database_standards = None
+        self.standard_elements = None
+        self.standard_element_uncertainties = None
+        self.spots = None
+        self.analytes = None
+        self.calibration_std_stdevs = None
+        self.data = None
+        self.int_std_element = None
+        self.potential_calibration_standards = None
+        self.samples_nostandards = None
+        self.elements = None
+        self.calibration_std = None
+        self.calibration_std_data = None
+        self.calibration_std_means = None
+        self.calibration_std_ses = None
+        self.calibration_std_stats = None
+        self.calibration_std_conc_ratios = None
+        self.secondary_standards = None
+        self.SRM_concentrations = None
+        self.unknown_concentrations = None
+        self.SRM_accuracies = None
 
     def get_SRM_comps(self, df):
         """load in a database of standard reference material compositions
@@ -148,12 +174,11 @@ class LaserCalc:
                 or "omitted_region" in analyte
             )
         ]
-        analytes_nomass = []
-        for i in range(len(self.analytes)):
-            # strip the atomic number from our analyte data
-            nomass = re.split(r"(\d+)", self.analytes[i])[2]
-            analytes_nomass.append(nomass)
-        self.elements = analytes_nomass
+        # elements without isotopes in the front
+        self.elements = [re.split(r"(\d+)", analyte)[2] for analyte in self.analytes]
+
+        # internal standard analyte from lasertram
+        self.int_std_element = re.split(r"(\d+)", self.data["norm"].unique()[0])[2]
 
     def set_calibration_standard(self, std):
         """Assign which standard reference material will be the calibration
@@ -193,15 +218,10 @@ class LaserCalc:
         calib_std_intercepts = []
         drift_check = []
 
-        # For our calibration standard, calculate the concentration ratio of
-        # each analyte to the element used as the internal standard
-        std_conc_ratios = []
-        myanalytes_nomass = []
-
         f_pvals = []
         f_vals = []
         f_crits = []
-        for j in range(len(self.analytes)):
+        for analyte in self.analytes:
             # Getting regression statistics on analyte normalized ratios through time
             # for the calibration standard. This is what we use to check to see if it needs
             # to be drift corrected
@@ -220,7 +240,7 @@ class LaserCalc:
             else:
                 x = self.calibration_std_data["index"].to_numpy()
 
-            y = self.calibration_std_data.loc[:, self.analytes[j]].astype("float64")
+            y = self.calibration_std_data.loc[:, analyte].astype("float64")
 
             X = sm.add_constant(x)
             # Note the difference in argument order
@@ -283,28 +303,17 @@ class LaserCalc:
         # For our calibration standard, calculate the concentration ratio
         # of each analyte to the element used as the internal standard
         std_conc_ratios = []
-        myanalytes_nomass = []
 
-        for i in range(len(self.analytes)):
-            # strip the atomic number from our analyte data
-            nomass = re.split(r"(\d+)", self.analytes[i])[2]
-            # make it a list
-            myanalytes_nomass.append(nomass)
-
-            # if our element is in the list of standard elements take the ratio
-            if nomass in self.standard_elements:
+        for element in self.elements:
+            if element in self.standard_elements:
                 std_conc_ratios.append(
-                    self.standards_data.loc[self.calibration_std, nomass]
+                    self.standards_data.loc[self.calibration_std, element]
                     / self.standards_data.loc[
-                        self.calibration_std,
-                        re.split(
-                            r"(\d+)", self.calibration_std_data["norm"].unique()[0]
-                        )[2],
+                        self.calibration_std, self.int_std_element
                     ]
                 )
 
         # make our list an array for easier math going forward
-        # std_conc_ratios = pd.DataFrame(np.array(std_conc_ratios)[np.newaxis,:],columns = myanalytes)
         self.calibration_std_conc_ratios = np.array(std_conc_ratios)
 
     def set_int_std_concentrations(
@@ -399,7 +408,7 @@ class LaserCalc:
 
                     drift_concentrations = Cn_u * (Cin_std[j] / Ni_std) * Ni_u[analyte]
 
-                    if type(drift_concentrations) == np.float64:
+                    if isinstance(drift_concentrations, np.float64):
                         df = pd.DataFrame(
                             np.array([drift_concentrations]), columns=[analyte]
                         )
@@ -419,13 +428,13 @@ class LaserCalc:
                 drift_df = pd.DataFrame()
 
             for column in drift_df.columns.tolist():
-                if type(concentrations) == pd.Series:
+                if isinstance(concentrations, pd.Series):
                     concentrations.loc[column] = drift_df[column].to_numpy()[0]
 
                 else:
                     concentrations[column] = drift_df[column].to_numpy()
 
-            if type(concentrations) == pd.Series:
+            if isinstance(concentrations, pd.Series):
                 concentrations = pd.DataFrame(concentrations).T
                 concentrations["sample"] = sample
                 concentrations.set_index("sample", inplace=True)
@@ -476,7 +485,7 @@ class LaserCalc:
                         * Ni_u[:, j][:, np.newaxis]
                     )
 
-                    if type(drift_concentrations) == np.float64:
+                    if isinstance(drift_concentrations, np.float64):
                         df = pd.DataFrame(
                             np.array([drift_concentrations]), columns=[analyte]
                         )
@@ -494,13 +503,13 @@ class LaserCalc:
                     drift_df.set_index("sample", inplace=True)
 
             for column in drift_df.columns.tolist():
-                if type(concentrations) == pd.Series:
+                if isinstance(concentrations, pd.Series):
                     concentrations.loc[column] = drift_df[column].to_numpy()[0]
 
                 else:
                     concentrations[column] = drift_df[column].to_numpy()
 
-            if type(concentrations) == pd.Series:
+            if isinstance(concentrations, pd.Series):
                 concentrations = pd.DataFrame(concentrations).T
                 concentrations["sample"] = sample
                 concentrations.set_index("sample", inplace=True)
@@ -579,35 +588,32 @@ class LaserCalc:
         rse_i_std = np.array(rse_i_std)
 
         for sample in self.secondary_standards:
-            # concentration of internal standard in unknown uncertainties
-            int_std_element = re.split(
-                r"(\d+)", self.calibration_std_data["norm"].unique()[0]
-            )[2]
             t1 = (
-                self.standards_data.loc[sample, f"{int_std_element}_std"]
-                / self.standards_data.loc[sample, f"{int_std_element}"]
+                self.standards_data.loc[sample, f"{self.int_std_element}_std"]
+                / self.standards_data.loc[sample, f"{self.int_std_element}"]
             ) ** 2
 
             # concentration of internal standard in calibration standard uncertainties
             t2 = (
-                self.standards_data.loc[self.calibration_std, f"{int_std_element}_std"]
-                / self.standards_data.loc[self.calibration_std, f"{int_std_element}"]
+                self.standards_data.loc[
+                    self.calibration_std, f"{self.int_std_element}_std"
+                ]
+                / self.standards_data.loc[
+                    self.calibration_std, f"{self.int_std_element}"
+                ]
             ) ** 2
 
             # concentration of each analyte in calibration standard uncertainties
             std_conc_stds = []
-            for i in range(len(self.analytes)):
-                # strip the atomic number from our analyte data
-                nomass = re.split(r"(\d+)", self.analytes[i])[2]
-
+            for element in self.elements:
                 # if our element is in the list of standard elements take the ratio
-                if nomass in self.standard_elements:
+                if element in self.standard_elements:
                     std_conc_stds.append(
                         (
                             self.standards_data.loc[
-                                self.calibration_std, f"{nomass}_std"
+                                self.calibration_std, f"{element}_std"
                             ]
-                            / self.standards_data.loc[self.calibration_std, nomass]
+                            / self.standards_data.loc[self.calibration_std, element]
                         )
                         ** 2
                     )
@@ -685,18 +691,15 @@ class LaserCalc:
 
             # concentration of each analyte in calibration standard uncertainties
             std_conc_stds = []
-            for i in range(len(self.analytes)):
-                # strip the atomic number from our analyte data
-                nomass = re.split(r"(\d+)", self.analytes[i])[2]
-
-                # if our element is in the list of standard elements take the ratio
-                if nomass in self.standard_elements:
+            for element in self.elements:
+                # # if our element is in the list of standard elements take the ratio
+                if element in self.standard_elements:
                     std_conc_stds.append(
                         (
                             self.standards_data.loc[
-                                self.calibration_std, f"{nomass}_std"
+                                self.calibration_std, f"{element}_std"
                             ]
-                            / self.standards_data.loc[self.calibration_std, nomass]
+                            / self.standards_data.loc[self.calibration_std, element]
                         )
                         ** 2
                     )
@@ -770,17 +773,15 @@ class LaserCalc:
         """
         df_list = []
 
-        nomass = [
-            re.split(r"(\d+)", self.analytes[i])[2] for i in range(len(self.analytes))
-        ]
-
         for standard in self.secondary_standards:
             df = pd.DataFrame(
                 100
                 * self.SRM_concentrations.loc[standard, self.analytes]
                 .replace("b.d.l.", np.nan)
                 .values
-                / self.standards_data.loc[standard, nomass].values[np.newaxis, :],
+                / self.standards_data.loc[standard, self.elements].values[
+                    np.newaxis, :
+                ],
                 columns=self.analytes,
                 index=self.SRM_concentrations.loc[standard, :].index,
             ).fillna("b.d.l.")

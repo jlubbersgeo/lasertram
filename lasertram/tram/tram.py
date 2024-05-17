@@ -34,19 +34,54 @@ class LaserTRAM:
         Args:
             name (str): your sample name i.e. the value in the `SampleLabel` column of the LT_ready file
         """
+        # all attributes in relative chronological order that they are created in
+        # if everything is done correctly. These all will get rewritten throughout the
+        # data processing pipeline but this allows us to see what all the potential attributes
+        # are going to be from the beginning (PEP convention)
         self.name = name
         self.despiked = False
         self.despiked_elements = None
+        self.data = None
+        self.data_matrix = None
+        self.analytes = None
+        self.timestamp = None
+        self.int_std = None
+        self.bkgd_start = None
+        self.bkgd_stop = None
+        self.int_start = None
+        self.int_stop = None
+        self.bkgd_start_idx = None
+        self.bkgd_stop_idx = None
+        self.int_start_idx = None
+        self.int_stop_idx = None
+        self.omit_start = None
+        self.omit_stop = None
+        self.omit_start_idx = None
+        self.omit_stop_idx = None
+        self.omitted_region = None
+        self.bkgd_data = None
+        self.detection_limits = None
+        self.bkgd_correct_data = None
+        self.int_std_loc = None
+        self.bkgd_subtract_normal_data = None
+        self.bkgd_correct_med = None
+        self.bkgd_correct_std_err = None
+        self.bkgd_correct_std_err_rel = None
+        self.output_report = None
 
-    def get_data(self, df):
+    def get_data(self, df, time_units="ms"):
         """assigns raw counts/sec data to the object
 
         Args:
             df (pandas DataFrame): raw data corresponding to the spot being processed i.e., `all_data.loc[spot,:]` if `all_data` is the LT_ready file
+            time_units (str): string denoting the units for the `Time` column. Used to convert input time values to seconds. Defaults to 'ms'.
         """
         self.data = df.reset_index()
         self.data = self.data.set_index("SampleLabel")
-        self.data["Time"] = self.data["Time"] / 1000
+        if time_units == "ms":
+            self.data["Time"] = self.data["Time"] / 1000
+        elif time_units == "s":
+            pass
         self.data_matrix = self.data.iloc[:, 1:].to_numpy()
         self.analytes = self.data.loc[:, "Time":].columns.tolist()[1:]
 
@@ -60,6 +95,7 @@ class LaserTRAM:
         Args:
             int_std (str): the name of the column for the internal standard analyte e.g., "29Si"
         """
+
         self.int_std = int_std
 
     def assign_intervals(self, bkgd, keep, omit=None):
