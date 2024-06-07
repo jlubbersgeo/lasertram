@@ -212,6 +212,12 @@ class LaserCalc:
         If the regression is statistically significant, it gets flagged for later
         correct treatment in `calculate_concentrations`
 
+
+
+        Parameters
+        ----------
+        pval : float, optional
+            significance threshold to reject the null hypothesis for drift correction, by default 0.01
         """
         calib_std_rmses = []
         calib_std_slopes = []
