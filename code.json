@@ -17,7 +17,7 @@
       },
   
       "homepageURL": "https://code.usgs.gov/vsc/petro/tools/lasertram",
-      "downloadURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/archive/1.0.0/lasertram-1.0.0.zip",
+      "downloadURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/archive/v1.0.0/lasertram-v1.0.0.zip",
       "disclaimerURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/blob/main/DISCLAIMER.md",
       "repositoryURL": "https://code.usgs.gov/vsc/petro/tools/lasertram.git",
       "vcs": "git",
