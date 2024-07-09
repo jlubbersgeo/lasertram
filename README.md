@@ -1,10 +1,10 @@
 # ```lasertram```
 
-Welcome to the repository for `lasertram`, a package for the time resolved analysis for processing laser ablation inductively coupled plasma mass spectrometry (LA-ICP-MS) data. It is utilized heavily in the dashboard [LaserTRAM-DB](https://github.com/jlubbersgeo/laserTRAM-DB).
+Welcome to the repository for `lasertram`, a package for the time resolved analysis for processing laser ablation inductively coupled plasma mass spectrometry (LA-ICP-MS) data. It is used for back-end calculations in the dashboard [LaserTRAM-DB](https://github.com/jlubbersgeo/laserTRAM-DB).
 
 ## Documentation
 
-please see the [Documentation](https://code.usgs.gov/jlubbers/lasertram/-/wikis/Home) for more!
+please see the [Documentation](https://jlubbersgeo.github.io/lasertram/) for more!
 
 ## Installation
 [![PyPI](https://img.shields.io/pypi/v/lasertram.svg?style=flat)](https://pypi.python.org/pypi/lasertram)
