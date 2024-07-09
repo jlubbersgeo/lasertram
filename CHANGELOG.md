@@ -26,6 +26,20 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## v1.0.0 (07/09/2024)
+
+### :sparkles: USGS Software Release approval :sparkles:
+
+- Addresses reviewer comments from Issue !1 related to USGS internal code review
+
+### :sparkles: Features
+
+- updated syntax to reflect `pylint` recommendations (e.g., snake case variables, correct negation/equivalence referencing)
+
+### :books: Documentation
+
+- transitioned to solely using a `pyproject.toml` rather than combination of `setup.cfg` + `pyproject.toml`
+
 ## v0.1.2 (5/1/2024)
 
 ### :bug: Bug Fixes
