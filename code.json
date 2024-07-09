@@ -16,10 +16,10 @@
         ]
       },
   
-      "homepageURL": "https://code.usgs.gov/jlubbers/lasertram",
-      "downloadURL": "https://code.usgs.gov/jlubbers/lasertram/-/archive/0.1.2/lasertram-0.1.2.zip",
-      "disclaimerURL": "https://code.usgs.gov/jlubbers/lasertram/-/blob/main/DISCLAIMER.md",
-      "repositoryURL": "https://code.usgs.gov/jlubbers/lasertram.git",
+      "homepageURL": "https://code.usgs.gov/vsc/petro/tools/lasertram",
+      "downloadURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/archive/1.0.0/lasertram-1.0.0.zip",
+      "disclaimerURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/blob/main/DISCLAIMER.md",
+      "repositoryURL": "https://code.usgs.gov/vsc/petro/tools/lasertram.git",
       "vcs": "git",
   
       "laborHours": 0,
@@ -41,7 +41,7 @@
       },
   
       "date": {
-        "metadataLastUpdated": "2024-05-06"
+        "metadataLastUpdated": "2024-07-09"
       }
     }
   ]
