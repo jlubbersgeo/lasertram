@@ -3,7 +3,7 @@
       "name": "lasertram",
       "organization": "U.S. Geological Survey",
       "description": "laser ablation icp-ms data processing in python",
-      "version": "0.1.2",
+      "version": "1.0.0",
       "status": "Development",
   
       "permissions": {
