@@ -98,7 +98,7 @@ Where $RMSE_i$ is the Root Mean Squared Error as specified in the Drift Correcti
 
 ## Concentrations of internal standard in unknown
 
-To calculate concentrations of a given analyte list in an unknown sample, the concentration of the internal standard must be known. LaserCalc takes these concentrations in the form of wt\% oxide and utilizes user interaction to input concentrations of the internal standard and its relative uncertainty. A default value of 10\% is used for this, but may and <b>should</b> be updated by the user.
+To calculate concentrations of a given analyte list in an unknown sample, the concentration of the internal standard must be known. LaserCalc takes these concentrations in the form of wt% oxide and utilizes user interaction to input concentrations of the internal standard and its relative uncertainty. A default value of 10% is used for this, but may and <b>should</b> be updated by the user.
 
 ## References
 
