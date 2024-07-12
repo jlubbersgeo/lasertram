@@ -18,3 +18,8 @@ pip install lasertram
 If you have features you'd like to see please open an issue or consider contributing yourself! I'm always happy to have help.
 
 **Maintainer** Jordan Lubbers (jlubbers _at_ usgs.gov)
+
+## Citation
+A manuscript for `lasertram` is currently being prepared for _Computers and Geosciences_, but you may also cite the code directly as:
+> Lubbers, J. (2024) lasertram - Laser Time Resolved Analysis Module (Version 1.0.0), U.S. Geological Survey Software Release, https://doi.org/10.5066/P1DZUR3Z
+
