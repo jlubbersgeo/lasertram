@@ -26,7 +26,7 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
-## v1.0.0 (07/09/2024)
+## 1.0.0 (07/11/2024)
 
 ### :sparkles: USGS Software Release approval :sparkles:
 
