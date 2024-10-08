@@ -1,4 +1,4 @@
-image: continuumio/miniconda:latest
+image: python:latest
 
 stages:
     - test
@@ -6,9 +6,10 @@ stages:
 test-coverage-style:
     stage: test
     before_script:
-        - conda config --add channels conda-forge
-        - conda create -n lasertram python>=3.10 
-        - source activate lasertram
+        - python --version ; pip --version
+        - pip install virtualenv
+        - virtualenv lasertram
+        - source lasertram/bin/activate
         - pip install -e .
         - pip install coverage pytest
     script:
