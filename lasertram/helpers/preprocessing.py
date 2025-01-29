@@ -202,3 +202,69 @@ def make_lt_ready_file(file, quad_type):
         raise ValueError("please choose either 'thermo' or 'agilent' for quad_type")
 
     return outdf
+
+
+def load_test_rawdata():
+    """
+    Load in raw data used as examples in the following manuscript:
+
+    Lubbers, J., Kent, A., Russo, C. (2025) "lasertram: a Python
+    library for time resolved analysis of laser ablation inductively
+    coupled plasma mass spectrometry data "
+
+    """
+
+    current_path = Path(__file__).parent
+
+    lt_ready = pd.read_excel(
+        current_path.parents[1]
+        / "test_data"
+        / "computers_and_geosciences_example"
+        / "2022-05-10_LT_ready.xlsx"
+    ).set_index("SampleLabel")
+
+    return lt_ready
+
+
+def load_test_intervals():
+    """
+    Load in interval regions used as examples in the following manuscript:
+
+    Lubbers, J., Kent, A., Russo, C. (2025) "lasertram: a Python
+    library for time resolved analysis of laser ablation inductively
+    coupled plasma mass spectrometry data "
+
+    """
+
+    current_path = Path(__file__).parent
+
+    intervals = pd.read_excel(
+        current_path.parents[1]
+        / "test_data"
+        / "computers_and_geosciences_example"
+        / "example_intervals.xlsx"
+    ).set_index("Spot")
+
+    return intervals
+
+
+def load_test_int_std_comps():
+    """
+    Load in internal standard comps used as examples in the following manuscript:
+
+    Lubbers, J., Kent, A., Russo, C. (2025) "lasertram: a Python
+    library for time resolved analysis of laser ablation inductively
+    coupled plasma mass spectrometry data "
+
+    """
+
+    current_path = Path(__file__).parent
+
+    concentrations = pd.read_excel(
+        current_path.parents[1]
+        / "test_data"
+        / "computers_and_geosciences_example"
+        / "example_internal_std.xlsx"
+    )
+
+    return concentrations

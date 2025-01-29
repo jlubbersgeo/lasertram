@@ -59,28 +59,117 @@ class LaserCalc:
         # if everything is done correctly. These all will get rewritten throughout the
         # data processing pipeline but this allows us to see what all the potential attributes
         # are going to be from the beginning (PEP convention)
+
+        # for the math involved please see:
+
+        # name for the lasercalc object
+        # for notekeeping
         self.name = name
+
+        # 2D pandas dataframe of standards reference material preferred compositions
+        # from georem
         self.standards_data = None
+
+        # List of standard reference materials in self.standards_data
         self.database_standards = None
+
+        # list of standard reference material elements/oxides in self.standards_data
         self.standard_elements = None
+
+        # list of standard reference material element/oxide 1 sigma uncertainties in self.standards_data
         self.standard_element_uncertainties = None
+
+        # list of spot analyses for which concentrations are being calculated
+        # this is the equivalent of self.data['Spot']
         self.spots = None
+
+        # list of analytes for which concentrations are being calculated
+        # these are column headers in self.data
         self.analytes = None
+
+        # 1 sigma standard deviation of the calibration standard values
+        # in self.data. Is len(analytes) in shape
         self.calibration_std_stdevs = None
+
+        # 2D pandas dataframe that represents the metadata and data for numerous
+        # spot analyses. Each row is the equivalent of a LaserTRAM.output_report
+        # and has the following columns:
+        # |timestamp|Spot|despiked|omitted_region|bkgd_start|bkgd_stop|int_start|int_stop|norm|norm_cps|analyte vals and uncertainties -->|
+        # |---------|----|--------|--------------|----------|---------|---------|--------|----|--------|----------------------------------|
         self.data = None
+
+        # element used as internal standard. NOT to be confused with analyte
+        # e.g. self.int_std_element == 'Si' NOT '29Si'
         self.int_std_element = None
+
+        # list of standard reference materials in found in self.data that are
+        # also found in self.database_standards. This lets you know which standard reference
+        # materials you can use as potential calibration standards
         self.potential_calibration_standards = None
+
+        # list of samples in self.data with the self.potential_calibration_standards
+        # removed
         self.samples_nostandards = None
+
+        # list of elements for which concentrations are being calculated
+        # this is the equivalent to self.analytes with the atomic masses
+        # removed
         self.elements = None
+
+        # string representing the standard reference material used
+        # as the calibration standard for calculating concentrations
         self.calibration_std = None
+
+        # 2D pandas dataframe which is a subset of self.data for only the
+        # calibration standard data. This is essentially self.data.loc[self.calibration_std,:]
         self.calibration_std_data = None
+
+        # mean calibration standard values for all analytes
+        # equivalent of self.calibration_std_data.mean(axis = 0)
         self.calibration_std_means = None
+
+        # calibration standard standard error of the mean for all analytes
         self.calibration_std_ses = None
+
+        # 2D dataframe that is contains statistics for each analyte in self.calibration_std_data
+        # columns are:
+        # drift_correct | f_pval | f_value | f_crit_value | rmse | slope | intercept | mean | std_dev | percent_std_err
+        # These stats are based on the following regression:
+        # for each analyte
+        # x = self.calibration_std_data.loc[:,'timestamp']
+        # y = self.calibration_std_data.loc[:, analyte]
+
+        # X = sm.add_constant(x)
+        # Note the difference in argument order
+        # model = sm.OLS(y, X).fit()
+        # now generate predictions
+        # ypred = model.predict(X)
+
+        # calc rmse
+        # RMSE = rmse(y, ypred)
+
         self.calibration_std_stats = None
+
+        # the ratio of concentrations between an analyte and the internal standard
+        # in the georem calibration standard values
         self.calibration_std_conc_ratios = None
+
+        # list of standard reference materials that are not used as calibration standard
+        # this is effectively self.potential_calibration_standards with self.calibration_std
+        # removed
         self.secondary_standards = None
+
+        # 2D pandas dataframe of calculated concentrations for all spots in self.secondary_standards and all
+        # analytes in self.analytes. This is self.data.loc[self.secondary_standards,self.analytes].shape in shape
         self.SRM_concentrations = None
+
+        # 2D pandas dataframe of calculated concentrations for all spots in self.spots and all
+        # analytes in self.analytes. This is self.data.loc[self.spots,self.analytes].shape in shape
         self.unknown_concentrations = None
+
+        # 2D pandas dataframe of calculated accuracies for all spots in self.secondary_standards and all
+        # analytes in self.analytes. This is self.data.loc[self.secondary_standards,self.analytes].shape in shape
+        # here accuracy is just 100*measured_concentration / georem_concentration
         self.SRM_accuracies = None
 
     def get_SRM_comps(self, df):
