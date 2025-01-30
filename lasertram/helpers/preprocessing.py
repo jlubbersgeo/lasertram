@@ -10,17 +10,21 @@ from dateutil.parser import parse
 
 
 def extract_agilent_data(file):
-    """_summary_
+    """
+    read raw output from an Agilent quadrupole .csv file and
+    return a pandas dataframe and metadata ready for processing with LaserTRAM
 
     Parameters
     ----------
-    file : _type_
-        _description_
+    file : path-like
+        path to the csv file for data to be extracted
 
     Returns
     -------
-    _type_
-        _description_
+    dict
+        dictionary that contains timestamp, filename, and data
+        for preprocessing
+
     """
     # import data
     # extract sample name
@@ -52,17 +56,20 @@ def extract_agilent_data(file):
 
 
 def extract_thermo_data(file):
-    """_summary_
+    """
+    read raw output from an ThermoFisher quadrupole .csv file and
+    return a pandas dataframe and metadata ready for processing with LaserTRAM
 
     Parameters
     ----------
-    file : _type_
-        _description_
+    file : path-like
+        path to the csv file for data to be extracted
 
     Returns
     -------
-    _type_
-        _description_
+    dict
+        dictionary that contains timestamp, filename, and data
+        for preprocessing
     """
 
     # gets the top row in your csv and turns it into a pandas series
@@ -104,19 +111,23 @@ def extract_thermo_data(file):
 
 
 def make_lt_ready_folder(folder, quad_type):
-    """_summary_
+    """
+    Take a folder of csv files from either an Agilent or ThermoFisher
+    quadrupole mass spectrometer, and combine their data such that it is
+    a pandas.DataFrame ready for processing in LaserTRAM
 
     Parameters
     ----------
-    folder : _type_
-        _description_
-    quad_type : _type_
-        _description_
+    folder : path-like
+        path to the folder where the csv files are. This looks at all csv
+        files so make sure ONLY the data are in there.
+    quad_type : str
+        "agilent" or "thermo"
 
     Returns
     -------
-    _type_
-        _description_
+    pandas.DataFrame
+        dataframe ready to be processed using LaserTRAM.
     """
 
     if isinstance(folder, Path):
@@ -163,19 +174,22 @@ def make_lt_ready_folder(folder, quad_type):
 
 
 def make_lt_ready_file(file, quad_type):
-    """_summary_
+    """
+    Take an individual csv file from either an Agilent or ThermoFisher
+    quadrupole mass spectrometer and convert it to a pandas.DataFrame
+    object ready for processing in LaserTRAM
 
     Parameters
     ----------
-    file : _type_
-        _description_
-    quad_type : _type_
-        _description_
+    folder : path-like
+        path to the csv file.
+    quad_type : str
+        "agilent" or "thermo"
 
     Returns
     -------
-    _type_
-        _description_
+    pandas.DataFrame
+        dataframe ready to be processed using LaserTRAM.
     """
 
     if isinstance(file, Path):
@@ -263,7 +277,7 @@ def load_test_int_std_comps():
     concentrations = pd.read_excel(
         current_path.parents[1]
         / "test_data"
-        / "computers_and_geosciences_example"
+        / "computers_and_geosciences_examples"
         / "example_internal_std.xlsx"
     )
 
