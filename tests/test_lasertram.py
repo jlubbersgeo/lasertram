@@ -8,7 +8,6 @@ import pytest
 
 from lasertram import LaserCalc, LaserTRAM, batch, conversions
 
-
 ###########LASERTRAM UNIT TESTS##############
 spreadsheet_path = r"./tests/spot_test_timestamp_raw_data.xlsx"
 
@@ -99,7 +98,7 @@ def test_get_bkgd_data(load_data):
     spot.get_bkgd_data()
 
     assert np.allclose(
-        spot.bkgd_data,
+        spot.bkgd_data_median,
         np.array(
             [
                 700.01960055,
@@ -143,8 +142,9 @@ def test_subtract_bkgd(load_data):
     spot.subtract_bkgd()
 
     assert np.allclose(
-        spot.bkgd_correct_data,
-        spot.data_matrix[spot.int_start_idx : spot.int_stop_idx, 1:] - spot.bkgd_data,
+        spot.bkgd_subtract_data,
+        spot.data_matrix[spot.int_start_idx : spot.int_stop_idx, 1:]
+        - spot.bkgd_data_median,
     ), "background not subtracted properly"
 
 
@@ -257,14 +257,14 @@ def test_normalize_interval(load_data):
     spot.subtract_bkgd()
     spot.get_detection_limits()
     spot.normalize_interval()
-    assert (
-        spot.bkgd_subtract_normal_data.shape[0]
-        == (spot.int_stop_idx - spot.int_start_idx)
-        - (spot.omit_stop_idx - spot.omit_start_idx)
+    assert spot.bkgd_subtract_normal_data.shape[0] == (
+        spot.int_stop_idx - spot.int_start_idx
+    ) - (
+        spot.omit_stop_idx - spot.omit_start_idx
     ), "background subtracted and normalized data is not the right shape. Likely a region omission problem"
 
     assert np.allclose(
-        spot.bkgd_correct_med,
+        spot.bkgd_subtract_med,
         np.array(
             [
                 1.84185261e-03,
@@ -284,7 +284,7 @@ def test_normalize_interval(load_data):
         ),
     ), "median background and normalized values are incorrect"
     assert np.allclose(
-        spot.bkgd_correct_std_err_rel,
+        spot.bkgd_subtract_std_err_rel,
         np.array(
             [
                 100.99950523,

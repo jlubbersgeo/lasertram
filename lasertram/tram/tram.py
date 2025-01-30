@@ -68,6 +68,10 @@ class LaserTRAM:
         # standard e.g., "29Si"
         self.int_std = None
 
+        # column number in self.data_matrix that denotes the internal standard analyte
+        # data. Remember python starts counting at 0!
+        self.int_std_loc = None
+
         # background interval start time
         self.bkgd_start = None
 
@@ -109,10 +113,7 @@ class LaserTRAM:
 
         # 1D array of median background values [self.bkgd_start - self.bkgd_stop)
         # that is len(analytes) in shape
-        self.bkgd_data = None
-
-        # standard error of the mean for background values normalized to the internal standard
-        self.bkgd_data_norm_std_err = None
+        self.bkgd_data_median = None
 
         # 1D array of detection limits in counts per second
         # that is len(analytes) in shape
@@ -120,11 +121,7 @@ class LaserTRAM:
 
         # 2D array of background corrected data over the self.int_start - self.int_stop
         # region
-        self.bkgd_correct_data = None
-
-        # column number in self.data_matrix that denotes the internal standard analyte
-        # data. Remember python starts counting at 0!
-        self.int_std_loc = None
+        self.bkgd_subtract_data = None
 
         # 2D array of background corrected data over the self.int_start - self.int_stop
         # region that is normalized to the internal standard
@@ -132,18 +129,14 @@ class LaserTRAM:
 
         # 1D array of median background corrected normalized values over the self.int_start - self.int_stop
         # retion that is len(analytes) in shape
-        self.bkgd_correct_med = None
+        self.bkgd_subtract_med = None
 
         # 1D array of 1 standard error of the mean values for each analyte over the
         # self.int_start - self.int_stop region
-        self.bkgd_correct_std_err = None
+        self.bkgd_subtract_std_err = None
 
-        # overall uncertainty of chosen interval that includes uncertainty in background values
-        # that have been subtracted. this is simply np.sqrt(self.bkgd_data_norm_se**2 + self.bkgd_correct_std_err)
-        self.overall_std_err = None
-
-        # 1D array of relative standard error of the mean values for each analyte
-        self.overall_std_err_rel = None
+        #
+        self.bkgd_subtract_std_err_rel = None
 
         # 1D pandas dataframe that contains many of the attributes created during the
         # LaserTRAM process:
@@ -187,6 +180,9 @@ class LaserTRAM:
 
         # set the internal standard analyte
         self.int_std = int_std
+
+        # get the internal standard array index
+        self.int_std_loc = np.where(np.array(self.analytes) == self.int_std)[0][0]
 
     def assign_intervals(self, bkgd, keep, omit=None):
         """assigns the intervals to be used as background
@@ -234,21 +230,8 @@ class LaserTRAM:
         background signal that gets subtracted from the ablation signal
         """
         # median background data values
-        self.bkgd_data = np.median(
+        self.bkgd_data_median = np.median(
             self.data_matrix[self.bkgd_start_idx : self.bkgd_stop_idx, 1:], axis=0
-        )
-
-        # background values normalized to internal standard
-        # so uncertainty can be in same units as chosen interval for error propagation
-        bkgd_data_norm = (
-            self.data_matrix[self.bkgd_start_idx : self.bkgd_stop_idx, 1:]
-            / self.bkgd_data[self.int_std_loc]
-        )
-
-        # standard error of the mean for background values normalized to the internal standard
-        # this gets used for overall error propagation later
-        self.bkgd_data_norm_std_err = np.std(bkgd_data_norm, axis=0) / np.sqrt(
-            bkgd_data_norm.shape[0]
         )
 
     def get_detection_limits(self):
@@ -270,9 +253,9 @@ class LaserTRAM:
         from the signal in the "keep" interval established in `assign_intervals`
 
         """
-        self.bkgd_correct_data = (
+        self.bkgd_subtract_data = (
             self.data_matrix[self.int_start_idx : self.int_stop_idx, 1:]
-            - self.bkgd_data
+            - self.bkgd_data_median
         )
 
     def normalize_interval(self):
@@ -286,53 +269,44 @@ class LaserTRAM:
         of the mean.
         """
 
-        # get the internal standard array index
-        self.int_std_loc = np.where(np.array(self.analytes) == self.int_std)[0][0]
-
         # set the detection limit thresholds to be checked against
         # with the interval data. This basically takes the detection limits
-        threshold = self.detection_limits - np.median(
-            self.data_matrix[self.bkgd_start_idx : self.bkgd_stop_idx, 1:], axis=0
-        )
+        threshold = self.detection_limits - self.bkgd_data_median
 
         # if there's an omitted region, remove it from the data to be further processed
         # for the chosen interval
         if self.omitted_region is True:
             self.bkgd_subtract_normal_data = np.delete(
-                self.bkgd_correct_data,
+                self.bkgd_subtract_data,
                 np.arange(self.omit_start_idx, self.omit_stop_idx),
                 axis=0,
             ) / np.delete(
-                self.bkgd_correct_data[:, self.int_std_loc][:, None],
+                self.bkgd_subtract_data[:, self.int_std_loc][:, None],
                 np.arange(self.omit_start_idx, self.omit_stop_idx),
                 axis=0,
             )
 
         else:
             self.bkgd_subtract_normal_data = (
-                self.bkgd_correct_data
-                / self.bkgd_correct_data[:, self.int_std_loc][:, None]
+                self.bkgd_subtract_data
+                / self.bkgd_subtract_data[:, self.int_std_loc][:, None]
             )
 
         # get background corrected and normalized median values for an interval
-        self.bkgd_correct_med = np.median(self.bkgd_subtract_normal_data, axis=0)
-        self.bkgd_correct_med[
-            np.median(self.bkgd_correct_data, axis=0) <= threshold
+        self.bkgd_subtract_med = np.median(self.bkgd_subtract_normal_data, axis=0)
+        self.bkgd_subtract_med[
+            np.median(self.bkgd_subtract_data, axis=0) <= threshold
         ] = -9999
-        self.bkgd_correct_med[np.median(self.bkgd_correct_data, axis=0) == 0] = -9999
+        self.bkgd_subtract_med[np.median(self.bkgd_subtract_data, axis=0) == 0] = -9999
 
         # standard error of the mean for the interval region
-        self.bkgd_correct_std_err = self.bkgd_subtract_normal_data.std(
+        self.bkgd_subtract_std_err = self.bkgd_subtract_normal_data.std(
             axis=0
         ) / np.sqrt(abs(self.int_stop_idx - self.int_start_idx))
 
-        # error propagation to include uncertainty in background values as well
-        self.overall_std_err = np.sqrt(
-            self.bkgd_data_norm_std_err**2 + self.bkgd_correct_std_err**2
+        self.bkgd_subtract_std_err_rel = 100 * (
+            self.bkgd_subtract_std_err / self.bkgd_subtract_med
         )
-
-        # relative standard error
-        self.overall_std_err_rel = 100 * (self.overall_std_err / self.bkgd_correct_med)
 
     def make_output_report(self):
         """
@@ -366,7 +340,7 @@ class LaserTRAM:
                 self.data["Time"].iloc[self.int_start_idx],
                 self.data["Time"].iloc[self.int_stop_idx],
                 self.int_std,
-                np.median(self.bkgd_correct_data[:, self.int_std_loc]),
+                np.median(self.bkgd_subtract_data[:, self.int_std_loc]),
             ]
         ).T
         spot_data.columns = [
@@ -385,10 +359,10 @@ class LaserTRAM:
             [
                 spot_data,
                 pd.DataFrame(
-                    self.bkgd_correct_med[np.newaxis, :], columns=self.analytes
+                    self.bkgd_subtract_med[np.newaxis, :], columns=self.analytes
                 ),
                 pd.DataFrame(
-                    self.overall_std_err_rel[np.newaxis, :],
+                    self.bkgd_subtract_std_err_rel[np.newaxis, :],
                     columns=[f"{analyte}_se" for analyte in self.analytes],
                 ),
             ],
