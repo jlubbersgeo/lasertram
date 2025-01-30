@@ -233,7 +233,7 @@ def load_test_rawdata():
     lt_ready = pd.read_excel(
         current_path.parents[1]
         / "test_data"
-        / "computers_and_geosciences_example"
+        / "computers_and_geosciences_examples"
         / "2022-05-10_LT_ready.xlsx"
     ).set_index("SampleLabel")
 
@@ -255,7 +255,7 @@ def load_test_intervals():
     intervals = pd.read_excel(
         current_path.parents[1]
         / "test_data"
-        / "computers_and_geosciences_example"
+        / "computers_and_geosciences_examples"
         / "example_intervals.xlsx"
     ).set_index("Spot")
 
