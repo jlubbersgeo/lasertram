@@ -11,10 +11,41 @@ metadata
 
 """
 
-import warnings
-
 import numpy as np
 import pandas as pd
+
+
+def _z_filter(signal, std_devs, window=50):
+    """compute a z filter for a given signal
+
+    Parameters
+    ----------
+    signal : pandas.Series
+        the timeseries signal to be filtered
+    std_devs : float
+        number of standard deviations away from the mean to
+        be considered an outlier
+    window : int, optional
+        number of points in the moving average window, by default 50
+    """
+
+    # rolling calculation setup
+    roll = signal.rolling(window=window, min_periods=1, center=True)
+    # rolling average
+    avg = roll.mean()
+    # rolling standard deviation
+    std = roll.std(ddof=0)
+    # z score
+    z = (signal - avg) / std
+    # boolean if a given z score is within the bounds set up by
+    # the standard deviation limits
+    m = z.between(-std_devs, std_devs)
+
+    # original signal where z score is between bounds
+    # mean of rolling window otherwise
+    despiked = signal.where(m, avg)
+
+    return despiked
 
 
 class LaserTRAM:
@@ -374,79 +405,56 @@ class LaserTRAM:
 
         self.output_report = spot_data
 
-    def despike_data(self, analyte_list="all"):
+    def despike_data(self, analyte_list="all", std_devs=4, window=25):
         """
-        apply a standard deviation filter to all specified
-        analytes.
+        despike counts per second normalized to an internal standard using a z score filter
 
-
-        Args:
-            analyte_list (str or list, optional): analyte to despike (e.g., '7Li'). Or list of analytes to despike (e.g., ['7Li','88Sr']). If 'all', despikes all analytes in the experiment. Defaults to "all".
+        Parameters
+        ----------
+        analyte_list : str, optional
+            list of analytes to despike. Accepts singular analytes e.g., "29Si"
+            or numerous e.g., ["7Li", "29Si"]. by default "all"
+        std_devs : int, optional
+            number of standard deviations from the mean to be considered an outlier, by default 3
+        window : int, optional
+            size of the window to be used in the moving average, by default 50
         """
 
-        def despike_signal(data, analyte, passes=2):
-            """
-            apply a standard deviation filter to analyte signal
-
-            Args:
-                data (pandas DataFrame): dataframe representing the spot raw counts per second data.
-                analyte (string): analyte to despike
-                passes (int, optional): the number of iterations for the filter to complete. Defaults to 2.
-
-            Returns:
-                signal (ndarray): the filtered signal
-            """
-            window = 3
-            sigma = 25
-            kernel = np.ones(window) / window
-
-            signal_raw = data[analyte].to_numpy()
-            signal = signal_raw.copy()
-
-            for i in range(passes):
-                signal_mean = np.convolve(signal, kernel, "valid")
-                signal_mean = np.insert(
-                    signal_mean,
-                    0,
-                    signal_mean[0],
-                )
-                signal_mean = np.append(signal_mean, signal_mean[-1])
-                signal_std = np.sqrt(signal_mean)
-
-                spikes = signal > signal_mean + signal_std * sigma
-                despiked_signal = signal.copy()
-                despiked_signal[spikes] = signal_mean[spikes]
-                signal = despiked_signal
-
-            return signal
+        assert (
+            self.bkgd_subtract_normal_data is not None
+        ), "please normalize your data prior to despiking"
 
         self.despiked = True
-
-        # analyte_list = "all"  # currently only supports despiking every element
 
         if analyte_list == "all":
             filter_list = self.analytes
         else:
-            warnings.warn(
-                "single element despiking currently not supported, falling back to 'all'"
-            )
-            # # this
-            # if analyte_list is not type(list):
-            #     filter_list = [analyte_list]
-            # else:
-            #     filter_list = analyte_list
-            filter_list = self.analytes
+            if isinstance(analyte_list, list):
+                pass
+            else:
+                analyte_list = [analyte_list]
+
+            filter_list = analyte_list
 
         self.despiked_elements = filter_list
-        despiked = []
+
+        df = pd.DataFrame(self.bkgd_subtract_normal_data, columns=self.analytes)
+
         for analyte in filter_list:
-            despiked.append(despike_signal(self.data, analyte))
 
-        despiked = pd.DataFrame(
-            np.array(despiked).T, columns=self.analytes, index=self.data.index
+            filtered = _z_filter(df[analyte], window=window, std_devs=std_devs)
+
+            # replaces data with despiked data
+            df[analyte] = filtered
+
+        self.bkgd_subtract_normal_data = df.loc[:, self.analytes].values
+
+        # now recalculate uncertainties after despiking
+        # standard error of the mean for the interval region
+        self.bkgd_subtract_std_err = self.bkgd_subtract_normal_data.std(
+            axis=0
+        ) / np.sqrt(abs(self.int_stop_idx - self.int_start_idx))
+
+        self.bkgd_subtract_std_err_rel = 100 * (
+            self.bkgd_subtract_std_err / self.bkgd_subtract_med
         )
-        despiked.index.name = self.data.index.name
-        despiked.insert(0, "Time", self.data["Time"])
-
-        self.data = despiked
-        self.data_matrix = despiked.to_numpy()
