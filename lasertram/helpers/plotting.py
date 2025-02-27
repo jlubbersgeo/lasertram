@@ -13,26 +13,47 @@ def plot_timeseries_data(
     ax=None,
     **kwargs,
 ):
-    """_summary_
+    """Plot time-series data related to laser ablation ICP-MS analyses,
+        typically where the x-axis is analysis time and y-axis is either
+        counts per second data or data derived from it.
 
     Parameters
     ----------
-    df : _type_
-        _description_
+    df : pandas DataFrame
+        the dataframe to be plotted
     analytes : str, optional
-        _description_, by default 'all'
+        list of columns to be plotted from the dataframe, by default 'all'.
+        Meant to be utilized when the input dataframe is either a LaserTRAM spot
+        object so columns reflect only 'Time' and analytes.
     marker : str, optional
-        _description_, by default ''
-    fig : _type_, optional
-        _description_, by default None
-    ax : _type_, optional
-        _description_, by default None
+        matplotlib marker to use for plotting symbol, by default ''
+    fig : matplotlib.Figure, optional
+        The figure to apply the plot to, by default None
+    ax : matplotlib.Axes, optional
+        the axis to apply the plot to, by default None
 
     Returns
     -------
-    _type_
-        _description_
+    ax
+
+
+    Ex:
+    ```python
+    from lasertram import preprocessing, plotting, LaserTRAM
+    import matplotlib.pyplot as plt
+    plt.style.use("lasertram.lasertram")
+
+    raw_data  = preprocessing.load_test_rawdata()
+
+    sample = 'GSD-1G_-_1'
+
+    ax = plotting.plot_timeseries_data(raw_data.loc[sample,:])
+    ax[0].set_title(sample)
+    ax[0].set_ylabel("cps")
+    ax[0].set_xlabel("Time (ms)")
+    ```
     """
+
     if fig is None:
         fig = plt.figure(figsize=(8, 4))
     else:
@@ -99,21 +120,21 @@ def plot_timeseries_data(
 
 
 def plot_lasertram_uncertainties(spot, fig=None, ax=None, **kwargs):
-    """_summary_
+    """plot a bar chart of analyte uncertainties related to the output from
+    processing using the `LaserTRAM` module
 
     Parameters
     ----------
-    spot : _type_
-        _description_
-    fig : _type_, optional
-        _description_, by default None
-    ax : _type_, optional
-        _description_, by default None
+    spot : LaserTRAM.spot
+        the `LaserTRAM.spot` object to plot the uncertainties for
+    fig : matplotlib.Figure, optional
+        The figure to apply the plot to, by default None
+    ax : matplotlib.Axes, optional
+        the axis to apply the plot to, by default None
 
     Returns
     -------
-    _type_
-        _description_
+    ax
     """
 
     if fig is None:
@@ -138,5 +159,4 @@ def plot_lasertram_uncertainties(spot, fig=None, ax=None, **kwargs):
     ax.set_xticklabels(labels, rotation=90)
     ax.set_ylabel("% SE")
 
-    return ax
     return ax

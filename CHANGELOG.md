@@ -26,6 +26,27 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## 1.0.1 (tbd)
+
+### :sparkles: First release after manuscript acceptance :sparkles:
+
+- [_`lasertram`: A Python library for the time resolved analysis of laser ablation inductively coupled plasma mass spectrometry data_](https://doi.org/10.1016/j.acags.2025.100225)
+
+### :sparkles: Features
+
+- added a module for basic plotting of time-series and uncertainties in `LaserTRAM`
+- added a module for preprocessing which has functions related to loading in test data ready for `LaserTRAM` and for taking raw .csv files from Thermo or Agilent quadrupoles and converting them directly to `pandas.DataFrames` ready for `LaserTRAM`. 
+
+### :books: Documentation
+
+- added more example jupyter notebooks on signal de-spiking and region omission
+- Added much better docstring coverage to _everything_
+- Added much better line-by-line coverage to _everything_
+
+### :bug: Bug Fixes
+
+- fixed pytest bugs with move to new version. 
+
 ## 1.0.0 (07/11/2024)
 
 ### :sparkles: USGS Software Release approval :sparkles:
