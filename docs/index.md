@@ -7,7 +7,7 @@ This site contains the project documentation for `lasertram` (laser <b><i>T</i><
 
 ## Motivation
 
-With a wide array of applications in the natural sciences, laser ablation inductively coupled plasma mass spectrometry (LA-ICP-MS) is a now a commonplace tool for the gathering of <i>in situ</i> trace element (i.e., $<$ 0.1 wt\%) data from solid materials. The last two decades have seen significant advances in both instrument capabilities and operating software, allowing users to generate large volumes of <i>in situ</i> geochemical data in comparatively little time to previous methodologies (i.e., micro-drilling) while still maintaining high degrees of accuracy and precision.
+With a wide array of applications in the natural sciences, laser ablation inductively coupled plasma mass spectrometry (LA-ICP-MS) is a now a commonplace tool for the gathering of <i>in situ</i> trace element (i.e., $<$ 0.1 wt%) data from solid materials. The last two decades have seen significant advances in both instrument capabilities and operating software, allowing users to generate large volumes of <i>in situ</i> geochemical data in comparatively little time to previous methodologies (i.e., micro-drilling) while still maintaining high degrees of accuracy and precision.
 
 Raw data output from LA-ICP-MS, however, is in the form of counts per second (cps) for the selected analyte isotopes, not elemental concentrations. In order to be converted into accurate concentrations, a modest amount of user input and interpretation is required and should not be automated. That does not mean, however, we cannot streamline our workflow! This documuentation is designed to outline the theory, workflow, and structure, behind `lasertram` in an effort to maximize its effectiveness in the petrology and volcanology communities.
 
@@ -19,6 +19,20 @@ Overall the goals of `lasertram` are three-fold:
    > More time doing science less time processing data!!
 
 ## Projects
+
+- `lasertram` is now published in _Applied Computing and Geosciences_:
+
+```tex
+@article{lubbers2025lasertram,
+  title={lasertram: A Python library for time resolved analysis of laser ablation inductively coupled plasma mass spectrometry data},
+  author={Lubbers, Jordan and Kent, Adam JR and Russo, Chris},
+  journal={Applied Computing and Geosciences},
+  pages={100225},
+  year={2025},
+  publisher={Elsevier},
+  doi={10.1016/j.acags.2025.100225}
+}
+```
 
 - `lasertram` is the backend engine to [LaserTRAM-DB](https://github.com/jlubbersgeo/laserTRAM-DB), a dashboard for interactively and transparently processing LA-ICP-MS data.
 

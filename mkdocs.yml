@@ -6,8 +6,9 @@ theme:
 nav:
   - lasertram Documentation: index.md
   - Background: explanation.md
-  - Tutorials: lasertram_tutorial.ipynb
-  - How-To Guides: how-to-guides.md
+  - Tutorials - Basic: lasertram_tutorial.ipynb
+  - Tutorials - Signal de-spiking: lasertram_despiking.ipynb
+  - Tutorials - Region omission: lasertram_region_omission.ipynb
   - API reference: reference.md
   - Release Notes: CHANGELOG.md
 
