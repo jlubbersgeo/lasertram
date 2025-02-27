@@ -1,3 +1,5 @@
+import re
+
 import matplotlib.pyplot as plt
 import mpl_toolkits.axes_grid1.axes_size as Size
 from mpl_toolkits.axes_grid1 import Divider
@@ -136,4 +138,5 @@ def plot_lasertram_uncertainties(spot, fig=None, ax=None, **kwargs):
     ax.set_xticklabels(labels, rotation=90)
     ax.set_ylabel("% SE")
 
+    return ax
     return ax

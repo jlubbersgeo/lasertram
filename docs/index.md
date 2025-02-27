@@ -31,6 +31,7 @@ pip install lasertram
 ## Table of Contents
 
 1. [Background](explanation.md)
-2. [Tutorials](lasertram_tutorial.ipynb)
-3. [How-To guide](how-to-guides.md)
-4. [API reference](reference.md)
+2. [Tutorials - Basic](lasertram_tutorial.ipynb)
+3. [Tutorials - Signal despiking](lasertram_despiking.ipynb)
+4. [Tutorials - Region omission](lasertram_region_omission.ipynb)
+5. [API reference](reference.md)

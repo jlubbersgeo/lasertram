@@ -33,7 +33,7 @@ mathtext.fontset: stixsans
 
 # X-TICK
 xtick.bottom: True
-xtick.top: True
+xtick.top: False
 xtick.direction: out
 xtick.major.size: 5
 xtick.major.width: 1
