@@ -20,7 +20,7 @@ Overall the goals of `lasertram` are three-fold:
 
 ## Projects
 
-- `lasertram` is now published in _Applied Computing and Geosciences_:
+- `lasertram` is now [published](https://doi.org/10.1016/j.acags.2025.100225) in _Applied Computing and Geosciences_:
 
 ```tex
 @article{lubbers2025lasertram,
