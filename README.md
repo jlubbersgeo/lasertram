@@ -20,6 +20,19 @@ If you have features you'd like to see please open an issue or consider contribu
 **Maintainer** Jordan Lubbers (jlubbers _at_ usgs.gov)
 
 ## Citation
-A manuscript for `lasertram` is currently being prepared for _Computers and Geosciences_, but you may also cite the code directly as:
-> Lubbers, J. (2024) lasertram - Laser Time Resolved Analysis Module (Version 1.0.0), U.S. Geological Survey Software Release, https://doi.org/10.5066/P1DZUR3Z
 
+The math, logic, and structure of `lasertram` is now published in _Applied Computing and Geosciences_: [`lasertram`: A Python library for time resolved analysis of laser ablation inductively coupled plasma mass spectrometry data](https://doi.org/10.1016/j.acags.2025.100225)
+
+Here's a bib entry for you:
+
+```tex
+@article{lubbers2025lasertram,
+  title={lasertram: A Python library for time resolved analysis of laser ablation inductively coupled plasma mass spectrometry data},
+  author={Lubbers, Jordan and Kent, Adam JR and Russo, Chris},
+  journal={Applied Computing and Geosciences},
+  pages={100225},
+  year={2025},
+  publisher={Elsevier},
+  doi={10.1016/j.acags.2025.100225}
+}
+```
