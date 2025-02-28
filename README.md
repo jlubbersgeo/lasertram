@@ -36,3 +36,6 @@ Here's a bib entry for you:
   doi={10.1016/j.acags.2025.100225}
 }
 ```
+
+To cite this specific version of code (v1.0.1) directly:
+> Lubbers, J. (2025) lasertram - Laser Time Resolved Analysis Module (Version 1.0.1), U.S. Geological Survey Software Release, https://doi.org/10.5066/P14DFTFD
