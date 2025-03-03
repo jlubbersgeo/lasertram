@@ -26,7 +26,9 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
-## 1.0.1 (tbd)
+## 1.0.1 and 1.0.2
+
+_1.0.2 is the same as 1.0.1 but I screwed up the PyPI distribution so I'm redoing it as 1.0.2_
 
 ### :sparkles: First release after manuscript acceptance :sparkles:
 
