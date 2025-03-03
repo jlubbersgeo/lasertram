@@ -1,47 +1,88 @@
 [
-    {
-      "name": "lasertram",
-      "organization": "U.S. Geological Survey",
-      "description": "laser ablation icp-ms data processing in python",
-      "version": "1.0.1",
-      "status": "Development",
-  
-      "permissions": {
-        "usageType": "openSource",
-        "licenses": [
-          {
-            "name": "Public Domain, CC0-1.0",
-            "URL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/raw/1.0.1/LICENSE.md"
-          }
-        ]
-      },
-  
-      "homepageURL": "https://code.usgs.gov/vsc/petro/tools/lasertram",
-      "downloadURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/archive/1.0.1/lasertram-1.0.1.zip",
-      "disclaimerURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/raw/1.0.1/DISCLAIMER.md",
-      "repositoryURL": "https://code.usgs.gov/vsc/petro/tools/lasertram.git",
-      "vcs": "git",
-  
-      "laborHours": 0,
-  
-      "tags": [
-        "laser ablation icp-ms",
-        "geochemistry",
-        "trace elements",
-        "data processing"
-      ],
-  
-      "languages": [
-        "Python"
-      ],
-  
-      "contact": {
-        "name": "Jordan Lubbers",
-        "email": "jlubbers@usgs.gov"
-      },
-  
-      "date": {
-        "metadataLastUpdated": "2024-07-09"
-      }
-    }
-  ]
+	{
+		"name": "lasertram",
+		"organization": "U.S. Geological Survey",
+		"description": "laser ablation icp-ms data processing in python",
+		"version": "1.0.1",
+		"status": "Development",
+
+		"permissions": {
+			"usageType": "openSource",
+			"licenses": [
+				{
+					"name": "Public Domain, CC0-1.0",
+					"URL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/raw/1.0.1/LICENSE.md"
+				}
+			]
+		},
+
+		"homepageURL": "https://code.usgs.gov/vsc/petro/tools/lasertram",
+		"downloadURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/archive/1.0.1/lasertram-1.0.1.zip",
+		"disclaimerURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/raw/1.0.1/DISCLAIMER.md",
+		"repositoryURL": "https://code.usgs.gov/vsc/petro/tools/lasertram.git",
+		"vcs": "git",
+
+		"laborHours": 0,
+
+		"tags": [
+			"laser ablation icp-ms",
+			"geochemistry",
+			"trace elements",
+			"data processing"
+		],
+
+		"languages": ["Python"],
+
+		"contact": {
+			"name": "Jordan Lubbers",
+			"email": "jlubbers@usgs.gov"
+		},
+
+		"date": {
+			"metadataLastUpdated": "2025-03-03"
+		}
+	},
+	{
+		"name": "lasertram",
+		"organization": "U.S. Geological Survey",
+		"description": "laser ablation icp-ms data processing in python",
+		"version": "1.0.0",
+		"status": "Development",
+
+		"permissions": {
+			"usageType": "openSource",
+			"licenses": [
+				{
+					"name": "Public Domain, CC0-1.0",
+					"URL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/raw/1.0.0/LICENSE.md"
+				}
+			]
+		},
+
+		"homepageURL": "https://code.usgs.gov/vsc/petro/tools/lasertram",
+		"downloadURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/archive/1.0.0/lasertram-1.0.0.zip",
+		"disclaimerURL": "https://code.usgs.gov/vsc/petro/tools/lasertram/-/raw/1.0.0/DISCLAIMER.md",
+		"repositoryURL": "https://code.usgs.gov/vsc/petro/tools/lasertram.git",
+		"vcs": "git",
+
+		"laborHours": 0,
+
+		"tags": [
+			"laser ablation icp-ms",
+			"geochemistry",
+			"trace elements",
+			"data processing"
+		],
+
+		"languages": ["Python"],
+
+		"contact": {
+			"name": "Jordan Lubbers",
+			"email": "jlubbers@usgs.gov"
+		},
+
+		"date": {
+			"metadataLastUpdated": "2024-07-09"
+		}
+	}
+]
