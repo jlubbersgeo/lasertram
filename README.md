@@ -4,7 +4,7 @@ Welcome to the repository for `lasertram`, a package for the time resolved analy
 
 ## Documentation
 
-please see the [Documentation](https://jlubbersgeo.github.io/lasertram/) for more!
+please see the [Documentation](https://jlubbersgeo.github.io/lasertram/latest/) for more!
 
 ## Installation
 [![PyPI](https://img.shields.io/pypi/v/lasertram.svg?style=flat)](https://pypi.python.org/pypi/lasertram)
