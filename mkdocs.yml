@@ -31,3 +31,8 @@ extra_javascript:
 plugins:
   - mkdocstrings
   - mkdocs-jupyter
+
+extra:
+  version:
+    provider: mike
+  
