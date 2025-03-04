@@ -278,11 +278,30 @@
   
   
     <li class="md-nav__item">
-      <a href="how-to-guides/" class="md-nav__link">
+      <a href="lasertram_despiking/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    How-To Guides
+    Signal de-spiking in LaserTRAM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="lasertram_region_omission/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Advanced region selection using LaserTRAM: region omission
   </span>
   
 
@@ -405,7 +424,7 @@
 <li><a href="https://pubs.geoscienceworld.org/msa/ammin/article/91/8-9/1401/134304/Analysis-of-light-lithophile-elements-Li-Be-B-by">Kent, A. J., &amp; Ungerer, C. A. (2006). Analysis of light lithophile elements (Li, Be, B) by laser ablation ICP-MS: comparison between magnetic sector and quadrupole ICP-MS. American Mineralogist, 91(8-9), 1401-1411.</a></li>
 </ol>
 <h2 id="motivation">Motivation</h2>
-<p>With a wide array of applications in the natural sciences, laser ablation inductively coupled plasma mass spectrometry (LA-ICP-MS) is a now a commonplace tool for the gathering of <i>in situ</i> trace element (i.e., <span class="arithmatex">\(&lt;\)</span> 0.1 wt\%) data from solid materials. The last two decades have seen significant advances in both instrument capabilities and operating software, allowing users to generate large volumes of <i>in situ</i> geochemical data in comparatively little time to previous methodologies (i.e., micro-drilling) while still maintaining high degrees of accuracy and precision.</p>
+<p>With a wide array of applications in the natural sciences, laser ablation inductively coupled plasma mass spectrometry (LA-ICP-MS) is a now a commonplace tool for the gathering of <i>in situ</i> trace element (i.e., <span class="arithmatex">\(&lt;\)</span> 0.1 wt%) data from solid materials. The last two decades have seen significant advances in both instrument capabilities and operating software, allowing users to generate large volumes of <i>in situ</i> geochemical data in comparatively little time to previous methodologies (i.e., micro-drilling) while still maintaining high degrees of accuracy and precision.</p>
 <p>Raw data output from LA-ICP-MS, however, is in the form of counts per second (cps) for the selected analyte isotopes, not elemental concentrations. In order to be converted into accurate concentrations, a modest amount of user input and interpretation is required and should not be automated. That does not mean, however, we cannot streamline our workflow! This documuentation is designed to outline the theory, workflow, and structure, behind <code>lasertram</code> in an effort to maximize its effectiveness in the petrology and volcanology communities.</p>
 <p>Overall the goals of <code>lasertram</code> are three-fold:</p>
 <ol>
@@ -418,6 +437,19 @@
 </ol>
 <h2 id="projects">Projects</h2>
 <ul>
+<li><code>lasertram</code> is now <a href="https://doi.org/10.1016/j.acags.2025.100225">published</a> in <em>Applied Computing and Geosciences</em>:</li>
+</ul>
+<pre><code class="language-tex">@article{lubbers2025lasertram,
+  title={lasertram: A Python library for time resolved analysis of laser ablation inductively coupled plasma mass spectrometry data},
+  author={Lubbers, Jordan and Kent, Adam JR and Russo, Chris},
+  journal={Applied Computing and Geosciences},
+  pages={100225},
+  year={2025},
+  publisher={Elsevier},
+  doi={10.1016/j.acags.2025.100225}
+}
+</code></pre>
+<ul>
 <li><code>lasertram</code> is the backend engine to <a href="https://github.com/jlubbersgeo/laserTRAM-DB">LaserTRAM-DB</a>, a dashboard for interactively and transparently processing LA-ICP-MS data.</li>
 </ul>
 <h2 id="get-started">Get started</h2>
@@ -426,8 +458,9 @@
 <h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="explanation/">Background</a></li>
-<li><a href="lasertram_tutorial/">Tutorials</a></li>
-<li><a href="how-to-guides/">How-To guide</a></li>
+<li><a href="lasertram_tutorial/">Tutorials - Basic</a></li>
+<li><a href="lasertram_despiking/">Tutorials - Signal despiking</a></li>
+<li><a href="lasertram_region_omission/">Tutorials - Region omission</a></li>
 <li><a href="reference/">API reference</a></li>
 </ol>
 
