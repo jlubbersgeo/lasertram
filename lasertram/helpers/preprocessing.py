@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 from dateutil.parser import parse
 
+data_examples_dir = Path(__file__).parent.parent / "data"
+
 
 def extract_agilent_data(file):
     """
@@ -44,7 +46,7 @@ def extract_agilent_data(file):
     data.columns = header
     newcols = []
     for s in data.columns.tolist():
-        l = re.findall("(\d+|[A-Za-z]+)", s)
+        l = re.findall(r"(\d+|[A-Za-z]+)", s)
         if "Time" in l:
             newcols.append(l[0])
         else:
@@ -228,11 +230,16 @@ def load_test_rawdata():
 
     """
 
-    current_path = Path(__file__).parent
+    # current_path = Path(__file__).parent
+    # lt_ready = pd.read_excel(
+    #     current_path.parents[1]
+    #     / "test_data"
+    #     / "computers_and_geosciences_examples"
+    #     / "2022-05-10_LT_ready.xlsx"
+    # ).set_index("SampleLabel")
 
     lt_ready = pd.read_excel(
-        current_path.parents[1]
-        / "test_data"
+        data_examples_dir
         / "computers_and_geosciences_examples"
         / "2022-05-10_LT_ready.xlsx"
     ).set_index("SampleLabel")
@@ -250,11 +257,17 @@ def load_test_intervals():
 
     """
 
-    current_path = Path(__file__).parent
+    # current_path = Path(__file__).parent
+
+    # intervals = pd.read_excel(
+    #     current_path.parents[1]
+    #     / "test_data"
+    #     / "computers_and_geosciences_examples"
+    #     / "example_intervals.xlsx"
+    # ).set_index("Spot")
 
     intervals = pd.read_excel(
-        current_path.parents[1]
-        / "test_data"
+        data_examples_dir
         / "computers_and_geosciences_examples"
         / "example_intervals.xlsx"
     ).set_index("Spot")
@@ -272,11 +285,17 @@ def load_test_int_std_comps():
 
     """
 
-    current_path = Path(__file__).parent
+    # current_path = Path(__file__).parent
+
+    # concentrations = pd.read_excel(
+    #     current_path.parents[1]
+    #     / "test_data"
+    #     / "computers_and_geosciences_examples"
+    #     / "example_internal_std.xlsx"
+    # )
 
     concentrations = pd.read_excel(
-        current_path.parents[1]
-        / "test_data"
+        data_examples_dir
         / "computers_and_geosciences_examples"
         / "example_internal_std.xlsx"
     )
