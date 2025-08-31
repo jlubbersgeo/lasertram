@@ -2,15 +2,18 @@
 various tests for the package lasertram
 """
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
+from matplotlib import pyplot as plt
 
-from lasertram import LaserCalc, LaserTRAM, batch, conversions
+from lasertram import LaserCalc, LaserTRAM, batch, conversions, plotting, preprocessing
 
 ###########LASERTRAM UNIT TESTS##############
-spreadsheet_path = r"./tests/spot_test_timestamp_raw_data.xlsx"
-
+spreadsheet_path = Path(__file__).parent / "spot_test_timestamp_raw_data.xlsx"
+raw_thermo_path = Path(__file__).parent / "raw" / "03152024_IODP_tephras4_1.csv"
 
 pytest.bkgd_interval = (5, 10)
 pytest.keep_interval = (20, 40)
@@ -22,6 +25,157 @@ pytest.int_std = "29Si"
 def load_data():
     data = pd.read_excel(spreadsheet_path).set_index("SampleLabel")
     return data
+
+
+def test_load_preprocess_thermo():
+
+    assert all(
+        k in preprocessing.extract_thermo_data(raw_thermo_path).keys()
+        for k in ["timestamp", "file", "sample", "data"]
+    )
+
+    df = preprocessing.make_lt_ready_file(raw_thermo_path, quad_type="thermo")
+
+    assert df.shape == (194, 35), "dataframe not the right shape"
+    assert df.columns.to_list() == [
+        "timestamp",
+        "SampleLabel",
+        "Time",
+        "7Li",
+        "29Si",
+        "31P",
+        "43Ca",
+        "45Sc",
+        "47Ti",
+        "51V",
+        "55Mn",
+        "65Cu",
+        "66Zn",
+        "85Rb",
+        "88Sr",
+        "89Y",
+        "90Zr",
+        "93Nb",
+        "133Cs",
+        "137Ba",
+        "139La",
+        "140Ce",
+        "141Pr",
+        "146Nd",
+        "147Sm",
+        "153Eu",
+        "157Gd",
+        "163Dy",
+        "166Er",
+        "172Yb",
+        "178Hf",
+        "181Ta",
+        "208Pb",
+        "232Th",
+        "238U",
+    ], "columns not correct"
+
+
+def test_check_included_data():
+
+    raw_data = preprocessing.load_test_rawdata()
+
+    assert raw_data.shape == (27434, 34), "raw data not the right shape"
+    assert raw_data.columns.to_list() == [
+        "timestamp",
+        "Time",
+        "7Li",
+        "29Si",
+        "31P",
+        "43Ca",
+        "45Sc",
+        "47Ti",
+        "51V",
+        "55Mn",
+        "65Cu",
+        "66Zn",
+        "85Rb",
+        "88Sr",
+        "89Y",
+        "90Zr",
+        "93Nb",
+        "133Cs",
+        "137Ba",
+        "139La",
+        "140Ce",
+        "141Pr",
+        "146Nd",
+        "147Sm",
+        "153Eu",
+        "157Gd",
+        "163Dy",
+        "166Er",
+        "172Yb",
+        "178Hf",
+        "181Ta",
+        "208Pb",
+        "232Th",
+        "238U",
+    ]
+
+
+def test_make_lt_ready_folder():
+    df = preprocessing.make_lt_ready_folder(raw_thermo_path.parent, quad_type="thermo")
+
+    assert df.shape == (973, 35)
+    assert df.columns.to_list() == [
+        "timestamp",
+        "SampleLabel",
+        "Time",
+        "7Li",
+        "29Si",
+        "31P",
+        "43Ca",
+        "45Sc",
+        "47Ti",
+        "51V",
+        "55Mn",
+        "65Cu",
+        "66Zn",
+        "85Rb",
+        "88Sr",
+        "89Y",
+        "90Zr",
+        "93Nb",
+        "133Cs",
+        "137Ba",
+        "139La",
+        "140Ce",
+        "141Pr",
+        "146Nd",
+        "147Sm",
+        "153Eu",
+        "157Gd",
+        "163Dy",
+        "166Er",
+        "172Yb",
+        "178Hf",
+        "181Ta",
+        "208Pb",
+        "232Th",
+        "238U",
+    ]
+
+
+def test_get_intervals():
+
+    intervals = preprocessing.load_test_intervals()
+
+    assert intervals.shape == (168, 2)
+    assert intervals.columns.to_list() == ["int_start", "int_stop"]
+
+
+def test_get_intstd_comps():
+
+    int_std_comps = preprocessing.load_test_int_std_comps()
+
+    assert int_std_comps.shape == (131, 3)
+    assert int_std_comps.columns.to_list() == ["Spot", "SiO2", "SiO2_std%"]
 
 
 def test_get_data(load_data):
@@ -82,6 +236,66 @@ def test_assign_intervals(load_data):
     assert spot.omit_start == pytest.omit_interval[0], "the omit_start should be 30"
     assert spot.omit_stop == pytest.omit_interval[1], "the omit_stop should be 35"
     assert spot.omitted_region is True, "omittted_region should be True"
+
+
+def test_plot_raw_data():
+    """test that the raw data function plots things correctly"""
+    raw_data = preprocessing.load_test_rawdata()
+
+    sample = "GSD-1G_-_1"
+    ax = plotting.plot_timeseries_data(raw_data.loc[sample, :])
+
+    lines = ax[0].get_lines()
+    for line in lines:
+        ydata = line.get_ydata()
+
+        np.testing.assert_array_equal(
+            ydata, raw_data.loc[sample, line.get_label()].values
+        )
+
+    # now test with specified elements
+    ax = plotting.plot_timeseries_data(
+        raw_data.loc[sample, :], analytes=["7Li", "29Si"]
+    )
+    lines = ax[0].get_lines()
+    for line in lines:
+        ydata = line.get_ydata()
+
+        np.testing.assert_array_equal(
+            ydata, raw_data.loc[sample, line.get_label()].values
+        )
+
+
+def test_plot_lt_errors(load_data):
+    """
+    test that the error bars are being plotted correctly for lasertram"""
+
+    spot = LaserTRAM(name="test")
+
+    samples = load_data.index.unique().dropna().tolist()
+
+    spot.get_data(load_data.loc[samples[0], :])
+
+    spot.assign_int_std(pytest.int_std)
+
+    spot.assign_intervals(
+        bkgd=pytest.bkgd_interval, keep=pytest.keep_interval, omit=pytest.omit_interval
+    )
+    spot.get_bkgd_data()
+    spot.subtract_bkgd()
+    spot.get_detection_limits()
+    spot.normalize_interval()
+    spot.despike_data()
+
+    fig, ax = plt.subplots()
+    plotting.plot_lasertram_uncertainties(spot, ax=ax)
+    patches = ax.patches
+    heights = []
+    for patch in patches:
+        heights.append(patch.get_height())
+    heights = np.array(heights)
+
+    np.testing.assert_array_equal(heights, spot.bkgd_subtract_std_err_rel)
 
 
 def test_get_bkgd_data(load_data):
