@@ -8,6 +8,7 @@ with statistics on calibration standards
 """
 
 import re
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -182,7 +183,6 @@ class LaserCalc:
         for different elemental concentrations.Standard names must be exact
         names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp
         """
-
         self.standards_data = df.set_index("Standard")
         self.database_standards = self.standards_data.index.unique().to_list()
         # Get a list of all of the elements supported in the published standard datasheet
@@ -265,6 +265,56 @@ class LaserCalc:
         ]
         # elements without isotopes in the front
         self.elements = [re.split(r"(\d+)", analyte)[2] for analyte in self.analytes]
+
+        # ADD IN SOME CHECKING FOR ANALYTES TO MAKE SURE THAT THE MEASURED ANALYTES HAVE SRM VALUES IN THE DB
+        # compare self.elements to self.standard_elements by going through each standard and checking for nan for that element
+
+        # first check to make sure that the element exists within the standards database
+        for el in self.elements:
+            if el not in self.standard_elements:
+                raise ValueError(
+                    f"{el} is not in the standards database. Please remove it from your data before proceeding with processing."
+                )
+        # now for each potential calibration standard check to see if any of the analytes measured
+        # don't have published values
+        nan_dict = {}
+        for standard in self.potential_calibration_standards:
+
+            # isolate just the elements measured in the experiment
+            to_check = self.standards_data.loc[standard, self.elements]
+
+            # now check to see if any are nan by creating a mask
+            nan_mask = to_check.isna()
+            nan_dict[standard] = nan_mask
+
+        # create dataframe of masks
+        nan_df = pd.DataFrame(nan_dict)
+
+        # for each column check to see if there are any nans
+        # if so this eliminates them as potential calibration standards
+        # so they get removed
+        for col in nan_df.columns:
+            if nan_df[col].any():
+                self.potential_calibration_standards.remove(col)
+
+        # if no potential calibration standards exist throw some messages and then
+        # an error
+        if len(self.potential_calibration_standards) == 0:
+            print(
+                f"your list of measured analytes is: {self.analytes}.\nThe following measured standard reference materials have no published value for the selected analytes:"
+            )
+
+            for col in nan_df.columns:
+                print(f"{col}: {nan_df[col][nan_dict[col]].index.values}")
+
+            raise ValueError(
+                "cannot process data. There are no potential calibration standards in your dataset that contain accepted values for all analytes in the uploaded standards database. The easiest way to proceed is to remove the problematic analytes from your dataset."
+            )
+        # else tell them their potential calibration standards
+        else:
+            print(
+                f"Your potential calibration standards are: {[str(s) for s in self.potential_calibration_standards]}"
+            )
 
         # internal standard analyte from lasertram
         self.int_std_element = re.split(r"(\d+)", self.data["norm"].unique()[0])[2]

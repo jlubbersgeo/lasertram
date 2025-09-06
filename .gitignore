@@ -161,3 +161,7 @@ cython_debug/
 
 # mac specific files
 .DS_Store
+
+# testing specific files
+tests/throwaway.py
+
