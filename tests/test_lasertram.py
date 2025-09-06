@@ -791,6 +791,17 @@ def test_get_SRM_comps(load_SRM_data):
 
 
 def test_get_data(load_SRM_data, load_LTcomplete_data):
+    """_summary_
+
+    Parameters
+    ----------
+    load_SRM_data : _type_
+        _description_
+    load_LTcomplete_data : _type_
+        _description_
+    """
+    # TODO add test for checking when analytes are not in SRM data and when there are no
+    # potential calibration standards due to nans in the SRM data
     concentrations = LaserCalc(name="test")
     concentrations.get_SRM_comps(load_SRM_data)
     concentrations.get_data(load_LTcomplete_data)
