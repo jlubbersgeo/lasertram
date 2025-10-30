@@ -135,7 +135,6 @@ class LaserTRAM:
 
         # row in self.data corresponding to self.omit_start
         self.omit_start_idx = None
-
         # row in self.data corresponding to self.omit_stop
         self.omit_stop_idx = None
 
@@ -182,6 +181,11 @@ class LaserTRAM:
             df (pandas DataFrame): raw data corresponding to the spot being processed i.e., `all_data.loc[spot,:]` if `all_data` is the LT_ready file
             time_units (str): string denoting the units for the `Time` column. Used to convert input time values to seconds. Defaults to 'ms'.
         """
+
+        # TODO: get_data
+        # - [ ] add: check to make sure data are in right format else throw an error. do this by having a list of required columns and checking for them.
+
+        
         # get data and set index to "SampleLabel" column
         self.data = df.reset_index()
         self.data = self.data.set_index("SampleLabel")

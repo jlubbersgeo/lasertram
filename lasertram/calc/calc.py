@@ -19,6 +19,7 @@ from statsmodels.tools.eval_measures import rmse
 from ..helpers import conversions
 
 
+
 class LaserCalc:
     """
     # LaserCalc
@@ -183,6 +184,9 @@ class LaserCalc:
         for different elemental concentrations.Standard names must be exact
         names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp
         """
+        #TODO: get_SRM_comps
+        # - [ ] add: check to make sure data are in right format else throw an error. do this by having a list of required columns and checking for them.
+        
         self.standards_data = df.set_index("Standard")
         self.database_standards = self.standards_data.index.unique().to_list()
         # Get a list of all of the elements supported in the published standard datasheet
@@ -206,6 +210,10 @@ class LaserCalc:
         # check if first row is nan (output from GUI does this).
         # If so, remove it
         df = df[df.iloc[:, 0].isna() == False]
+
+        #TODO: get_data
+        # - [ ] add: check to make sure data are in right format else throw an error. do this by having a list of required columns and checking for them. this can't include analytes though - just the metadata.
+        # - [x] add: in some checking for analytes to make sure that the measured analytes exist within the standards database. compare self.elements to self.standard_elements by going through each standard and checking for nan for that element
 
         data = df.set_index("Spot")
         data.insert(loc=1, column="index", value=np.arange(1, len(data) + 1))
@@ -266,8 +274,7 @@ class LaserCalc:
         # elements without isotopes in the front
         self.elements = [re.split(r"(\d+)", analyte)[2] for analyte in self.analytes]
 
-        # ADD IN SOME CHECKING FOR ANALYTES TO MAKE SURE THAT THE MEASURED ANALYTES HAVE SRM VALUES IN THE DB
-        # compare self.elements to self.standard_elements by going through each standard and checking for nan for that element
+
 
         # first check to make sure that the element exists within the standards database
         for el in self.elements:
@@ -666,7 +673,7 @@ class LaserCalc:
 
         self.calculate_uncertainties()
 
-        # ADD IN SPOT METADATA NOW
+        # INSERT IN SPOT METADATA NOW
 
         self.unknown_concentrations[self.unknown_concentrations < 0] = "b.d.l."
         self.SRM_concentrations[self.SRM_concentrations < 0] = "b.d.l."
