@@ -8,6 +8,7 @@ with statistics on calibration standards
 """
 
 import re
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -15,7 +16,7 @@ import statsmodels.api as sm
 from scipy import stats
 from statsmodels.tools.eval_measures import rmse
 
-from ..helpers import conversions
+from ..helpers import conversions, formatting
 
 
 class LaserCalc:
@@ -182,8 +183,26 @@ class LaserCalc:
         for different elemental concentrations.Standard names must be exact
         names found in GEOREM: http://georem.mpch-mainz.gwdg.de/sample_query_pref.asp
         """
+        # TODO: get_SRM_comps
+        # - [x] add: check to make sure data are in right format else throw an error. do this by having a list of required columns and checking for them.
 
+        print(
+            "checking uploaded standards database format for correct column headers and data types..."
+        )
+        col_check, type_check = formatting.check_srm_format(df)
+
+        if col_check is not None:
+            raise ValueError(
+                f"It looks like your input data are missing the following required columns: {col_check}. Please fix before continuing with processing."
+            )
+        if type_check is not None:
+            raise TypeError(
+                f"It looks like your input data have incorrect types in the following column indices: {type_check}. Please fix before continuing with processing."
+            )
         self.standards_data = df.set_index("Standard")
+
+        print("check complete...standards database format looks good!")
+
         self.database_standards = self.standards_data.index.unique().to_list()
         # Get a list of all of the elements supported in the published standard datasheet
         # Get a second list for the same elements but their corresponding uncertainty columns
@@ -206,6 +225,26 @@ class LaserCalc:
         # check if first row is nan (output from GUI does this).
         # If so, remove it
         df = df[df.iloc[:, 0].isna() == False]
+
+        # TODO: get_data
+        # - [x] add: check to make sure data are in right format else throw an error. do this by having a list of required columns and checking for them. this can't include analytes though - just the metadata.
+        # - [x] add: in some checking for analytes to make sure that the measured analytes exist within the standards database. compare self.elements to self.standard_elements by going through each standard and checking for nan for that element
+
+        print(
+            "checking LaserCalc input data format for correct column headers and data types..."
+        )
+
+        col_check, type_check = formatting.check_lt_complete_format(df)
+        if col_check is not None:
+            raise ValueError(
+                f"It looks like your input data are missing the following required columns: {col_check}. Please fix before continuing with processing."
+            )
+        if type_check is not None:
+            raise TypeError(
+                f"It looks like your input data have incorrect types in the following column indices: {type_check}. Please fix before continuing with processing."
+            )
+
+        print("check complete...input data format looks good!")
 
         data = df.set_index("Spot")
         data.insert(loc=1, column="index", value=np.arange(1, len(data) + 1))
@@ -265,6 +304,53 @@ class LaserCalc:
         ]
         # elements without isotopes in the front
         self.elements = [re.split(r"(\d+)", analyte)[2] for analyte in self.analytes]
+
+        # first check to make sure that the element exists within the standards database
+        for el in self.elements:
+            if el not in self.standard_elements:
+                raise ValueError(
+                    f"{el} is not in the standards database. Please remove it from your data before proceeding with processing."
+                )
+        # now for each potential calibration standard check to see if any of the analytes measured
+        # don't have published values
+        nan_dict = {}
+        for standard in self.potential_calibration_standards:
+
+            # isolate just the elements measured in the experiment
+            to_check = self.standards_data.loc[standard, self.elements]
+
+            # now check to see if any are nan by creating a mask
+            nan_mask = to_check.isna()
+            nan_dict[standard] = nan_mask
+
+        # create dataframe of masks
+        nan_df = pd.DataFrame(nan_dict)
+
+        # for each column check to see if there are any nans
+        # if so this eliminates them as potential calibration standards
+        # so they get removed
+        for col in nan_df.columns:
+            if nan_df[col].any():
+                self.potential_calibration_standards.remove(col)
+
+        # if no potential calibration standards exist throw some messages and then
+        # an error
+        if len(self.potential_calibration_standards) == 0:
+            print(
+                f"your list of measured analytes is: {self.analytes}.\nThe following measured standard reference materials have no published value for the selected analytes:"
+            )
+
+            for col in nan_df.columns:
+                print(f"{col}: {nan_df[col][nan_dict[col]].index.values}")
+
+            raise ValueError(
+                "cannot process data. There are no potential calibration standards in your dataset that contain accepted values for all analytes in the uploaded standards database. The easiest way to proceed is to remove the problematic analytes from your dataset."
+            )
+        # else tell them their potential calibration standards
+        else:
+            print(
+                f"Your potential calibration standards are: {[str(s) for s in self.potential_calibration_standards]}"
+            )
 
         # internal standard analyte from lasertram
         self.int_std_element = re.split(r"(\d+)", self.data["norm"].unique()[0])[2]
@@ -616,10 +702,58 @@ class LaserCalc:
 
         self.calculate_uncertainties()
 
-        # ADD IN SPOT METADATA NOW
+        # INSERT IN SPOT METADATA NOW
+        # OLD WAY OF REPLACING NEGATIVES. WILL THROW ERROR IN FUTURE FOR MIXING
+        # STRINGS WITH FLOATS
+        # self.unknown_concentrations[self.unknown_concentrations < 0] = "b.d.l."
+        # self.SRM_concentrations[self.SRM_concentrations < 0] = "b.d.l."
 
-        self.unknown_concentrations[self.unknown_concentrations < 0] = "b.d.l."
-        self.SRM_concentrations[self.SRM_concentrations < 0] = "b.d.l."
+        # THE NEW WAY OF DOING IT IS TO GO THROUGH COLUMN BY COLUMN AND CHECK FOR BELOW
+        # 0 VALUES, CHANGE THE DTYPE TO OBJECT, AND THEN REPLACE THE NEGATIVE VALUES WITH BDL STRING
+        # THEN CHANGE THE UNCERTAINTY VALUES TO BDL STRINGS BASED ON THE ROW WE DID FOR THE ACTUAL CONCENTRATION VALUE
+        for analyte in self.analytes:
+            if any(self.unknown_concentrations[analyte] < 0):
+                self.unknown_concentrations[analyte] = self.unknown_concentrations[
+                    analyte
+                ].astype("object")
+                self.unknown_concentrations[f"{analyte}_interr"] = (
+                    self.unknown_concentrations[f"{analyte}_interr"].astype("object")
+                )
+                self.unknown_concentrations[f"{analyte}_exterr"] = (
+                    self.unknown_concentrations[f"{analyte}_exterr"].astype("object")
+                )
+
+                self.unknown_concentrations.loc[
+                    self.unknown_concentrations[analyte] < 0, analyte
+                ] = "b.d.l."
+                self.unknown_concentrations.loc[
+                    self.unknown_concentrations[analyte] == "b.d.l.",
+                    f"{analyte}_interr",
+                ] = "b.d.l."
+                self.unknown_concentrations.loc[
+                    self.unknown_concentrations[analyte] == "b.d.l", f"{analyte}_interr"
+                ] = "b.d.l."
+
+            if any(self.SRM_concentrations[analyte] < 0):
+                self.SRM_concentrations[analyte] = self.SRM_concentrations[
+                    analyte
+                ].astype("object")
+                self.SRM_concentrations[f"{analyte}_interr"] = self.SRM_concentrations[
+                    f"{analyte}_interr"
+                ].astype("object")
+                self.SRM_concentrations[f"{analyte}_exterr"] = self.SRM_concentrations[
+                    f"{analyte}_exterr"
+                ].astype("object")
+
+                self.SRM_concentrations.loc[
+                    self.SRM_concentrations[analyte] < 0, analyte
+                ] = "b.d.l."
+                self.SRM_concentrations.loc[
+                    self.SRM_concentrations[analyte] == "b.d.l.", f"{analyte}_interr"
+                ] = "b.d.l."
+                self.SRM_concentrations.loc[
+                    self.SRM_concentrations[analyte] == "b.d.l", f"{analyte}_interr"
+                ] = "b.d.l."
 
         self.SRM_concentrations.insert(
             0, "Spot", list(self.data.loc[self.secondary_standards, "Spot"])
@@ -869,11 +1003,23 @@ class LaserCalc:
         df_list = []
 
         for standard in self.secondary_standards:
+            # need to go through column by column and check for bdl and then
+            # replace with nan for numeric calculation. This explicit type declaration
+            # is now required by pandas.
+
+            for analyte in self.analytes:
+                if self.SRM_concentrations[analyte].dtype == "object":
+                    if self.SRM_concentrations[analyte].str.contains("b.d.l.").any():
+                        ser = pd.to_numeric(
+                            self.SRM_concentrations[analyte], errors="coerce"
+                        )
+                        ser.replace("b.d.l.", np.nan, inplace=True)
+
+                        self.SRM_concentrations[analyte] = ser
+
             df = pd.DataFrame(
                 100
-                * self.SRM_concentrations.loc[standard, self.analytes]
-                .replace("b.d.l.", np.nan)
-                .values
+                * self.SRM_concentrations.loc[standard, self.analytes].values
                 / self.standards_data.loc[standard, self.elements].values[
                     np.newaxis, :
                 ],

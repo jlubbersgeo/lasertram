@@ -5,7 +5,10 @@ For converting wt% oxide to ppm
 
 import mendeleev
 
-
+#TODO: oxide_to_ppm function
+# - [ ] add: element_to_oxide and oxide_dict to conversions (take from oxide converter tool) so that we can utilize many more things as internal standards
+# - [ ] fix: Make oxide_to_ppm reference oxide_dict as well so we can seamlessly use both functions back and forth
+# - [ ] add: in error handling for if element is not found in oxides list
 def oxide_to_ppm(wt_percent, int_std):
     """
     convert concentration internal standard analyte oxide in weight percent to
@@ -45,6 +48,8 @@ def oxide_to_ppm(wt_percent, int_std):
     for o in oxides:
         if element in o:
             oxide = o
+
+
 
     s = oxide.split("O")
     cat_subscript = s[0]

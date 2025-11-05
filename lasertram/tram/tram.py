@@ -13,6 +13,7 @@ metadata
 
 import numpy as np
 import pandas as pd
+from ..helpers import formatting
 
 
 def _z_filter(signal, std_devs, window=50):
@@ -135,7 +136,6 @@ class LaserTRAM:
 
         # row in self.data corresponding to self.omit_start
         self.omit_start_idx = None
-
         # row in self.data corresponding to self.omit_stop
         self.omit_stop_idx = None
 
@@ -182,8 +182,24 @@ class LaserTRAM:
             df (pandas DataFrame): raw data corresponding to the spot being processed i.e., `all_data.loc[spot,:]` if `all_data` is the LT_ready file
             time_units (str): string denoting the units for the `Time` column. Used to convert input time values to seconds. Defaults to 'ms'.
         """
+
+        # TODO: get_data
+        # - [x] add: check to make sure data are in right format else throw an error. do this by having a list of required columns and checking for them.
+
+        
         # get data and set index to "SampleLabel" column
         self.data = df.reset_index()
+
+        col_check, type_check = formatting.check_lt_input_format(self.data)
+        print("checking LaserTRAM input data format for correct column headers and data types...")
+
+        if col_check is not None:
+            raise ValueError(f"It looks like your input data are missing the following required columns: {col_check}. Please fix before continuing with processing.")
+        if type_check is not None:
+            raise TypeError(f"It looks like your input data have incorrect types in the following column indices: {type_check}. Please fix before continuing with processing.")
+        
+        print("check complete...input data format looks good!")
+        
         self.data = self.data.set_index("SampleLabel")
 
         # convert time units from ms --> s if applicable
@@ -200,6 +216,7 @@ class LaserTRAM:
 
         # need to add check for if this exists otherwise there is no timestamp attribute
         self.timestamp = str(self.data.loc[:, "timestamp"].unique()[0])
+        self.timestamp = pd.to_datetime(self.timestamp)
 
     def assign_int_std(self, int_std):
         """assigns the spot an internal standard
@@ -386,6 +403,7 @@ class LaserTRAM:
             "norm",
             "norm_cps",
         ]
+        spot_data['timestamp'] = pd.to_datetime(spot_data['timestamp'])
         spot_data = pd.concat(
             [
                 spot_data,
