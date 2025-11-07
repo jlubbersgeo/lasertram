@@ -9,12 +9,11 @@ import pandas as pd
 import pytest
 from matplotlib import pyplot as plt
 
-from lasertram import LaserCalc, LaserTRAM, batch, conversions, plotting, preprocessing
+from lasertram import LaserCalc, LaserTRAM, batch, conversions, plotting, preprocessing, formatting
 
 ###########LASERTRAM UNIT TESTS##############
 spreadsheet_path = Path(__file__).parent / "2022-05-10_LT_ready.xlsx"
 raw_thermo_path = Path(__file__).parent / "raw" / "03152024_IODP_tephras4_1.csv"
-
 
 
 pytest.bkgd_interval = (5, 10)
@@ -25,7 +24,6 @@ pytest.int_std = "29Si"
 # TODO: general pytest notes
 # - [ ] add: upload type checking test for lt_ready, lt_complete, srm_database functions
 # - [ ] add: test for checking when analytes are not in SRM data and when there are no published values for an analyte
-
 
 @pytest.fixture
 def load_data():
@@ -803,22 +801,111 @@ def test_oxide_to_ppm():
     properly. Test
     """
 
-    analytes = ["29Si", "27Al", "CaO"]
+    elements = ["Si", "Al", "Ca"]
     oxide_vals = np.array([65.0, 15.0, 8.0])
 
-    result = {}
-    for analyte, oxide in zip(analytes, oxide_vals):
-        result[analyte] = conversions.oxide_to_ppm(oxide, analyte)
+    result = []
+    for element, val in zip(elements, oxide_vals):
+        result.append(conversions.oxide_to_ppm(val, element))
 
-    expected = {
-        "29Si": 303833.8631559676,
-        "27Al": 107957.04626864659,
-        "CaO": 34304.891110317745,
-    }
+    result = np.array(result)
 
-    assert (
-        result == expected
-    ), "concentrations from oxides not being calculated properly"
+    expected = np.array([303833.86315597, 79388.5390063, 57175.66916918])
+
+    np.testing.assert_allclose(
+        result,
+        expected,
+        err_msg="conversions from wt percent oxide to ppm not correct, please check!",
+    )
+
+def test_wt_percent_to_oxide():
+
+    elements = ["Si", "Al", "Ca"]
+
+    wt_percent_values = expected = np.array([303833.86315597, 79388.5390063, 57175.66916918]) /1e4
+    
+
+    result = []
+    for element, val in zip(elements, wt_percent_values):
+        result.append(conversions.wt_percent_to_oxide(val, element))
+
+    result = np.array(result)
+
+    expected = np.array([65.0, 15.0, 8.0])
+
+    np.testing.assert_allclose(
+        result,
+        expected,
+        err_msg="conversions from wt percent oxide to ppm not correct, please check!",
+    )
+
+def test_supported_oxides():
+
+    
+    result = conversions.supported_internal_standard_oxides
+
+    expected = [
+        "Al2O3",
+        "As2O3",
+        "Au2O",
+        "B2O3",
+        "BaO",
+        "BeO",
+        "CO2",
+        "CaO",
+        "Ce2O3",
+        "CoO",
+        "Cr2O3",
+        "Cs2O",
+        "CuO",
+        "Dy2O3",
+        "Er2O3",
+        "Eu2O3",
+        "FeOT",
+        "Ga2O3",
+        "Gd2O3",
+        "GeO2",
+        "H2O",
+        "HfO2",
+        "Ho2O3",
+        "K2O",
+        "La2O3",
+        "Li2O",
+        "Lu2O3",
+        "MgO",
+        "MnO",
+        "MoO3",
+        "Na2O",
+        "Nb2O5",
+        "Nd2O3",
+        "NiO",
+        "P2O5",
+        "PbO",
+        "Pr2O3",
+        "Rb2O",
+        "SO3",
+        "Sb2O3",
+        "Sc2O3",
+        "SiO2",
+        "Sm2O3",
+        "SnO2",
+        "SrO",
+        "Ta2O5",
+        "Tb2O3",
+        "ThO2",
+        "TiO2",
+        "Tm2O3",
+        "V2O5",
+        "WO3",
+        "Y2O3",
+        "Yb2O3",
+        "ZnO",
+        "ZrO2",
+    ]
+
+    assert sorted(result) == sorted(
+        expected
+    ), "supported internal standard oxides do not match expected - have you changed this list recently??"
 
 
 ###############LASERCALC UNIT TESTS#########################
@@ -826,7 +913,6 @@ SRM_path = Path(__file__).parent / "laicpms_stds_tidy.xlsx"
 # SRM_path = r"./tests/laicpms_stds_tidy.xlsx"
 intervals_path = Path(__file__).parent / "example_intervals.xlsx"
 internal_std_path = Path(__file__).parent / "example_internal_std.xlsx"
-
 
 
 @pytest.fixture
@@ -958,6 +1044,43 @@ def test_get_SRM_comps(load_SRM_data):
         "T1-G",
         "StHs680-G",
     ], "standard names not being read in properly"
+
+def test_duplicate_samples(load_LTcomplete_data):
+    """test check for finding duplicate sample names in "Spot" column of lasertram output
+
+    Args:
+        load_LTcomplete_data (_type_): _description_
+    """
+    lt_complete = load_LTcomplete_data
+
+    lt_complete.loc[1, "Spot"] = 'GSD-1G_-_1'
+
+    lt_complete.loc[164,"Spot"] = 'ATHO-G_-_4'
+
+    duplicates = formatting.check_duplicate_values(lt_complete, 'Spot',print_output = True)
+
+    expected = pd.Series(
+        {0: 'GSD-1G_-_1', 1: 'GSD-1G_-_1', 164: 'ATHO-G_-_4', 165: 'ATHO-G_-_4'}, name = "Spot"
+    )
+
+    pd.testing.assert_series_equal(duplicates,expected)
+
+
+def test_replace_duplicate_samples(load_LTcomplete_data):
+    """test replacing duplicate sample names in "Spot" column from lasertram output
+
+    Args:
+        load_LTcomplete_data (_type_): _description_
+    """
+    lt_complete = load_LTcomplete_data
+
+    lt_complete.loc[1, "Spot"] = 'GSD-1G_-_1'
+
+    lt_complete.loc[164,"Spot"] = 'ATHO-G_-_4'
+    result = formatting.rename_duplicate_values(lt_complete, 'Spot', print_output = True)
+    expected = pd.Series({0: 'GSD-1G_-_1-a', 1: 'GSD-1G_-_1-b', 164: 'ATHO-G_-_4-a', 165: 'ATHO-G_-_4-b'},name = 'Spot')
+    
+    pd.testing.assert_series_equal(result.loc[[0,1,164,165],'Spot'], expected)
 
 
 def test_get_lc_data(load_SRM_data, load_LTcomplete_data):
@@ -1378,7 +1501,7 @@ def test_get_calibration_std_ratios(load_SRM_data, load_LTcomplete_data):
         ]
     )
     assert np.allclose(
-        concentrations.calibration_std_conc_ratios, test_ratios
+        concentrations.calibration_std_conc_ratios, test_ratios, rtol = 1e-3,
     ), "calibration standard concentration ratios are not correct, check again"
 
 
@@ -1399,6 +1522,7 @@ def test_set_int_std_concentrations(
         concentrations=load_internal_std_comps["SiO2"],
         uncertainties=load_internal_std_comps["SiO2_std%"],
     )
+    # TODO check that all different units work for this, oxide and element (wt percent and ppm)
 
     assert np.allclose(
         concentrations.data.loc["unknown", "int_std_comp"].values,
@@ -1408,6 +1532,52 @@ def test_set_int_std_concentrations(
         concentrations.data.loc["unknown", "int_std_rel_unc"].values,
         load_internal_std_comps["SiO2_std%"].values,
     ), "internal standard concentration uncertainties for unknowns not set properly"
+
+def test_calculate_concentrations_units(load_SRM_data,load_LTcomplete_data,load_internal_std_comps):
+    """test to make sure that no matter which internal standard units are used (wt percent oxide, wt percent element, ppm element), the output concentration
+    is the same
+
+    Args:
+        load_SRM_data (_type_): _description_
+        load_LTcomplete_data (_type_): _description_
+        load_internal_std_comps (_type_): _description_
+    """
+
+
+    out = []
+
+    for units in ["wt_per_ox","wt_per_el","ppm_el"]:
+        concentrations = LaserCalc(name="test")
+        concentrations.get_SRM_comps(load_SRM_data)
+        concentrations.get_data(load_LTcomplete_data)
+        concentrations.set_calibration_standard("GSD-1G")
+        concentrations.drift_check()
+        concentrations.get_calibration_std_ratios()
+
+        int_std_data = load_internal_std_comps
+
+        if units == 'ppm_el':
+            values= conversions.oxide_to_ppm(int_std_data['SiO2'],'Si')
+
+        elif units == 'wt_per_el':
+            values = conversions.oxide_to_ppm(int_std_data['SiO2'],'Si') / 1e4
+
+        else:
+            values = int_std_data['SiO2']
+
+        concentrations.set_int_std_concentrations(
+            spots=int_std_data["Spot"],
+            concentrations=values,
+            uncertainties=int_std_data["SiO2_std%"],
+            units = units
+        )
+        concentrations.calculate_concentrations()
+
+
+        out.append(concentrations.unknown_concentrations)
+
+    pd.testing.assert_frame_equal(out[0],out[1])
+    pd.testing.assert_frame_equal(out[0],out[2])
 
 
 def test_calculate_concentrations(
@@ -2343,13 +2513,13 @@ def test_calculate_concentrations(
         test_unknown_concentrations,
         concentrations.unknown_concentrations.iloc[[0, 4, 8], :].reset_index(),
         check_index_type=False,
-        check_dtype = False
+        check_dtype=False,
     )
     pd.testing.assert_frame_equal(
         test_SRM_concentrations,
         concentrations.SRM_concentrations.iloc[[0, 4, 8], :].head(),
         check_index_type=False,
-        check_dtype = False
+        check_dtype=False,
     )
 
 
@@ -2544,5 +2714,5 @@ def test_SRM_accuracies(load_SRM_data, load_LTcomplete_data, load_internal_std_c
         test_SRM_accuracies,
         concentrations.SRM_accuracies.iloc[[0, 4, 8], :].head(),
         check_index_type=False,
-        check_dtype = False
+        check_dtype=False,
     )

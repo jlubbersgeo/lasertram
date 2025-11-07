@@ -4,9 +4,12 @@
 - [x] add: lt_ready formatting for upload into lasertram
 - [x] add: lt_complete formatting for upload into lasercalc
 - [x] add: checks for the correct types in each column for all uploads
+- [ ] add: duplicate name checks for lasercalc upload
 """
 
 import pandas as pd
+import string
+from tabulate import tabulate
 
 
 def _check_cols(in_cols: list, correct_cols: list) -> None | list:
@@ -328,3 +331,82 @@ def check_lt_complete_format(df: pd.DataFrame) -> None | list:
     col_types_check = _check_col_types(df[in_cols], correct_types)
 
     return col_names_check, col_types_check
+
+
+def check_duplicate_values(df: pd.DataFrame, col: str, print_output: bool = True) -> pd.Series:
+    """check a column in a pandas dataframe for duplicate values and return them as a pandas series
+
+    Args:
+        df (pd.DataFrame): input dataframe
+        col (str): column to check for duplicate values
+        print_output (bool, optional): whether or not to print a nicely formatted table of the duplicates. Defaults to True.
+
+    Returns:
+        pd.Series: the duplicate values in the specified column and their indices 
+    """
+
+    assert isinstance(print_output, bool), "print_output must be boolean"
+    assert isinstance(df, pd.core.frame.DataFrame), "df must be a pandas dataframe"
+    assert col in df.columns, f"'{col}' is not in the input dataframe columns - please choose a column that exists in the dataframe"
+
+    duplicates = df[col][df[col].duplicated(keep = False).values]
+    if duplicates.shape[0] > 0:
+        if print_output:
+
+            print("duplicate sample names found:\n")
+            print(tabulate(pd.DataFrame(duplicates),headers = 'keys',tablefmt='pipe'))
+    else:
+        duplicates = None
+        if print_output:
+
+            print( f"No duplicate values in column {col} found")
+
+
+    return duplicates
+
+def rename_duplicate_values(df: pd.DataFrame, col: str, print_output: bool = True) -> pd.DataFrame:
+    """rename duplicate values in a specified column from a pandas dataframe. Renaming will append 
+    -a, -b, -c ... -z. For use with columns that have values that are solely strings e.g. sample names
+
+    Args:
+        df (pd.DataFrame): input dataframe
+        col (str): column to check for and rename duplicate values
+        print_output (bool, optional): Whether or not to print a nicely formatted table of the duplicates as well as messages that show the results of the renaming. Defaults to True.
+
+    Returns:
+        pd.DataFrame: copy of the input dataframe with duplicate values in the specified column renamed. All other values are left alone.
+    """
+
+    assert isinstance(print_output, bool), "print_output must be boolean"
+    assert isinstance(df, pd.core.frame.DataFrame), "df must be a pandas dataframe"
+    assert col in df.columns, f"'{col}' is not in the input dataframe columns - please choose a column that exists in the dataframe"
+    
+    df_copy = df.copy()
+
+    duplicates = check_duplicate_values(df_copy, col, print_output)
+
+    if duplicates is not None:
+        print("Renaming columns:")
+
+        unique_duplicates = duplicates.unique()
+
+        alphabet = list(string.ascii_lowercase)
+        for duplicate in unique_duplicates:
+            subset = df_copy[col][df_copy[col] == duplicate]
+            old_vals = subset.values.copy()
+            
+            for val, letter in zip(range(len(subset)),alphabet):
+                subset.iloc[val] = f"{subset.iloc[val]}-{letter}"
+
+            new_vals = subset.values
+            if print_output:
+
+                print(f"Rename {col} indices {subset.index.values} from {old_vals} ---> {new_vals} complete")
+
+            df_copy.loc[subset.index,col] = subset.values
+    else:
+        print("No duplicates to rename, returning copy of unmodified DataFrame")
+    
+    return df_copy
+    
+    
