@@ -102,6 +102,7 @@ class LaserCalc:
         # element used as internal standard. NOT to be confused with analyte
         # e.g. self.int_std_element == 'Si' NOT '29Si'
         self.int_std_element = None
+        self.int_std_units = None
 
         # list of standard reference materials in found in self.data that are
         # also found in self.database_standards. This lets you know which standard reference
@@ -229,7 +230,7 @@ class LaserCalc:
         # TODO: get_data
         # - [x] add: check to make sure data are in right format else throw an error. do this by having a list of required columns and checking for them. this can't include analytes though - just the metadata.
         # - [x] add: in some checking for analytes to make sure that the measured analytes exist within the standards database. compare self.elements to self.standard_elements by going through each standard and checking for nan for that element
-
+        # - [ ] add: duplicate name check.
         print(
             "checking LaserCalc input data format for correct column headers and data types..."
         )
@@ -502,6 +503,7 @@ class LaserCalc:
         spots=None,
         concentrations=None,
         uncertainties=None,
+        units = "wt_per_ox"
     ):
         """Assign the concentration and uncertainty of the internal standard analyte to
         a series of spots.
@@ -514,7 +516,11 @@ class LaserCalc:
 
             concentrations (array-like): values representing the internal standard concentration. Must be the same shape as `spots`.
             uncertainties (array-like): values representing the internal standard relative uncertainty in percent. Must be the same shape as `spots`.
+            units (str): units for the concentration and uncertainty values. Accepts: `wt_per_ox`, `wt_per_el`, `ppm_el` for weight percent oxide, weight percent element, and parts per million element, respectively
         """
+
+        assert units in ['wt_per_ox','wt_per_el', 'ppm_el'], f"{units} is not a supported unit for concentrations. accepted units are: ['wt_per_ox','wt_per_el', 'ppm_el']"
+
         if spots is None:
             spots = (self.data["Spot"],)
             concentrations = (np.full(self.data["Spot"].shape[0], 10),)
@@ -532,6 +538,9 @@ class LaserCalc:
 
         self.data["int_std_comp"] = df["int_std_comp"].to_numpy()
         self.data["int_std_rel_unc"] = df["int_std_rel_unc"].to_numpy()
+
+
+        self.int_std_units = units
 
     def calculate_concentrations(self):
         """
@@ -623,11 +632,22 @@ class LaserCalc:
             secondary_standards_concentrations_list.append(concentrations)
 
         ###############################
+        
         for sample in self.samples_nostandards:
-            Cn_u = conversions.oxide_to_ppm(
-                self.data.loc[sample, "int_std_comp"],
-                self.data.loc[sample, "norm"].unique()[0],
-            ).to_numpy()
+            # Cn_u = conversions.oxide_to_ppm(
+            #     self.data.loc[sample, "int_std_comp"],
+            #     self.data.loc[sample, "norm"].unique()[0],
+            # ).to_numpy()
+            int_std_element = "".join([i for i in self.data.loc[sample, "norm"].unique()[0] if not i.isdigit()])
+
+            # handle conversions from various units to all end up at ppm element
+            if self.int_std_units == 'wt_per_ox':
+                Cn_u = conversions.oxide_to_ppm(self.data.loc[sample,"int_std_comp"], int_std_element)
+            elif self.int_std_units == 'wt_per_el':
+                Cn_u = self.data.loc[sample,"int_std_comp"].values *1e4
+            elif self.int_std_units == 'ppm_el':
+                Cn_u = self.data.loc[sample,"int_std_comp"].values
+
             Cin_std = self.calibration_std_conc_ratios
             Ni_std = self.calibration_std_stats["mean"][self.analytes].to_numpy()
             Ni_u = self.data.loc[sample, self.analytes].to_numpy()
