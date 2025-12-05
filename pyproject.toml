@@ -21,7 +21,8 @@ dependencies = [
     "statsmodels >= 0.14.0",
     "openpyxl >= 3.0.0",
     "matplotlib",
-    "tabulate"
+    "tabulate",
+    "tqdm"
 
 ]
 classifiers = [
