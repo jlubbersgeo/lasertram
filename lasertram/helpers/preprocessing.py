@@ -3,10 +3,11 @@
 
 import re
 from pathlib import Path
-
+from tabulate import tabulate
 import numpy as np
 import pandas as pd
 from dateutil.parser import parse
+from tqdm import tqdm
 
 data_examples_dir = Path(__file__).parent.parent / "data"
 
@@ -73,43 +74,54 @@ def extract_thermo_data(file):
         dictionary that contains timestamp, filename, and data
         for preprocessing
     """
+    assert isinstance(file, (str, Path)), "file must be a str or pathlib.Path object"
+
+    if isinstance(file, Path):
+        pass
+    else:
+        file = Path(file)
 
     # gets the top row in your csv and turns it into a pandas series
-    top = pd.read_csv(file, nrows=0)
-    # since it is only 1 long it is also the column name
-    # extract that as a list
-    sample = list(top.columns)
+    try:
+        top = pd.read_csv(file, nrows=0)
 
-    # turn that list value to a string
-    sample = str(sample[0])
+        # since it is only 1 long it is also the column name
+        # extract that as a list
+        sample = list(top.columns)
 
-    # because its a string it can be split
-    # split at : removes the time stamp
-    sample = sample.split(":")[0]
+        # turn that list value to a string
+        sample = str(sample[0])
 
-    # .strip() removes leading and trailing spaces
-    sample = sample.strip()
+        # because its a string it can be split
+        # split at : removes the time stamp
+        sample = sample.split(":")[0]
 
-    # replace middle spaces with _ because spaces are bad
-    nospace = sample.replace(" ", "_")
+        # .strip() removes leading and trailing spaces
+        sample = sample.strip()
 
-    # get the timestamp by splitting the string by the previously
-    # designated sample. Also drops the colon in front of the date
-    timestamp = top.columns.tolist()[0].split(sample)[1:][0][1:]
+        # replace middle spaces with _ because spaces are bad
+        nospace = sample.replace(" ", "_")
 
-    timestamp = parse(timestamp)
+        # get the timestamp by splitting the string by the previously
+        # designated sample. Also drops the colon in front of the date
+        timestamp = top.columns.tolist()[0].split(sample)[1:][0][1:]
 
-    # import data
-    # remove the top rows. Double check that your header is the specified
-    # amount of rows to be skipped in 'skiprows' argument
-    data = pd.read_csv(file, skiprows=13)
-    # drop empty column at the end
-    data.drop(data.columns[len(data.columns) - 1], axis=1, inplace=True)
+        timestamp = parse(timestamp)
 
-    # remove dwell time row beneath header row
-    data = data.dropna()
+        # import data
+        # remove the top rows. Double check that your header is the specified
+        # amount of rows to be skipped in 'skiprows' argument
+        data = pd.read_csv(file, skiprows=13)
+        # drop empty column at the end
+        data.drop(data.columns[len(data.columns) - 1], axis=1, inplace=True)
 
-    return {"timestamp": timestamp, "file": file, "sample": nospace, "data": data}
+        # remove dwell time row beneath header row
+        data = data.dropna()
+
+        return {"timestamp": timestamp, "file": file, "sample": nospace, "data": data}
+
+    except pd.errors.EmptyDataError:
+        return None
 
 
 def make_lt_ready_folder(folder, quad_type):
@@ -139,20 +151,51 @@ def make_lt_ready_folder(folder, quad_type):
     assert (
         folder.is_dir()
     ), f"{folder} is not a directory, please choose a directory to your data .csv files"
+
+    print("Processing the all .csv files in the following folder for LaserTRAM input format:\n")
+    print(tabulate([[str(folder)]], headers = ["Folder Path"],tablefmt = "pipe"))
+    print("\n")
     my_dict = {}
-    for i in folder.glob("*.csv"):
+    files = [f for f in folder.glob("*.csv")]
+    # GET METADATA
+    # establish progress bar
+    pbar = tqdm(
+        files, desc="Extracting metadata from files", unit="file", total=len(files)
+    )
+    temp = None
+    empty_files = []
+    for i in pbar:
+        # rename description to match file
+        pbar.set_description(f"Extracting metadata from {i.name}")
+
         if quad_type == "thermo":
             temp = extract_thermo_data(i)
 
         elif quad_type == "agilent":
             temp = extract_agilent_data(i)
 
-        my_dict[temp["timestamp"]] = temp
+        # if the file is empty extract_thermo_data will be none
+        if temp is None:
+            empty_files.append(i)
+        else:
+            my_dict[temp["timestamp"]] = temp
 
     my_dict = dict(sorted(my_dict.items()))
-
+    # if any empty files display them in a table
+    if len(empty_files) > 0:
+        print("the following files were skipped because they contained no data:\n")
+        table = [[e.name] for e in empty_files]
+        print(tabulate(table, headers=["Empty files"], tablefmt="pipe"))
+        print("\n")
+    # GET DATA FROM DICTIONARY AND CONCAT ALL THE DATA INTO ONE DF
     outdf = pd.DataFrame()
-    for timestamp in my_dict:
+    pbar2 = tqdm(my_dict, desc="Combining individual files", unit="file")
+    for timestamp in pbar2:
+
+        pbar2.set_description(
+            f"Adding data from {Path(my_dict[timestamp]['file']).name}"
+        )
+
         samplelabel = pd.DataFrame(
             np.repeat(
                 my_dict[timestamp]["sample"], my_dict[timestamp]["data"].shape[0]
@@ -171,7 +214,7 @@ def make_lt_ready_folder(folder, quad_type):
 
         outdf = pd.concat([outdf, df])
         outdf.index = np.arange(outdf.shape[0], dtype=int)
-
+    print("Success.\n")
     return outdf
 
 
