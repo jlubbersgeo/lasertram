@@ -26,7 +26,7 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
-## 1.0.3 (DATE HERE)
+## 1.0.3 (12/8/2025)
 
 This release mostly revolves around improvements to the parts of the library that deal with type checking, formatting of input data, and other things that better help the user avoid common pitfalls related to improper data formatting. There has been some reorganizing as well:
 
