@@ -3,7 +3,8 @@ batch module:
 For batch processing operations in laserTRAM
 """
 
-
+# TODO:
+# - [ ] fix: error thrown in process spot if despike is true. must normalize data first
 def process_spot(
     spot,
     raw_data,
