@@ -26,6 +26,37 @@ Current and past maintainers of `lasertram`:
 
 - [@jlubbersgeo](https://github.com/jlubbersgeo)
 
+## 1.0.3 (DATE HERE)
+
+This release mostly revolves around improvements to the parts of the library that deal with type checking, formatting of input data, and other things that better help the user avoid common pitfalls related to improper data formatting. There has been some reorganizing as well:
+
+- moving the test data to its own directory: `test_data`. This contains subdirectories `basic_SRM_example` and `computers_and_geosciences_examples` which contain data used for the docs and associated manuscript [https://doi.org/10.1016/j.acags.2025.100225](https://doi.org/10.1016/j.acags.2025.100225) , respectively.
+- 
+
+### :sparkles: Features
+- added module for formatting checks:
+  - added in functionality to check that input data to `LaserTRAM` is properly formatted. This includes checking for:
+  - added functionality to check that the chosen calibration standard has published values for all analytes in the input dataset. If not throw error.
+  - added functionality to check that the SRM dataset is uploaded in the correct format
+  - added functionality to check that data loaded into LaserCalc are properly formatted.
+- added ability to calculate concentrations using internal standard values that are in either ppm element, wt% element, or wt% oxide.
+- added support for more internal standard analytes. While any element can be used as an internal standard in ppm units, supported oxides can be found by checking the `lasertram.helpers.conversions.supported_internal_standard_oxides` list. `mendeleev` was removed as a dependency because of this.
+- `LaserCalc` now checks for and fixes duplicate spot names. Because a lot of the code uses pandas indexing and the spot names are the index, duplicates will break the `LaserCalc` process. `LaserCalc` now will append `_A`, `_B`, etc. to duplicate spot names to make them unique to prevent this break. 
+- `make_LT_ready_folder()` function now deals with empty `.csv` files better by skipping them and throwing a message to the user rather than breaking. It also now displays more verbose messages to the user about what files are being processed so if something does break they have better context. Because of this `tqdm` and `tabulate` were added as dependencies.
+
+
+### :test_tube: Tests
+
+- `pytest` coverage has been updated to better reflect the way LaserTRAM and LaserCalc output data. This also increases the coverage to > 90%.
+- switch to using computers and geosciences dataset for testing rather than basic SRM dataset. Better reflects actual use cases for users rather than "idealized" data.
+- added data to be used for testing how the `preprocessing` module deals with raw data from ThermoFisher quadrupole ICP-MS. This is in the `tests/raw` directory.
+
+### :bug: Bug Fixes
+
+- fixed bad path handling with functions related to loading test data
+- migrated how `b.d.l.` is handled internally to avoid deprecation warnings from `pandas`
+- fixed bug with `make_LT_ready_folder()` where empty `csv` files would cause the function to break.
+
 ## 1.0.1 and 1.0.2
 
 _1.0.2 is the same as 1.0.1 but I screwed up the PyPI distribution so I'm redoing it as 1.0.2_
