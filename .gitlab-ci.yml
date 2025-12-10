@@ -18,18 +18,23 @@
 
 #     coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
 
+# USE THIS TO LINT YOUR YAML
+# https://code.usgs.gov/<your_group>/<your_project>/-/ci/lint
+# https://code.usgs.gov/vsc/petro/tools/lasertram/-/ci/lint
+
 default:
     image: python:3.13
     cache:
         paths:
             - .cache/pip/
-    variables:
-        PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
     before_script:
         - python --version
         - pip install --upgrade pip
         - mkdir -p "$CI_PROJECT_DIR/.cache/pip"
         - pip install build twine
+
+variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 stages:
     - build
